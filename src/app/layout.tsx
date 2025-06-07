@@ -16,11 +16,11 @@ export const metadata: Metadata = {
 async function AuthAwareUIComponents() {
   const auth = await checkAuthStatus();
   // Log to see if this component re-runs and gets fresh auth status
-  console.log("AuthAwareUIComponents: Current auth status - isAuthenticated:", auth.isAuthenticated);
+  console.log("[AuthAwareUIComponents] Auth status from checkAuthStatus:", auth);
   return (
     <>
-      <Header key={`header-${auth.isAuthenticated}`} initialIsAuthenticated={auth.isAuthenticated} />
-      <FloatingLogoutButton key={`logout-btn-${auth.isAuthenticated}`} initialIsAuthenticated={auth.isAuthenticated} />
+      <Header key={`header-${auth.isAuthenticated.toString()}`} initialIsAuthenticated={auth.isAuthenticated} />
+      <FloatingLogoutButton key={`logout-btn-${auth.isAuthenticated.toString()}`} initialIsAuthenticated={auth.isAuthenticated} />
     </>
   );
 }

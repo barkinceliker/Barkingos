@@ -19,8 +19,8 @@ import type { LucideIcon } from 'lucide-react';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 
 const staticNavItems = [
-  { label: 'Anasayfa', href: '/', iconName: 'Home' },
-  { label: 'Hakkımda', href: '/hakkimda', iconName: 'User' },
+  { label: 'Anasayfa', href: '/', iconName: 'HomeIcon' },
+  { label: 'Hakkımda', href: '/hakkimda', iconName: 'UserIcon' },
   { label: 'Hizmetler', href: '/hizmetler', iconName: 'Sparkles' },
   { label: 'Projeler', href: '/projeler', iconName: 'Laptop' },
   { label: 'Yetenekler', href: '/yetenekler', iconName: 'Lightbulb' },
@@ -36,6 +36,8 @@ interface HeaderProps {
 }
 
 export default function Header({ initialIsAuthenticated }: HeaderProps) {
+  console.log("[Header] Received initialIsAuthenticated prop:", initialIsAuthenticated);
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -107,7 +109,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
         setIsLoginDialogOpen(false);
         toast({ title: "Giriş Başarılı!", description: "Admin paneline yönlendiriliyorsunuz..." });
         router.push('/admin'); 
-        router.refresh(); // This should trigger AuthAwareUIComponents to re-run and pass new prop
+        router.refresh(); 
       } else {
         setLoginError(sessionResult.error || "Giriş yapılamadı. Lütfen tekrar deneyin.");
         toast({ title: "Giriş Başarısız", description: sessionResult.error || "Bir hata oluştu.", variant: "destructive" });
@@ -137,7 +139,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
         if (pathname.startsWith('/admin')) {
           router.push('/');
         }
-        router.refresh(); // This should trigger AuthAwareUIComponents to re-run and pass new prop
+        router.refresh();
       } else {
         toast({ title: "Çıkış Hatası", description: result.error || "Çıkış sırasında bir sorun oluştu.", variant: "destructive" });
       }
@@ -148,7 +150,6 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
       setIsSubmittingLogout(false);
     }
   };
-
 
   return (
     <>
