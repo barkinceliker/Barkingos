@@ -19,7 +19,7 @@ export interface HakkimdaPageContent {
   stat_teamwork_value: string;
   mission_title: string;
   mission_p1: string;
-  updatedAt?: admin.firestore.Timestamp;
+  updatedAt?: string; // Changed from admin.firestore.Timestamp to string
 }
 
 const hakkimdaPageContentSchema = z.object({
@@ -37,7 +37,7 @@ const hakkimdaPageContentSchema = z.object({
   mission_p1: z.string().min(1, "Misyon paragrafı gereklidir."),
 });
 
-const DEFAULT_HAKKIMDA_CONTENT: HakkimdaPageContent = {
+const DEFAULT_HAKKIMDA_CONTENT: Omit<HakkimdaPageContent, 'id' | 'updatedAt'> = {
   pageTitle: 'Hakkımda',
   pageSubtitle: 'Benim hikayem, tutkularım ve profesyonel yolculuğum hakkında daha fazla bilgi edinin.',
   profileImageUrl: 'https://placehold.co/400x400.png',
@@ -70,26 +70,50 @@ export const getHakkimdaContent = cache(async (): Promise<HakkimdaPageContent> =
     const docSnap = await docRef.get();
 
     if (docSnap.exists) {
-      const data = docSnap.data() as HakkimdaPageContent;
-      return { ...data, id: docSnap.id };
+      const dataFromDb = docSnap.data();
+      // Manually construct the object to ensure type conformity and serialize Timestamp
+      const content: HakkimdaPageContent = {
+        id: docSnap.id,
+        pageTitle: dataFromDb?.pageTitle || DEFAULT_HAKKIMDA_CONTENT.pageTitle,
+        pageSubtitle: dataFromDb?.pageSubtitle || DEFAULT_HAKKIMDA_CONTENT.pageSubtitle,
+        profileImageUrl: dataFromDb?.profileImageUrl || DEFAULT_HAKKIMDA_CONTENT.profileImageUrl,
+        profileImageAiHint: dataFromDb?.profileImageAiHint || DEFAULT_HAKKIMDA_CONTENT.profileImageAiHint,
+        whoAmI_p1: dataFromDb?.whoAmI_p1 || DEFAULT_HAKKIMDA_CONTENT.whoAmI_p1,
+        whoAmI_p2: dataFromDb?.whoAmI_p2 || DEFAULT_HAKKIMDA_CONTENT.whoAmI_p2,
+        whoAmI_p3_hobbies: dataFromDb?.whoAmI_p3_hobbies || DEFAULT_HAKKIMDA_CONTENT.whoAmI_p3_hobbies,
+        stat_experience_value: dataFromDb?.stat_experience_value || DEFAULT_HAKKIMDA_CONTENT.stat_experience_value,
+        stat_expertise_value: dataFromDb?.stat_expertise_value || DEFAULT_HAKKIMDA_CONTENT.stat_expertise_value,
+        stat_teamwork_value: dataFromDb?.stat_teamwork_value || DEFAULT_HAKKIMDA_CONTENT.stat_teamwork_value,
+        mission_title: dataFromDb?.mission_title || DEFAULT_HAKKIMDA_CONTENT.mission_title,
+        mission_p1: dataFromDb?.mission_p1 || DEFAULT_HAKKIMDA_CONTENT.mission_p1,
+        updatedAt: dataFromDb?.updatedAt && typeof dataFromDb.updatedAt.toDate === 'function' 
+                   ? (dataFromDb.updatedAt as admin.firestore.Timestamp).toDate().toISOString() 
+                   : undefined,
+      };
+      return content;
     } else {
       // Create default content if it doesn't exist
-      await docRef.set({ ...DEFAULT_HAKKIMDA_CONTENT, updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+      // Note: DEFAULT_HAKKIMDA_CONTENT does not include 'updatedAt', serverTimestamp is set on write
+      await docRef.set({ 
+        ...DEFAULT_HAKKIMDA_CONTENT, 
+        updatedAt: admin.firestore.FieldValue.serverTimestamp() 
+      });
       console.log("Created default 'hakkimda' page content in Firestore.");
-      return { ...DEFAULT_HAKKIMDA_CONTENT, id: 'hakkimda' };
+      // Return default content without updatedAt, as it's freshly created and serverTimestamp needs to resolve
+      return { ...DEFAULT_HAKKIMDA_CONTENT, id: 'hakkimda', updatedAt: undefined };
     }
   } catch (error) {
     console.error("Error fetching/creating Hakkimda page content:", error);
     // Fallback to default content in case of error, but log it.
-    // This prevents the page from breaking if Firestore is temporarily unavailable.
-    return { ...DEFAULT_HAKKIMDA_CONTENT, id: 'hakkimda' };
+    return { ...DEFAULT_HAKKIMDA_CONTENT, id: 'hakkimda', updatedAt: undefined };
   }
 });
 
-export async function updateHakkimdaContent(data: HakkimdaPageContent) {
+export async function updateHakkimdaContent(data: Omit<HakkimdaPageContent, 'id' | 'updatedAt'>) {
   const validation = hakkimdaPageContentSchema.safeParse(data);
   if (!validation.success) {
-    return { success: false, errors: validation.error.flatten().fieldErrors };
+    // Make sure to return a structure that matches the expected Promise<{success: boolean, message?: string, errors?: any}>
+    return { success: false, message: "Doğrulama hatası.", errors: validation.error.flatten().fieldErrors };
   }
 
   try {
