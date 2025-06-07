@@ -25,6 +25,7 @@ export default function AdminLoginPage() {
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     setAuthError(null);
+    console.log("LoginPage: onSubmit triggered with values:", data);
     try {
       console.log("LoginPage: Attempting Firebase sign-in...");
       const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
@@ -32,9 +33,18 @@ export default function AdminLoginPage() {
 
       if (userCredential.user) {
         const token = await userCredential.user.getIdToken();
+        console.log("LoginPage: Firebase ID Token retrieved:", token ? token.substring(0, 30) + "..." : "EMPTY TOKEN");
+
+        if (!token) {
+          console.error("CRITICAL: Firebase ID Token is null or empty. Cannot set cookie.");
+          setAuthError("Kullanıcı token alınamadı.");
+          toast({ title: "Giriş Hatası", description: "Kullanıcı token alınamadı.", variant: "destructive" });
+          return;
+        }
+
         console.log("LoginPage: About to set firebaseIdToken cookie. Initial document.cookie:", document.cookie);
-        // Max-age is 1 hour (3600 seconds)
-        document.cookie = `firebaseIdToken=${token}; path=/; max-age=3600; SameSite=Lax; Secure`;
+        // Max-age is 1 hour (3600 seconds). Removed 'Secure' for local HTTP dev.
+        document.cookie = `firebaseIdToken=${token}; path=/; max-age=3600; SameSite=Lax`;
         console.log("LoginPage: firebaseIdToken cookie set command executed.");
         console.log("LoginPage: document.cookie state immediately after set:", document.cookie);
 
@@ -48,7 +58,6 @@ export default function AdminLoginPage() {
           console.log("LoginPage: document.cookie state after 100ms delay:", document.cookie);
           if (!document.cookie.includes('firebaseIdToken=')) {
             console.error("CRITICAL: Cookie 'firebaseIdToken' was not found client-side after setting and delay. Redirect might fail or loop.");
-            // You could even add an alert here for very explicit debugging on the client:
             // alert("CRITICAL: Cookie 'firebaseIdToken' was not found client-side. Redirect might be problematic.");
           }
           console.log("LoginPage: Attempting redirect to /admin via router.push...");
@@ -57,10 +66,11 @@ export default function AdminLoginPage() {
         }, 100);
 
       } else {
+        console.error("LoginPage: UserCredential.user is null after successful sign-in.");
         throw new Error("Kullanıcı bilgileri alınamadı.");
       }
     } catch (e: any) {
-      console.error("LoginPage: Firebase sign-in error:", e);
+      console.error("LoginPage: Firebase sign-in or token error:", e);
       let errorMessage = "E-posta veya şifre yanlış.";
       if (e.code === 'auth/invalid-credential' || e.code === 'auth/user-not-found' || e.code === 'auth/wrong-password') {
         errorMessage = "Geçersiz e-posta veya şifre.";
@@ -74,6 +84,7 @@ export default function AdminLoginPage() {
         variant: "destructive",
       });
     }
+    console.log("LoginPage: onSubmit finished.");
   };
 
   return (
