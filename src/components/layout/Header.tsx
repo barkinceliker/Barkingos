@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import React, { useState, useEffect } from 'react'; // Added React import for React.cloneElement
+import React, { useState, useEffect } from 'react';
 import { Menu, X, Loader2, LogIn, LogOut, Shield, Home, User, Briefcase, Sparkles, Laptop, Lightbulb, MessageSquare, BookOpen, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
@@ -144,32 +144,31 @@ export default function Header() {
     return items.map((item) => {
       const itemKey = `${isMobile ? 'mobile' : 'desktop'}-${item.href}`;
       
-      const navLinkElement = (
-        <NavLink 
-          href={item.href} 
-          onClick={isMobile ? () => setIsMobileMenuOpen(false) : undefined} 
-          className={isMobile ? "text-base" : ""}
+      const navLinkInstance = (
+        <NavLink
+          // Key is now applied directly if it's the top-level element in map,
+          // or it can be on the wrapper (SheetClose) for mobile.
+          // For simplicity, we'll key the NavLink itself.
+          key={itemKey}
+          href={item.href}
+          onClick={isMobile ? () => setIsMobileMenuOpen(false) : undefined}
+          className={isMobile ? "text-base" : ""} // Applied to NavLink's Button
           iconName={item.iconName}
         >
           {item.label}
         </NavLink>
       );
-
+  
       if (isMobile) {
-        // For mobile, wrap NavLink with SheetClose
+        // SheetClose wraps NavLink. The key for the .map iteration should be on SheetClose.
         return (
-          <SheetClose asChild key={itemKey}>
-            {React.cloneElement(navLinkElement, { onClick: () => {
-                setIsMobileMenuOpen(false);
-                if (navLinkElement.props.onClick) {
-                  navLinkElement.props.onClick(); 
-                }
-              }})}
+          <SheetClose asChild key={itemKey}> 
+            {navLinkInstance}
           </SheetClose>
         );
       } else {
-        // For desktop, render NavLink directly with a key.
-        return React.cloneElement(navLinkElement, { key: itemKey });
+        // For desktop, navLinkInstance is already keyed.
+        return navLinkInstance;
       }
     });
   };
@@ -285,8 +284,6 @@ export default function Header() {
               )}
             </div>
             <DialogFooter>
-              {/* The "İptal" button was removed in a previous step to debug a DialogClose error */}
-              {/* If needed, it can be re-added carefully, ensuring DialogClose is used correctly or Dialog onOpenChange is leveraged */}
               <Button type="submit" disabled={isSubmittingLogin}>
                 {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Giriş Yap
