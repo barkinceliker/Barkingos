@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,8 +17,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
-import { submitContactForm } from "@/lib/actions/contact"; // Will create this action
+import { Mail, Phone, MapPin, Send, Loader2 } from 'lucide-react';
+import { submitContactForm } from "@/lib/actions/contact"; 
 
 const formSchema = z.object({
   name: z.string().min(2, "İsim en az 2 karakter olmalıdır.").max(50, "İsim en fazla 50 karakter olabilir."),
@@ -39,12 +40,11 @@ export default function IletisimPage() {
     },
   });
 
+  const { formState: { isSubmitting } } = form;
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      // const result = await submitContactForm(values); // This would be the actual server action call
-      // Simulate server action
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      const result = { success: true, message: "Mesajınız başarıyla gönderildi!" };
+      const result = await submitContactForm(values); 
 
       if (result.success) {
         toast({
@@ -179,8 +179,8 @@ export default function IletisimPage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={form.formState.isSubmitting}>
-                    {form.formState.isSubmitting ? "Gönderiliyor..." : <>Mesajı Gönder <Send className="ml-2 h-4 w-4" /></>}
+                  <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isSubmitting}>
+                    {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Gönderiliyor...</> : <><Send className="mr-2 h-4 w-4" /> Mesajı Gönder</>}
                   </Button>
                 </form>
               </Form>
