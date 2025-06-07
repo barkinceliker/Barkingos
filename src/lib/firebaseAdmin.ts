@@ -1,32 +1,45 @@
 
 // lib/firebaseAdmin.ts
-import * as admin from "firebase-admin";
+import * as tiềmNăngAdmin from 'firebase-admin'; // Use a different name to check if 'admin' itself is problematic
+
+if (!tiềmNăngAdmin || typeof tiềmNăngAdmin.initializeApp !== 'function') {
+  console.error("CRITICAL_ADMIN_SDK_LOAD_FAILURE: 'firebase-admin' module could not be imported correctly, or 'initializeApp' is not a function. Import result:", tiềmNăngAdmin);
+  // If this log appears, it's a fundamental issue with firebase-admin package or its import.
+} else {
+  console.log("FirebaseAdmin: 'firebase-admin' module (aliased as tiềmNăngAdmin) imported successfully. Actual admin object will use this.");
+}
+
+// Use the standard 'admin' name for the rest of the module
+const admin = tiềmNăngAdmin;
 
 const projectId = process.env.FIREBASE_PROJECT_ID;
 const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY;
 const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
 
-// Log environment variables for debugging
-console.log("FirebaseAdmin: Attempting to initialize...");
-console.log(`FirebaseAdmin: FIREBASE_PROJECT_ID (raw from env): '${projectId}' (type: ${typeof projectId})`);
-console.log(`FirebaseAdmin: FIREBASE_CLIENT_EMAIL (raw from env): '${clientEmail}' (type: ${typeof clientEmail})`);
-console.log(`FirebaseAdmin: FIREBASE_PRIVATE_KEY (raw from env) is ${privateKeyRaw ? 'SET' : 'NOT SET'} (type: ${typeof privateKeyRaw})`);
+console.log("FirebaseAdmin: Attempting to initialize Firebase Admin SDK...");
+console.log(`FirebaseAdmin: ENV - FIREBASE_PROJECT_ID: '${projectId}' (Type: ${typeof projectId})`);
+console.log(`FirebaseAdmin: ENV - FIREBASE_CLIENT_EMAIL: '${clientEmail}' (Type: ${typeof clientEmail})`);
+console.log(`FirebaseAdmin: ENV - FIREBASE_PRIVATE_KEY is ${privateKeyRaw ? 'SET' : 'NOT SET'} (Type: ${typeof privateKeyRaw})`);
 
-if (privateKeyRaw) {
-  console.log(`FirebaseAdmin: FIREBASE_PRIVATE_KEY (raw from env) starts with: ${privateKeyRaw.substring(0, 30)}...`);
-  console.log(`FirebaseAdmin: FIREBASE_PRIVATE_KEY (raw from env) ends with: ...${privateKeyRaw.substring(privateKeyRaw.length - 30)}`);
+if (privateKeyRaw && typeof privateKeyRaw === 'string' && privateKeyRaw.length > 0) {
+  console.log(`FirebaseAdmin: Raw FIREBASE_PRIVATE_KEY starts with: '${privateKeyRaw.substring(0, 30)}...'`);
+  console.log(`FirebaseAdmin: Raw FIREBASE_PRIVATE_KEY ends with: '...${privateKeyRaw.substring(privateKeyRaw.length - 30)}'`);
+} else if (privateKeyRaw) {
+  console.warn(`FirebaseAdmin: FIREBASE_PRIVATE_KEY is set but might not be a string or is empty. Actual value (type ${typeof privateKeyRaw}): ${privateKeyRaw}`);
 }
 
 
-if (!admin.apps.length) {
+if (admin && admin.apps && !admin.apps.length) { // Check if admin object is valid before checking apps
   if (projectId && privateKeyRaw && clientEmail) {
     try {
-      // This is the crucial step: replace escaped newlines with actual newlines
+      if (typeof privateKeyRaw !== 'string') {
+        throw new Error('FIREBASE_PRIVATE_KEY from .env is not a string.');
+      }
       const privateKey = privateKeyRaw.replace(/\\n/g, "\n");
       
-      console.log("FirebaseAdmin: Processed privateKey for initialization starts with: " + privateKey.substring(0, 30) + "...");
-      console.log("FirebaseAdmin: Processed privateKey for initialization ends with: ..." + privateKey.substring(privateKey.length - 30));
-      console.log("FirebaseAdmin: Type of processed privateKey: " + typeof privateKey);
+      console.log(`FirebaseAdmin: Processed privateKey for initialization starts with: '${privateKey.substring(0, 30)}...'`);
+      console.log(`FirebaseAdmin: Processed privateKey for initialization ends with: '...${privateKey.substring(privateKey.length - 30)}'`);
+      console.log(`FirebaseAdmin: Type of processed privateKey: ${typeof privateKey}`);
 
       if (typeof projectId !== 'string' || projectId.trim() === '') {
         throw new Error('FIREBASE_PROJECT_ID is not a valid string or is empty.');
@@ -35,6 +48,7 @@ if (!admin.apps.length) {
         throw new Error('FIREBASE_CLIENT_EMAIL is not a valid string or is empty.');
       }
       if (typeof privateKey !== 'string' || privateKey.trim() === '' || !privateKey.includes("-----BEGIN PRIVATE KEY-----") || !privateKey.includes("-----END PRIVATE KEY-----")) {
+        console.error("FirebaseAdmin: Processed FIREBASE_PRIVATE_KEY validation failed. Key content (check for BEGIN/END markers).");
         throw new Error('Processed FIREBASE_PRIVATE_KEY is not a valid string, is empty, or does not seem to be a valid PEM key.');
       }
 
@@ -45,38 +59,39 @@ if (!admin.apps.length) {
           clientEmail: clientEmail,
         }),
       });
-      console.log("Firebase Admin SDK initialized successfully.");
-    } catch (error) {
-      console.error(
-        "Firebase Admin SDK initialization error: ",
-        (error as Error).message
-      );
-      console.error("Firebase Admin SDK - Detailed error stack:", error);
-      console.error("FirebaseAdmin: Check the format of FIREBASE_PRIVATE_KEY in your .env file. It must be enclosed in quotes and all newline characters (\\n) within the key must be escaped as \\\\n. Also ensure projectId and clientEmail are correct.");
+      console.log("FirebaseAdmin: Firebase Admin SDK initialized successfully with default app.");
+    } catch (error: any) {
+      console.error("FirebaseAdmin: Firebase Admin SDK initialization error:", error.message);
+      console.error("FirebaseAdmin: Detailed error stack:", error.stack);
+      console.error("FirebaseAdmin: Critical - Check the format of FIREBASE_PRIVATE_KEY in your .env file. It must be enclosed in quotes, and all newline characters (\\n) within the key must be escaped as \\\\n. Also ensure projectId and clientEmail are correct and that the server was restarted after .env changes.");
     }
   } else {
+    let missingVars = [];
+    if (!projectId) missingVars.push("FIREBASE_PROJECT_ID");
+    if (!privateKeyRaw) missingVars.push("FIREBASE_PRIVATE_KEY");
+    if (!clientEmail) missingVars.push("FIREBASE_CLIENT_EMAIL");
     console.warn(
-      "Firebase Admin SDK not initialized because one or more required environment variables (FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, FIREBASE_CLIENT_EMAIL) are missing. Server-side token verification will not work."
+      `FirebaseAdmin: Firebase Admin SDK NOT initialized because one or more required environment variables are missing: [${missingVars.join(', ')}]. Server-side token verification will not work.`
     );
-    console.warn("Please ensure these variables are correctly set in your .env file and that the server has been restarted after changes.");
-    console.warn("FIREBASE_PRIVATE_KEY must be enclosed in quotes and all newline characters (\\n) within the key must be escaped as \\\\n.");
   }
+} else if (admin && admin.apps && admin.apps.length > 0) {
+  console.log("FirebaseAdmin: Firebase Admin SDK already has an initialized app.");
+} else if (!admin || !admin.apps) {
+    console.error("FirebaseAdmin: 'admin' object from 'firebase-admin' import is not as expected (null, undefined, or no 'apps' property). Cannot proceed with initialization checks.");
 }
 
 export { admin };
 
 export async function verifyFirebaseIdToken(token: string) {
-  if (!admin.apps.length || !admin.app()) {
-    console.error(
-      "Firebase Admin SDK not initialized. Cannot verify token."
-    );
+  if (!admin || !admin.apps || !admin.apps.length) { // Robust check
+    console.error("verifyFirebaseIdToken: Firebase Admin SDK not initialized or 'admin' object is problematic. Cannot verify token.");
     return null;
   }
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
     return decodedToken;
   } catch (error) {
-    console.error("Error verifying Firebase ID token:", error);
+    console.error("verifyFirebaseIdToken: Error verifying Firebase ID token:", error);
     return null;
   }
 }

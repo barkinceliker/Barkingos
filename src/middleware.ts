@@ -1,7 +1,7 @@
 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { admin } from '@/lib/firebaseAdmin'; // For potential server-side token verification
+import { admin } from '@/lib/firebaseAdmin'; // Import admin from the updated firebaseAdmin.ts
 
 export const runtime = 'nodejs'; // Specify Node.js runtime
 
@@ -9,44 +9,43 @@ const COOKIE_NAME = 'adminAuthToken';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  console.log(`Middleware: Executing for path: ${pathname}.`);
+
+  let firebaseAdminAvailable = false;
+  if (admin && typeof admin.initializeApp === 'function' && admin.apps) {
+    if (admin.apps.length > 0) {
+      console.log("Middleware: Firebase Admin SDK appears to be initialized (admin.apps.length > 0).");
+      firebaseAdminAvailable = true;
+    } else {
+      console.warn("Middleware: Firebase Admin SDK 'admin' object loaded, but no apps are initialized (admin.apps.length is 0). This is likely due to issues in firebaseAdmin.ts, possibly .env configuration or server restart needed.");
+    }
+  } else {
+    console.error("Middleware: CRITICAL - Firebase Admin SDK 'admin' object from '@/lib/firebaseAdmin' is not available or malformed. Middleware cannot perform authentication checks.");
+  }
+
   const cookie = request.cookies.get(COOKIE_NAME);
   const token = cookie?.value;
   let isAuthenticated = false;
 
-  // Log all cookies received by the middleware
-  let allCookies = "Middleware: All cookies received: ";
-  request.cookies.getAll().forEach(c => {
-    allCookies += `${c.name}=${c.value}; `;
-  });
-  console.log(allCookies);
-  
-  console.log(`Middleware: Path: ${pathname}. Checking for '${COOKIE_NAME}' cookie.`);
-
-  if (token) {
-    if (admin.apps.length && admin.app()) {
-      try {
-        // Verify the token with Firebase Admin SDK
-        const decodedToken = await admin.auth().verifyIdToken(token);
-        if (decodedToken && decodedToken.uid) {
-          isAuthenticated = true;
-          console.log(`Middleware: Token is valid for UID: ${decodedToken.uid}. User is authenticated.`);
-        } else {
-          console.log("Middleware: Token found but invalid (verification failed or no UID).");
-        }
-      } catch (error) {
-        console.warn("Middleware: Error verifying token with Admin SDK. Invalidating session.", (error as Error).message);
-        // Token is invalid (e.g., expired, revoked), clear it
-        const response = NextResponse.redirect(new URL('/', request.url)); // Redirect to home
-        response.cookies.delete(COOKIE_NAME); // Clear the invalid cookie
-        return response;
+  if (token && firebaseAdminAvailable) {
+    try {
+      const decodedToken = await admin.auth().verifyIdToken(token);
+      if (decodedToken && decodedToken.uid) {
+        isAuthenticated = true;
+        console.log(`Middleware: Token is valid for UID: ${decodedToken.uid}. User is authenticated.`);
+      } else {
+        console.log("Middleware: Token found but was invalid upon verification (no UID or verification failed).");
       }
-    } else {
-      console.warn("Middleware: Firebase Admin SDK not initialized. Cannot verify token. Assuming unauthenticated.");
-      // If Admin SDK is not ready, we cannot confirm authentication.
-      // For security, treat as unauthenticated.
+    } catch (error) {
+      console.warn("Middleware: Error verifying token with Admin SDK. Invalidating session.", (error as Error).message);
+      const response = NextResponse.redirect(new URL('/', request.url));
+      response.cookies.delete(COOKIE_NAME);
+      return response;
     }
-  } else {
-    console.log(`Middleware: Cookie '${COOKIE_NAME}' does NOT exist.`);
+  } else if (token && !firebaseAdminAvailable) {
+    console.warn(`Middleware: Token '${COOKIE_NAME}' found, but Firebase Admin SDK is not available/initialized. Cannot verify token. Treating as unauthenticated.`);
+  } else if (!token) {
+    console.log(`Middleware: Auth cookie '${COOKIE_NAME}' does NOT exist.`);
   }
 
   const isAdminRoute = pathname.startsWith('/admin');
@@ -54,16 +53,15 @@ export async function middleware(request: NextRequest) {
 
   if (isAdminRoute && !isAdminLoginPage) {
     if (!isAuthenticated) {
-      console.log("Middleware: User is not authenticated. Redirecting to homepage for admin route access.");
+      console.log("Middleware: User is not authenticated for admin route. Redirecting to homepage.");
       const homeUrl = new URL('/', request.url);
       return NextResponse.redirect(homeUrl);
     }
     console.log("Middleware: User is authenticated. Allowing access to admin route:", pathname);
   }
   
-  // If user is authenticated and tries to access the (now deprecated) login page, redirect them to admin dashboard
   if (isAuthenticated && isAdminLoginPage) {
-      console.log("Middleware: Authenticated user trying to access login page. Redirecting to /admin.");
+      console.log("Middleware: Authenticated user trying to access deprecated login page. Redirecting to /admin.");
       return NextResponse.redirect(new URL('/admin', request.url));
   }
 
@@ -71,7 +69,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/admin'], // Apply middleware to all /admin routes
+  matcher: ['/admin/:path*', '/admin'],
 };
-
-    
