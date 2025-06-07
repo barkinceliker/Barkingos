@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Settings, Newspaper, FolderKanban } from 'lucide-react'; // Updated Icon
+import { FileText, Settings, Newspaper, FolderKanban, ListTree } from 'lucide-react'; // Updated Icon
 
 export default async function AdminDashboardPage() {
   return (
@@ -52,7 +52,7 @@ export default async function AdminDashboardPage() {
         <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300"> 
           <CardHeader>
              <div className="flex justify-center mb-4">
-                <FileText className="h-12 w-12 text-accent" /> {/* Updated Icon */}
+                <FileText className="h-12 w-12 text-accent" />
             </div>
             <CardTitle className="font-headline text-2xl text-center">Sayfa İçerik Yönetimi</CardTitle>
             <CardDescription className="text-center">
@@ -60,8 +60,25 @@ export default async function AdminDashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <Link href="/admin/manage-content" passHref> {/* Updated Link */}
+            <Link href="/admin/manage-content" passHref>
               <Button className="w-full">Sayfaları Yönet</Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
+          <CardHeader>
+             <div className="flex justify-center mb-4">
+                <ListTree className="h-12 w-12 text-accent" />
+            </div>
+            <CardTitle className="font-headline text-2xl text-center">Navigasyon Yönetimi</CardTitle>
+            <CardDescription className="text-center">
+              Site üst menüsündeki navigasyon linklerini yönetin. (Yakında)
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <Link href="/admin/manage-navigation" passHref>
+              <Button className="w-full">Navigasyonu Yönet</Button>
             </Link>
           </CardContent>
         </Card>
