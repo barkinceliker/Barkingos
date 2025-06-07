@@ -12,7 +12,7 @@ const formSchema = z.object({
 
 export async function submitContactForm(values: z.infer<typeof formSchema>) {
   // Simulate database call or email sending
-  console.log("Form submitted with values:", values);
+  console.log("Contact form submitted with values:", values);
 
   // In a real application, you would:
   // 1. Validate the data again on the server (though Zod already does this).
