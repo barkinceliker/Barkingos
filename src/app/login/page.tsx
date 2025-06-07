@@ -39,24 +39,32 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log("LoginPage: onSubmit triggered with values:", values);
     setIsLoading(true);
     try {
+      console.log("LoginPage: Attempting Firebase sign-in...");
       await signInWithEmailAndPassword(auth, values.email, values.password);
+      console.log("LoginPage: Firebase sign-in successful.");
       toast({
         title: "Giriş Başarılı!",
         description: "Admin paneline yönlendiriliyorsunuz...",
       });
-      // Set a cookie to indicate logged-in state for middleware
-      // Expires in 1 hour, SameSite=Lax for security
-      document.cookie = "isLoggedIn=true; path=/; max-age=3600; SameSite=Lax"; 
-      // Full page redirect to ensure cookie is sent with the request
+      
+      const cookieValue = "isLoggedIn=true; path=/; max-age=3600; SameSite=Lax";
+      document.cookie = cookieValue;
+      console.log("LoginPage: Cookie set:", cookieValue);
+      console.log("LoginPage: Current document.cookie state:", document.cookie); // Check what document.cookie reports
+
+      console.log("LoginPage: Attempting redirect to /admin...");
       window.location.href = '/admin';
+      console.log("LoginPage: window.location.href called. If you see this, redirect might be blocked or overridden.");
+
     } catch (error: any) {
       let errorMessage = "Giriş sırasında bir hata oluştu.";
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
         errorMessage = "E-posta veya şifre hatalı.";
       }
-      console.error("Login error:", error);
+      console.error("LoginPage: Login error:", error.code, error.message, error);
       toast({
         title: "Giriş Başarısız!",
         description: errorMessage,
@@ -64,6 +72,7 @@ export default function LoginPage() {
       });
     } finally {
       setIsLoading(false);
+      console.log("LoginPage: onSubmit finished.");
     }
   }
 
