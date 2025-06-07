@@ -3,7 +3,6 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // Keep useRouter if needed elsewhere, though not directly for login redirect
 import { Menu, X, Briefcase, Home, User, BookOpen, Code, BarChart, MessageSquare, Settings, FileText, Shield, LogIn, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
@@ -31,7 +30,6 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
-  // const router = useRouter(); // Kept if used for other purposes
 
   useEffect(() => {
     setIsMounted(true);
@@ -98,7 +96,7 @@ export default function Header() {
           {currentUser ? (
             <>
               <NavLink key={adminNavItem.label} href={adminNavItem.href}>
-                 {adminNavItem.label}
+                 <adminNavItem.icon className="mr-2 h-5 w-5" /> {adminNavItem.label}
               </NavLink>
               <Button variant="ghost" onClick={handleLogout} className="text-foreground hover:bg-accent/10 hover:text-accent-foreground">
                 <LogOut className="mr-2 h-5 w-5" /> Çıkış Yap
@@ -106,7 +104,7 @@ export default function Header() {
             </>
           ) : (
             <NavLink key={loginNavItem.label} href={loginNavItem.href}>
-              <LogInIcon className="mr-2 h-5 w-5" /> {loginNavItem.label}
+              <loginNavItem.icon className="mr-2 h-5 w-5" /> {loginNavItem.label}
             </NavLink>
           )}
         </nav>

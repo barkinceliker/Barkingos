@@ -21,15 +21,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths that are either /login or start with /admin/,
-     * except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * 
-     * A simpler matcher targeting only /admin/* and /login is safer.
-     */
     '/admin/:path*',
     '/login',
   ],
