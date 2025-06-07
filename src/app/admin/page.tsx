@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Settings, Newspaper, FolderKanban, ListTree } from 'lucide-react'; // Updated Icon
+import { FileText, Settings, Newspaper, FolderKanban, ListTree, Sparkles } from 'lucide-react';
 
 export default async function AdminDashboardPage() {
   return (
@@ -49,6 +49,23 @@ export default async function AdminDashboardPage() {
           </CardContent>
         </Card>
         
+        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
+          <CardHeader>
+             <div className="flex justify-center mb-4">
+                <Sparkles className="h-12 w-12 text-accent" />
+            </div>
+            <CardTitle className="font-headline text-2xl text-center">Hizmet Yönetimi</CardTitle>
+            <CardDescription className="text-center">
+              Sitede sunulan hizmetleri ekleyin, düzenleyin veya silin.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <Link href="/admin/manage-services" passHref>
+              <Button className="w-full">Hizmetleri Yönet</Button>
+            </Link>
+          </CardContent>
+        </Card>
+
         <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300"> 
           <CardHeader>
              <div className="flex justify-center mb-4">
@@ -56,7 +73,7 @@ export default async function AdminDashboardPage() {
             </div>
             <CardTitle className="font-headline text-2xl text-center">Sayfa İçerik Yönetimi</CardTitle>
             <CardDescription className="text-center">
-             Site sayfalarının (Hakkımda, Hizmetler vb.) içeriklerini düzenleyin.
+             Site sayfalarının (Hakkımda vb.) statik içeriklerini düzenleyin.
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
@@ -73,7 +90,7 @@ export default async function AdminDashboardPage() {
             </div>
             <CardTitle className="font-headline text-2xl text-center">Navigasyon Yönetimi</CardTitle>
             <CardDescription className="text-center">
-              Site üst menüsündeki navigasyon linklerini yönetin. (Yakında)
+              Site üst menüsündeki navigasyon linklerini yönetin. (Yapım Aşamasında)
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
