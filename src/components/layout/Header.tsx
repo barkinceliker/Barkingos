@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Menu, X, Briefcase, Home, User, BookOpen, Code, BarChart, MessageSquare, Settings, FileText, Shield, LogOut } from 'lucide-react';
+import { Menu, X, Briefcase, Home, User, BookOpen, Code, BarChart, MessageSquare, Settings, FileText, Shield, LogOut, LogIn } from 'lucide-react'; // Added LogIn
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { auth } from '@/lib/firebase';
@@ -64,7 +64,7 @@ export default function Header() {
     </Link>
   );
   
-  const allNavItems = [...mainNavItems, adminNavItem];
+  // const allNavItems = [...mainNavItems, adminNavItem]; // Not currently used
 
   if (!isMounted) { // Prevents hydration errors for mobile menu state and auth state
     return (
