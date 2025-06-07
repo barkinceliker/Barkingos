@@ -8,12 +8,14 @@ export default function AdminLoginPage() {
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-headline text-primary">Admin Erişimi</CardTitle>
-          <CardDescription>Admin paneline erişim için kimlik doğrulama şu anda bu form üzerinden yapılmamaktadır.</CardDescription>
+          <CardDescription>
+            Admin paneline erişim için lütfen sayfanın üst kısmındaki "Giriş Yap" butonunu kullanın.
+            Bu sayfa, yetkisiz erişim denemelerinde veya doğrudan yönlendirmelerde gösterilir.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-center text-muted-foreground">
-            Eğer admin paneline erişim yetkiniz varsa ve bir sorun yaşıyorsanız, lütfen site yöneticisi ile iletişime geçin.
-            Giriş işlemleri ve kullanıcı arayüzü kaldırılmıştır.
+            Eğer giriş yapmakta sorun yaşıyorsanız, lütfen site yöneticisi ile iletişime geçin.
           </p>
           <div className="mt-6 text-center">
             <Link href="/" className="text-primary hover:underline">

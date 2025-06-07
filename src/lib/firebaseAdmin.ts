@@ -1,49 +1,57 @@
 
-// STUB VERSION - Does not initialize real Firebase Admin SDK
-console.log("FirebaseAdmin: STUB MODULE LOADED. This version does NOT initialize the real Firebase Admin SDK and bypasses token verification.");
+import admin from 'firebase-admin';
+import type { App } from 'firebase-admin/app';
 
-const mockAuth = {
-  verifyIdToken: async (token: string) => {
-    console.log("FirebaseAdmin STUB: verifyIdToken called with token:", token ? token.substring(0,20) + "..." : "undefined/empty");
-    if (token) {
-      // If a token is provided, simulate successful verification (bypass)
-      console.log("FirebaseAdmin STUB: Token present, simulating successful verification (bypassed).");
-      return { uid: 'stub-uid-verified-bypassed' };
+let firebaseAdminApp: App;
+let initializationError: string | null = null;
+
+const serviceAccountKeyString = process.env.FIREBASE_SERVICE_ACCOUNT_KEY_JSON;
+
+console.log("FirebaseAdmin: Module loading. Attempting to initialize Firebase Admin SDK.");
+
+if (!admin.apps.length) {
+  console.log("FirebaseAdmin: No existing Firebase Admin apps. Initializing a new one.");
+  try {
+    if (!serviceAccountKeyString) {
+      throw new Error("FIREBASE_SERVICE_ACCOUNT_KEY_JSON environment variable is not set.");
     }
-    // If no token, simulate failure
-    console.log("FirebaseAdmin STUB: No token provided, simulating failure by throwing.");
-    throw new Error("Stub: No token provided to mock verifyIdToken");
+    
+    let serviceAccount;
+    try {
+      serviceAccount = JSON.parse(serviceAccountKeyString);
+    } catch (e: any) {
+      console.error("FirebaseAdmin: CRITICAL_JSON_PARSE_FAILURE - Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY_JSON:", e.message);
+      throw new Error(`Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY_JSON: ${e.message}`);
+    }
+
+    console.log("FirebaseAdmin: PRE-INITIALIZATION - Service Account Parsed. Project ID from SA:", serviceAccount.project_id);
+
+    firebaseAdminApp = admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      projectId: serviceAccount.project_id, // Ensure project ID is consistent
+    });
+
+    console.log("FirebaseAdmin: POST-INITIALIZATION - Firebase Admin SDK initialized successfully. App name:", firebaseAdminApp.name);
+
+    if (firebaseAdminApp && typeof firebaseAdminApp.INTERNAL === 'object' && firebaseAdminApp.INTERNAL !== null) {
+        console.log("FirebaseAdmin: POST-INIT_CHECK - firebaseAdminApp.INTERNAL is defined.");
+    } else {
+        console.error("FirebaseAdmin: CRITICAL POST-INIT_CHECK - firebaseAdminApp.INTERNAL IS UNDEFINED after initialization. This usually indicates a problem with credentials or SDK setup.");
+        initializationError = "Firebase Admin App INTERNAL object is undefined after initialization. Check credentials and SDK setup.";
+    }
+
+  } catch (error: any) {
+    initializationError = `Firebase Admin SDK Initialization Error: ${error.message}`;
+    console.error("FirebaseAdmin: CRITICAL INITIALIZATION ERROR - ", initializationError);
+    console.error("FirebaseAdmin: Full error object during initialization:", error);
   }
-};
-
-export const admin = {
-  apps: [{name: "stubApp"}], 
-  app: () => {
-    console.log("FirebaseAdmin STUB: admin.app() called");
-    return {
-      name: "stubAppInstance",
-      auth: () => mockAuth,
-    };
-  },
-  auth: () => {
-    console.log("FirebaseAdmin STUB: admin.auth() called");
-    return mockAuth;
-  },
-};
-
-export function getFirebaseAdminApp() {
-  console.log("FirebaseAdmin STUB: getFirebaseAdminApp() called");
-  return {
-    name: "stubAppFromGetter",
-    auth: () => mockAuth,
-  };
+} else {
+  console.log("FirebaseAdmin: Firebase Admin app already initialized.");
+  firebaseAdminApp = admin.app();
 }
+
+export { admin, firebaseAdminApp };
 
 export function getAdminInitializationError(): string | null {
-    console.log("FirebaseAdmin STUB: getAdminInitializationError() called, returning null (stub is active).");
-    return null; 
+  return initializationError;
 }
-
-console.log("FirebaseAdmin: STUB admin object created:", typeof admin);
-console.log("FirebaseAdmin: STUB getFirebaseAdminApp function defined:", typeof getFirebaseAdminApp);
-console.log("FirebaseAdmin: STUB getAdminInitializationError function defined:", typeof getAdminInitializationError);
