@@ -2,24 +2,24 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 // Import the potentially stubbed admin object and error getter
-import { admin, getAdminInitializationError } from '@/lib/firebaseAdmin';
+import { admin, getAdminInitializationError } from './lib/firebaseAdmin';
 
 export const runtime = 'nodejs'; // Specify Node.js runtime
 
-const COOKIE_NAME = 'adminAuthToken';
-
 console.log("Middleware: Module execution started.");
 
+// Initial check for admin object availability from the imported module
 if (!admin || typeof admin.auth !== 'function') {
-  const initError = getAdminInitializationError ? getAdminInitializationError() : new Error("Admin object malformed");
-  console.error("Middleware: CRITICAL - Firebase Admin SDK ('admin' from firebaseAdmin.ts) is not correctly formed or is a STUB.");
+  const initError = getAdminInitializationError ? getAdminInitializationError() : new Error("Imported 'admin' object from firebaseAdmin.ts is malformed or not available.");
+  console.error("Middleware: CRITICAL - The 'admin' object from firebaseAdmin.ts could not be used.");
   if (initError) {
     console.error("Middleware: Underlying Admin SDK status from firebaseAdmin.ts:", initError.message);
   }
-  // If it's a stub, admin.apps might be manipulated by the stub for basic checks,
-  // but actual auth operations will fail or return stubbed values.
+  // If admin is not usable, we cannot proceed with auth checks.
+  // Depending on policy, we might block all admin routes or log and allow (less secure).
+  // For now, we will log and let requests pass, as the stub would do.
 } else {
-  console.log("Middleware: 'admin' object imported. Checking initialization status (admin.apps.length).");
+  console.log("Middleware: 'admin' object imported successfully from firebaseAdmin.ts. Checking initialization status (admin.apps.length if not stub).");
 }
 
 
@@ -28,14 +28,11 @@ export async function middleware(request: NextRequest) {
   console.log(`Middleware: Executing for path: ${pathname}.`);
 
   let firebaseAdminFullyInitialized = false;
-  if (admin && typeof admin.auth === 'function' && admin.apps && admin.apps.length > 0 && admin.apps[0]?.name === '[DEFAULT]') {
-      // Check if it's not the stub's "simulated" app from initializeApp,
-      // or rely on a more robust check if the real init succeeded (which is harder with a stub).
-      // For now, if admin.apps.length > 0, we assume it's "initialized" for the stub or real.
-      // The STUB message from verifyIdToken will tell us if it's the stub.
+  // This check is mostly for the real SDK; the stub will have admin.apps.length > 0 after its "initializeApp" is called
+  if (admin && typeof admin.auth === 'function' && admin.apps && admin.apps.length > 0 ) {
       if (getAdminInitializationError && getAdminInitializationError().message.includes("STUB")) {
         console.warn("Middleware: Running with STUB Firebase Admin SDK. Real authentication will not occur.");
-        firebaseAdminFullyInitialized = false;
+        firebaseAdminFullyInitialized = false; // Technically, it's "initialized" as a stub
       } else {
         console.log("Middleware: Firebase Admin SDK appears to be initialized (admin.apps.length > 0).");
         firebaseAdminFullyInitialized = true;
@@ -46,26 +43,22 @@ export async function middleware(request: NextRequest) {
   }
 
 
+  const COOKIE_NAME = 'adminAuthToken';
   const cookie = request.cookies.get(COOKIE_NAME);
   const token = cookie?.value;
   let isAuthenticated = false;
 
-  if (token && admin && typeof admin.auth === 'function') { // Ensure admin.auth is a function
+  if (token && admin && typeof admin.auth === 'function') { 
     try {
-      // verifyIdToken will be the stubbed version if firebaseAdmin.ts is the stub
       const decodedToken = await admin.auth().verifyIdToken(token);
       if (decodedToken && decodedToken.uid) {
         isAuthenticated = true;
         console.log(`Middleware: Token is valid for UID: ${decodedToken.uid}. User is authenticated.`);
       } else {
-        console.log("Middleware: Token found but was invalid upon verification (no UID or verification failed).");
+        console.log("Middleware: Token found but was invalid upon verification (no UID or verification failed). Stub 'verifyIdToken' likely returned null.");
       }
     } catch (error) {
       console.warn("Middleware: Error verifying token. Invalidating session.", (error as Error).message);
-      // Potentially delete cookie if verification fails
-      // const response = NextResponse.redirect(new URL('/', request.url));
-      // response.cookies.delete(COOKIE_NAME);
-      // return response; // Be careful with returning responses directly from here if admin is stubbed.
     }
   } else if (token && (!admin || typeof admin.auth !== 'function')) {
     console.warn(`Middleware: Token '${COOKIE_NAME}' found, but Firebase Admin SDK is not available/initialized properly. Cannot verify token. Treating as unauthenticated.`);
@@ -80,7 +73,6 @@ export async function middleware(request: NextRequest) {
     if (!isAuthenticated) {
       console.log("Middleware: User is not authenticated for admin route. Redirecting to homepage.");
       const homeUrl = new URL('/', request.url);
-      // Avoid redirect loop if already on homepage due to some other issue
       if (pathname !== '/') {
         return NextResponse.redirect(homeUrl);
       }
@@ -99,3 +91,4 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: ['/admin/:path*', '/admin'],
 };
+
