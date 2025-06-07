@@ -8,38 +8,19 @@ export const config = {
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const idTokenCookie = request.cookies.get('firebaseIdToken');
-  const isLoggedIn = !!idTokenCookie?.value;
+  
+  // Simple log to show middleware is running for a path
+  console.log(`Middleware: Path: ${pathname} - No cookie check performed.`);
 
-  // Log all cookies received by the middleware for debugging
-  const allCookies = request.cookies.getAll();
-  console.log(`Middleware: Path: ${pathname}, All cookies received:`, allCookies.map(c => `${c.name}=${c.value.substring(0, 30)}...`).join('; ')); // Log only prefix of cookie value
-  console.log(`Middleware: Path: ${pathname}, Parsed isLoggedIn from firebaseIdToken: ${isLoggedIn}`);
+  // If you want to re-implement protection later, you'd add logic here
+  // For now, all admin paths (including /admin/login) will pass through.
+  // A more specific check would be needed if /admin/login itself shouldn't be accessed
+  // by already "logged-in" users based on Firebase's client-side state.
+  // But since we removed the cookie, middleware has no server-side session info.
 
-
-  // If trying to access the login page
-  if (pathname === '/admin/login') {
-    if (isLoggedIn) {
-      // If already logged in, redirect to the admin dashboard
-      console.log("Middleware: User is logged in and trying to access /admin/login. Redirecting to /admin.");
-      return NextResponse.redirect(new URL('/admin', request.url));
-    }
-    // If not logged in, allow access to the login page
-    console.log("Middleware: Allowing access to /admin/login for non-logged-in user.");
-    return NextResponse.next();
-  }
-
-  // For any other /admin/* route
-  if (pathname.startsWith('/admin')) {
-    if (!isLoggedIn) {
-      // If not logged in, redirect to the login page
-      console.log("Middleware: User is not logged in. Redirecting to /admin/login.");
-      const loginUrl = new URL('/admin/login', request.url);
-      return NextResponse.redirect(loginUrl);
-    }
-    // If logged in, allow access
-    console.log("Middleware: User is logged in. Allowing access to", pathname);
-  }
+  // Example: If trying to access /admin/login and Firebase client-side says logged in,
+  // you might want to redirect to /admin, but middleware can't know Firebase state.
+  // This kind of logic usually lives on the /admin/login page itself using client-side checks.
 
   return NextResponse.next();
 }
