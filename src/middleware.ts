@@ -2,31 +2,36 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// This is a no-op middleware. It allows all requests to pass through.
 export function middleware(request: NextRequest) {
+  const isLoggedIn = request.cookies.get('isLoggedIn')?.value === 'true';
+  const { pathname } = request.nextUrl;
+
+  // If trying to access admin routes and not logged in, redirect to login
+  if (pathname.startsWith('/admin') && !isLoggedIn) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  // If logged in and trying to access login page, redirect to admin
+  if (isLoggedIn && pathname === '/login') {
+    return NextResponse.redirect(new URL('/admin', request.url));
+  }
+
   return NextResponse.next();
 }
 
-// By not specifying any paths in the matcher, or keeping it empty,
-// this middleware won't be actively invoked for specific routes.
-// Next.js requires this file to export a valid middleware function if the file exists.
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
+     * Match all request paths that are either /login or start with /admin/,
+     * except for the ones starting with:
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     *
-     * This was the default matcher from a previous version.
-     * For a true "no-op" where middleware does nothing and applies to nothing,
-     * an empty array is better: matcher: []
-     * Or you can remove the config object entirely if you want it to apply to all paths
-     * (but still do nothing).
-     *
-     * Given the intent to remove previous auth logic, an empty matcher is safest.
+     * 
+     * We need to be careful not to block Next.js internal routes.
+     * A simpler matcher targeting only /admin/* and /login is safer.
      */
-    //  '/((?!api|_next/static|_next/image|favicon.ico).*)' // Example of a broader matcher
+    '/admin/:path*',
+    '/login',
   ],
 };

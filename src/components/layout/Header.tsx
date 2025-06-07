@@ -3,12 +3,12 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-// import { useRouter } from 'next/navigation'; // No longer needed for logout
-import { Menu, X, Briefcase, Home, User, BookOpen, Code, BarChart, MessageSquare, Settings, FileText, Shield } from 'lucide-react'; // Removed LogIn, LogOut
+import { useRouter } from 'next/navigation';
+import { Menu, X, Briefcase, Home, User, BookOpen, Code, BarChart, MessageSquare, Settings, FileText, Shield, LogIn, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
-// import { auth } from '@/lib/firebase'; // No longer directly using auth here for UI
-// import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth'; // No longer needed
+import { auth } from '@/lib/firebase';
+import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { cn } from '@/lib/utils';
 
 const mainNavItems = [
@@ -29,15 +29,30 @@ const adminNavItem = { label: 'Admin Panel', href: '/admin', icon: Shield };
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  // const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null); // No longer tracking current user here
-  // const router = useRouter(); // No longer needed for logout
+  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
-    // Firebase auth state listener removed as login form is removed
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
   }, []);
 
-  // handleLogout function removed
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      // Clear the login cookie
+      document.cookie = "isLoggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
+      // Redirect to login page
+      window.location.href = '/login'; // Full page redirect
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Optionally, show a toast error
+    }
+    setIsMobileMenuOpen(false);
+  };
 
   const NavLink = ({ href, children, onClick, className }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string }) => (
     <Link href={href} passHref>
@@ -78,11 +93,20 @@ export default function Header() {
               {item.label}
             </NavLink>
           ))}
-          {/* Admin Panel link is now always visible as login is removed */}
-          <NavLink key={adminNavItem.label} href={adminNavItem.href}>
-             {adminNavItem.label}
-          </NavLink>
-          {/* Login/Logout buttons removed */}
+          {currentUser ? (
+            <>
+              <NavLink key={adminNavItem.label} href={adminNavItem.href}>
+                 {adminNavItem.label}
+              </NavLink>
+              <Button variant="ghost" onClick={handleLogout} className="text-foreground hover:bg-accent/10 hover:text-accent-foreground">
+                <LogOut className="mr-2 h-5 w-5" /> Çıkış Yap
+              </Button>
+            </>
+          ) : (
+            <NavLink key="login-desktop-nav" href="/login">
+              <LogIn className="mr-2 h-5 w-5" /> Giriş Yap
+            </NavLink>
+          )}
         </nav>
         
         {/* Mobile Navigation */}
@@ -116,14 +140,28 @@ export default function Header() {
                     </SheetClose>
                   );
                 })}
-                {/* Admin Panel link is now always visible */}
-                <SheetClose asChild key={adminNavItem.label}>
-                    <NavLink href={adminNavItem.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base">
-                      <adminNavItem.icon className="mr-3 h-5 w-5" />
-                      {adminNavItem.label}
-                    </NavLink>
-                </SheetClose>
-                {/* Login/Logout buttons removed */}
+                {currentUser ? (
+                  <>
+                    <SheetClose asChild key={adminNavItem.label}>
+                        <NavLink href={adminNavItem.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base">
+                          <adminNavItem.icon className="mr-3 h-5 w-5" />
+                          {adminNavItem.label}
+                        </NavLink>
+                    </SheetClose>
+                     <SheetClose asChild key="logout-mobile-nav">
+                        <Button variant="ghost" onClick={handleLogout} className="text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start text-base">
+                            <LogOut className="mr-3 h-5 w-5" /> Çıkış Yap
+                        </Button>
+                    </SheetClose>
+                  </>
+                ) : (
+                  <SheetClose asChild key="login-mobile-nav">
+                     <NavLink href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-base">
+                        <LogIn className="mr-3 h-5 w-5" />
+                        Giriş Yap
+                      </NavLink>
+                  </SheetClose>
+                )}
               </nav>
             </SheetContent>
           </Sheet>
