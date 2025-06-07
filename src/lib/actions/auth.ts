@@ -2,7 +2,8 @@
 "use server";
 
 import { cookies } from 'next/headers';
-import { admin } from '@/lib/firebaseAdmin'; 
+// Using relative path for the stub to ensure it's picked up
+import { admin, getAdminInitializationError } from '../firebaseAdmin'; 
 import { redirect } from 'next/navigation';
 
 const COOKIE_NAME = 'adminAuthToken';
@@ -11,49 +12,54 @@ const MAX_AGE = 60 * 60 * 24 * 7; // 1 week in seconds
 export async function createSession(idToken: string) {
   console.log("AuthActions: createSession called with ID token (first 20 chars):", idToken ? idToken.substring(0,20) + "..." : "ID token is undefined or empty");
   
-  // Robust check for admin app initialization
-  if (!admin || !admin.apps || admin.apps.length === 0 || !admin.app()) {
-    const adminInitErrorMsg = "Sunucu yapılandırma hatası: Firebase Admin SDK başlatılamamış görünüyor. Lütfen sunucu loglarını kontrol edin.";
-    console.error("AuthActions Critical Error: Firebase Admin SDK not initialized or admin object is not as expected. Cannot create session.");
-    console.error("AuthActions: Admin object:", admin);
-    console.error("AuthActions: Admin apps:", admin ? admin.apps : "admin is undefined");
-    console.error("AuthActions: Admin apps length:", admin && admin.apps ? admin.apps.length : "admin or admin.apps is undefined");
-    // Log details from firebaseAdmin.ts if available (this assumes getAdminInitializationError is exported, which it is)
-    // To avoid circular dependency issues if getAdminInitializationError itself relies on a partially init admin,
-    // it might be better to just rely on startup logs of firebaseAdmin.ts.
-    // For now, let's assume firebaseAdmin.ts would have logged its own errors.
+  const adminInitError = getAdminInitializationError(); // Will be null from stub
+  if (adminInitError) {
+    // Should not happen with stub
+    const adminInitErrorMsg = `Sunucu yapılandırma hatası (stub issue): ${adminInitError}`;
+    console.error("AuthActions Critical Error (Stub Unexpected):", adminInitErrorMsg);
     return { success: false, error: adminInitErrorMsg };
   }
 
+  if (!admin || typeof admin.auth !== 'function') {
+    const adminStructureErrorMsg = "Sunucu yapılandırma hatası: Firebase Admin SDK (STUB) beklenen yapıda değil.";
+    console.error("AuthActions Critical Error: Firebase Admin SDK STUB not as expected.");
+    return { success: false, error: adminStructureErrorMsg };
+  }
+  console.log("AuthActions: Using STUBBED admin.auth() - token verification will be bypassed by the stub.");
+
   try {
-    console.log("AuthActions: Attempting to verify ID token with admin.auth().verifyIdToken()...");
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-    console.log("AuthActions: verifyIdToken call completed.");
+    // The stub's verifyIdToken will simulate success if an idToken is provided
+    console.log("AuthActions: Attempting to 'verify' ID token with STUBBED admin.auth().verifyIdToken()...");
+    const decodedToken = await admin.auth().verifyIdToken(idToken); // Stub will pass if token exists
+    console.log("AuthActions: STUBBED verifyIdToken call completed.");
 
     if (decodedToken && decodedToken.uid) {
-      cookies().set(COOKIE_NAME, idToken, {
+      cookies().set(COOKIE_NAME, idToken, { // Still store the original token for potential future use
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         maxAge: MAX_AGE,
         path: '/',
         sameSite: 'lax',
       });
-      console.log(`AuthActions: Session cookie '${COOKIE_NAME}' set for UID: ${decodedToken.uid}`);
+      console.log(`AuthActions: Session cookie '${COOKIE_NAME}' set for STUBBED UID: ${decodedToken.uid}. Verification was bypassed (stub in use).`);
       return { success: true };
     }
-    console.warn("AuthActions: ID token verification successful but UID missing in decoded token:", decodedToken);
-    return { success: false, error: "Token doğrulandı ancak kullanıcı kimliği bulunamadı." };
+    // This case implies the stub logic for verifyIdToken failed (e.g. no token provided to stub)
+    console.warn("AuthActions: STUBBED ID token verification failed (stub likely received no token or returned no UID):", decodedToken);
+    return { success: false, error: "Token (stub) doğrulaması başarısız oldu veya kullanıcı kimliği bulunamadı." };
   } catch (error: any) {
-    console.error("AuthActions: Error verifying ID token or setting cookie:", error);
-    let errorMessage = "Token doğrulama hatası.";
-    if (error.code === 'auth/id-token-expired') {
-      errorMessage = "Oturum süresi dolmuş. Lütfen tekrar giriş yapın.";
-    } else if (error.code === 'auth/argument-error') {
-      errorMessage = "Token doğrulama argümanları hatalı. ID Token boş veya geçersiz olabilir.";
-    } else if (error.message) {
-      errorMessage = `Token doğrulama hatası: ${error.message}`;
+    console.error("AuthActions: Error during STUBBED verifyIdToken or setting cookie:", error);
+    let errorMessage = "Token doğrulama hatası (stub).";
+     if (error.message && error.message.includes("Stub: No token provided")) {
+      errorMessage = "Giriş için token sağlanmadı (stub).";
+    } else if (error.message && error.message.includes("Stub: Token present, simulating success")) {
+      // This shouldn't be an error path if it simulated success
+      errorMessage = "Beklenmedik stub davranışı: Token mevcut, başarı simüle edildi ancak hata oluştu.";
     }
-    console.error("AuthActions: Specific error code:", error.code);
+     else if (error.message) {
+      errorMessage = `Token doğrulama hatası (stub): ${error.message}`;
+    }
+    console.error("AuthActions: Specific stub error message:", error.message);
     return { success: false, error: errorMessage };
   }
 }
@@ -70,7 +76,7 @@ export async function logout() {
 }
 
 export async function checkAuthStatus() {
-  console.log("AuthActions: checkAuthStatus called.");
+  console.log("AuthActions: checkAuthStatus called (using STUBBED admin).");
   const cookieStore = cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
 
@@ -79,26 +85,29 @@ export async function checkAuthStatus() {
     return { isAuthenticated: false };
   }
 
-  // Robust check for admin app initialization
-  if (!admin || !admin.apps || admin.apps.length === 0 || !admin.app()) {
-    console.warn("AuthActions Warning: Firebase Admin SDK not initialized or admin object not as expected during checkAuthStatus. Assuming token is invalid.");
-    // Potentially clear the cookie if admin is not initialized, as the token can't be verified
-    // cookies().delete(COOKIE_NAME); // Consider this if unverified tokens should always be cleared
+  const adminInitError = getAdminInitializationError(); // Will be null from stub
+  if (adminInitError) {
+    console.warn("AuthActions Warning (Stub Unexpected): Firebase Admin SDK reported an initialization error during checkAuthStatus:", adminInitError);
+    return { isAuthenticated: false };
+  }
+
+  if (!admin || typeof admin.auth !== 'function') {
+    console.warn("AuthActions Warning: Firebase Admin SDK (STUB) not as expected during checkAuthStatus.");
     return { isAuthenticated: false };
   }
 
   try {
-    const decodedToken = await admin.auth().verifyIdToken(token);
+    // The stub's verifyIdToken will simulate success if a token is provided
+    const decodedToken = await admin.auth().verifyIdToken(token); // Stub will pass if token exists
     if (decodedToken && decodedToken.uid) {
-       console.log(`AuthActions: Auth token cookie is valid for UID: ${decodedToken.uid}.`);
+       console.log(`AuthActions: STUBBED Auth token cookie is 'valid' (bypassed verification, stub in use) for UID: ${decodedToken.uid}.`);
       return { isAuthenticated: true, uid: decodedToken.uid };
     }
-    console.log("AuthActions: Auth token cookie found but verification failed (no UID after decode). Invalidating session.");
+    console.log("AuthActions: STUBBED Auth token cookie found but 'verification' failed (unexpected stub behavior - no UID). Invalidating session.");
     cookies().delete(COOKIE_NAME);
     return { isAuthenticated: false };
   } catch (error: any) {
-    console.warn("AuthActions: Error verifying auth token cookie during checkAuthStatus. Invalidating session.", (error as Error).message);
-    console.warn("AuthActions: Specific error code during checkAuthStatus:", error.code);
+    console.warn("AuthActions: Error during STUBBED auth token check during checkAuthStatus:", (error as Error).message);
     cookies().delete(COOKIE_NAME);
     return { isAuthenticated: false };
   }

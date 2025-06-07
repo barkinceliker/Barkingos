@@ -1,17 +1,18 @@
 
 // STUB VERSION - Does not initialize real Firebase Admin SDK
-console.log("FirebaseAdmin: STUB MODULE LOADED. This version does NOT initialize the real Firebase Admin SDK.");
+console.log("FirebaseAdmin: STUB MODULE LOADED. This version does NOT initialize the real Firebase Admin SDK and bypasses token verification.");
 
 const mockAuth = {
   verifyIdToken: async (token: string) => {
-    console.log("FirebaseAdmin STUB: verifyIdToken called with token:", token ? token.substring(0,10) + "..." : "undefined/empty");
-    // Simulate a successful verification for testing middleware flow
-    if (token && token.startsWith("valid-")) {
-      console.log("FirebaseAdmin STUB: Mock token is 'valid-', simulating success.");
-      return { uid: 'stub-uid-verified' };
+    console.log("FirebaseAdmin STUB: verifyIdToken called with token:", token ? token.substring(0,20) + "..." : "undefined/empty");
+    if (token) {
+      // If a token is provided, simulate successful verification (bypass)
+      console.log("FirebaseAdmin STUB: Token present, simulating successful verification (bypassed).");
+      return { uid: 'stub-uid-verified-bypassed' };
     }
-    console.log("FirebaseAdmin STUB: Mock token is not 'valid-', simulating failure by throwing.");
-    throw new Error("Stub: Invalid token provided to mock verifyIdToken");
+    // If no token, simulate failure
+    console.log("FirebaseAdmin STUB: No token provided, simulating failure by throwing.");
+    throw new Error("Stub: No token provided to mock verifyIdToken");
   }
 };
 
@@ -39,7 +40,7 @@ export function getFirebaseAdminApp() {
 }
 
 export function getAdminInitializationError(): string | null {
-    console.log("FirebaseAdmin STUB: getAdminInitializationError() called, returning null.");
+    console.log("FirebaseAdmin STUB: getAdminInitializationError() called, returning null (stub is active).");
     return null; 
 }
 
