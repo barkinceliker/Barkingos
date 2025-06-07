@@ -3,10 +3,12 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Menu, X, Loader2, LogIn, LogOut, Shield } from 'lucide-react';
+import { Menu, X, Loader2, LogIn, LogOut, Shield, Home, User, Briefcase, Sparkles, Laptop, Lightbulb, MessageSquare, BookOpen, Award } from 'lucide-react'; // Added Award
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
+// Import DialogPrimitive directly
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
@@ -15,9 +17,22 @@ import { useRouter, usePathname } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth as firebaseClientAuth } from '@/lib/firebase'; 
 import { createSession, logout as serverLogout, checkAuthStatus } from '@/lib/actions/auth';
-import type { NavigationItem } from '@/lib/navigation-data'; // Import the type
-import { getAllNavItems } from '@/lib/navigation-data'; // Import the server action
+import type { LucideIcon } from 'lucide-react';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
+
+
+// Statik Navigasyon Öğeleri
+const staticNavItems = [
+  { label: 'Anasayfa', href: '/', iconName: 'Home' },
+  { label: 'Hakkımda', href: '/hakkimda', iconName: 'User' },
+  { label: 'Hizmetler', href: '/hizmetler', iconName: 'Sparkles' },
+  { label: 'Portföy', href: '/portfoy', iconName: 'Briefcase' },
+  { label: 'Projeler', href: '/projeler', iconName: 'Laptop' },
+  { label: 'Yetenekler', href: '/yetenekler', iconName: 'Lightbulb' },
+  { label: 'Deneyim', href: '/deneyim', iconName: 'Award' }, 
+  { label: 'Blog', href: '/blog', iconName: 'BookOpen' },
+  { label: 'İletişim', href: '/iletisim', iconName: 'MessageSquare' },
+];
 
 const adminNavItemData = { label: 'Admin Panel', href: '/admin', iconName: 'Shield' };
 
@@ -28,35 +43,26 @@ export default function Header() {
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
-  const [navItems, setNavItems] = useState<NavigationItem[]>([]);
-  const [isLoadingNav, setIsLoadingNav] = useState(true);
 
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchInitialData = async () => {
+    const fetchAuthStatus = async () => {
       setIsLoadingAuth(true);
-      setIsLoadingNav(true);
       try {
         const auth = await checkAuthStatus();
         setIsAuthenticated(auth.isAuthenticated);
-        
-        const items = await getAllNavItems(); // Fetch only visible items for header
-        setNavItems(items);
-
       } catch (e) {
-        console.error("Header useEffect (mount): Error fetching initial data:", e);
+        console.error("Header useEffect (mount): Error fetching auth status:", e);
         setIsAuthenticated(false); 
-        setNavItems([]); 
-        toast({ title: "Veri Yükleme Hatası", description: "Navigasyon veya yetki bilgileri yüklenirken bir sorun oluştu.", variant: "destructive"});
+        toast({ title: "Yetki Kontrol Hatası", description: "Yetki bilgileri yüklenirken bir sorun oluştu.", variant: "destructive"});
       }
       setIsLoadingAuth(false);
-      setIsLoadingNav(false);
     };
-    fetchInitialData();
-  }, [pathname]); // Re-fetch on pathname change to ensure auth status is fresh after navigations
+    fetchAuthStatus();
+  }, []); 
 
   const NavLink = ({ href, children, onClick, className, disabled, iconName }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string, disabled?: boolean, iconName?: string }) => {
     const IconComponent = getLucideIcon(iconName);
@@ -133,11 +139,11 @@ export default function Header() {
     }
   };
 
-  const renderNavItems = (items: NavigationItem[], isMobile = false) => {
+  const renderNavItems = (items: typeof staticNavItems, isMobile = false) => {
     return items.map((item) => {
       const IconComponent = getLucideIcon(item.iconName);
       return (
-        <SheetClose asChild={isMobile} key={`${isMobile ? 'mobile' : 'desktop'}-${item.id}`}>
+        <SheetClose asChild={isMobile} key={`${isMobile ? 'mobile' : 'desktop'}-${item.href}`}>
           <NavLink 
             href={item.href} 
             onClick={isMobile ? () => setIsMobileMenuOpen(false) : undefined} 
@@ -162,9 +168,7 @@ export default function Header() {
           </Link>
 
           <nav className="hidden md:flex space-x-1 items-center flex-wrap">
-            {isLoadingNav ? (
-                [...Array(6)].map((_, i) => <Button key={i} variant="ghost" disabled className="w-20 h-8 animate-pulse bg-muted/50 rounded-md"></Button>)
-            ) : renderNavItems(navItems)}
+            {renderNavItems(staticNavItems)}
             
             {isLoadingAuth ? (
               <Button variant="ghost" disabled><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Yükleniyor...</Button>
@@ -205,9 +209,7 @@ export default function Header() {
                   </SheetClose>
                 </div>
                 <nav className="flex flex-col space-y-1 px-2">
-                  {isLoadingNav ? (
-                     [...Array(6)].map((_, i) => <Button key={`mobile-skel-${i}`} variant="ghost" disabled className="w-full h-10 justify-start animate-pulse bg-muted/50 rounded-md"></Button>)
-                  ) : renderNavItems(navItems, true)}
+                  {renderNavItems(staticNavItems, true)}
                   
                   {isLoadingAuth ? (
                      <Button variant="ghost" disabled className="text-base justify-start"><Loader2 className="mr-3 h-5 w-5 animate-spin" /> Yükleniyor...</Button>
@@ -267,11 +269,11 @@ export default function Header() {
               )}
             </div>
             <DialogFooter>
-              <DialogClose asChild>
+              <DialogPrimitive.Close asChild>
                 <Button type="button" variant="outline" disabled={isSubmittingLogin}>
                   İptal
                 </Button>
-              </DialogClose>
+              </DialogPrimitive.Close>
               <Button type="submit" disabled={isSubmittingLogin}>
                 {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Giriş Yap
@@ -283,4 +285,3 @@ export default function Header() {
     </>
   );
 }
-

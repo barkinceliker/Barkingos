@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Settings, Newspaper, FolderKanban, List } from 'lucide-react';
+import { BookOpen, Settings, Newspaper, FolderKanban } from 'lucide-react';
 
 export default async function AdminDashboardPage() {
   return (
@@ -15,23 +15,7 @@ export default async function AdminDashboardPage() {
       </section>
 
       <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
-          <CardHeader>
-             <div className="flex justify-center mb-4">
-                <List className="h-12 w-12 text-accent" />
-            </div>
-            <CardTitle className="font-headline text-2xl text-center">Navigasyon Yönetimi</CardTitle>
-            <CardDescription className="text-center">
-              Site menülerini (navigasyon linklerini) yönetin.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Link href="/admin/manage-navigation" passHref>
-              <Button className="w-full">Navigasyonu Yönet</Button>
-            </Link>
-          </CardContent>
-        </Card>
-
+        {/* Navigasyon Yönetimi Kartı Kaldırıldı */}
         <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
           <CardHeader>
              <div className="flex justify-center mb-4">
