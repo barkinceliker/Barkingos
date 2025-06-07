@@ -1,72 +1,33 @@
 
-// Import the functions you need from the SDKs you need
 import { initializeApp, getApps, FirebaseApp } from "firebase/app";
-import { getAnalytics, Analytics } from "firebase/analytics";
-import { getAuth, Auth } from "firebase/auth"; // Added
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getAuth, Auth } from "firebase/auth";
+import { getFirestore, Firestore } from "firebase/firestore";
+// Analytics can be added if needed, but removing for simplicity based on guide
+// import { getAnalytics, Analytics } from "firebase/analytics";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyDUJnJxMGJ0SljmEmejEWrwVXgruXxnp3k",
-  authDomain: "blog-bac0b.firebaseapp.com",
-  projectId: "blog-bac0b",
-  storageBucket: "blog-bac0b.appspot.com",
-  messagingSenderId: "166033617628",
-  appId: "1:166033617628:web:f8e0d32bc234eb3b3f7a19",
-  measurementId: "G-Q0W58R1ZZR"
+  apiKey: "AIzaSyDUJnJxMGJ0SljmEmejEWrwVXgruXxnp3k", // Replace with your actual API key
+  authDomain: "blog-bac0b.firebaseapp.com", // Replace with your actual authDomain
+  projectId: "blog-bac0b", // Replace with your actual projectId
+  storageBucket: "blog-bac0b.appspot.com", // Replace with your actual storageBucket
+  messagingSenderId: "166033617628", // Replace with your actual messagingSenderId
+  appId: "1:166033617628:web:f8e0d32bc234eb3b3f7a19", // Replace with your actual appId
+  measurementId: "G-Q0W58R1ZZR" // Optional: Replace with your actual measurementId
 };
 
-// Initialize Firebase
-let firebaseApp: FirebaseApp;
-let analytics: Analytics | null = null;
-let auth: Auth; // Added
+let app: FirebaseApp;
+let auth: Auth;
+let db: Firestore;
 
-if (typeof window !== 'undefined') {
-  if (!getApps().length) {
-    firebaseApp = initializeApp(firebaseConfig);
-    try {
-      analytics = getAnalytics(firebaseApp);
-    } catch (e) {
-      console.warn("Firebase Analytics could not be initialized:", e);
-    }
-    auth = getAuth(firebaseApp); // Initialize Auth
-  } else {
-    firebaseApp = getApps()[0];
-    try {
-      analytics = getAnalytics(firebaseApp);
-    } catch (e) {
-      // Analytics might not be supported or already initialized
-    }
-    auth = getAuth(firebaseApp); // Initialize Auth if app already exists
-  }
+if (getApps().length === 0) {
+  app = initializeApp(firebaseConfig);
 } else {
-  // For server-side, or environments where window is not defined
-  if (!getApps().length) {
-    firebaseApp = initializeApp(firebaseConfig);
-  } else {
-    firebaseApp = getApps()[0];
-  }
-  // Auth might not be usable in the same way server-side without admin SDK
-  // but getAuth() can be called. For client-side focus, this is fine.
-  // @ts-ignore: auth might not be initialized if window is undefined and no apps exist
-  if (!auth && firebaseApp) {
-      auth = getAuth(firebaseApp);
-  }
+  app = getApps()[0];
 }
 
+auth = getAuth(app);
+db = getFirestore(app);
 
-// Export a function to get the app instance, useful for server components or later initialization
-export const getFirebaseApp = () => {
-  if (!getApps().length) {
-    return initializeApp(firebaseConfig);
-  }
-  return getApps()[0];
-};
-
-// Export analytics instance directly if needed
-export { analytics };
-
-// Export app instance and auth instance
-export { firebaseApp, auth };
+export { app, auth, db };

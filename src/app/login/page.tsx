@@ -1,11 +1,5 @@
 
-export default function LoginPage() {
-  return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-200px)] py-12">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-primary mb-4">Login Page Disabled</h1>
-        <p className="text-muted-foreground">This page is currently not in use.</p>
-      </div>
-    </div>
-  );
-}
+This page has been moved to /app/admin/login/page.tsx
+Please remove this file if it's no longer needed or update references.
+If you were redirected here, the login functionality is now under the /admin path.
+You can try accessing /admin to be redirected to the new login page if not authenticated.

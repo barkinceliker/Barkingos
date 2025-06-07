@@ -2,9 +2,12 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Settings, Newspaper, FolderKanban } from 'lucide-react';
+import { BookOpen, Settings, Newspaper, FolderKanban, LogOut } from 'lucide-react';
+import { auth } from '@/lib/firebase'; // To get user info if needed
 
-export default function AdminPage() {
+export default async function AdminDashboardPage() {
+  // const user = auth.currentUser; // This will be null on server component, auth state needs to be handled differently for SSR or passed
+
   return (
     <div className="space-y-12">
       <section className="text-center">
@@ -15,26 +18,6 @@ export default function AdminPage() {
       </section>
 
       <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {/* AI Blog Assistant Card Removed */}
-        {/* 
-        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
-          <CardHeader>
-            <div className="flex justify-center mb-4">
-                <BrainCircuit className="h-12 w-12 text-accent" />
-            </div>
-            <CardTitle className="font-headline text-2xl text-center">AI Blog Asistanı</CardTitle>
-            <CardDescription className="text-center">
-              Blog yazılarınızı iyileştirmek, SEO puanınızı artırmak ve kategori önerileri almak için AI destekli aracımızı kullanın.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Link href="/admin/blog-assistant" passHref>
-              <Button className="w-full">Aracı Kullan</Button>
-            </Link>
-          </CardContent>
-        </Card>
-        */}
-
         <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
           <CardHeader>
              <div className="flex justify-center mb-4">
