@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth as firebaseClientAuth } from '@/lib/firebase'; 
+import { auth as firebaseClientAuth } from '@/lib/firebase';
 import { createSession, checkAuthStatus } from '@/lib/actions/auth';
 import type { LucideIcon } from 'lucide-react';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
@@ -24,7 +24,7 @@ const staticNavItems = [
   { label: 'Hizmetler', href: '/hizmetler', iconName: 'Sparkles' },
   { label: 'Projeler', href: '/projeler', iconName: 'Laptop' },
   { label: 'Yetenekler', href: '/yetenekler', iconName: 'Lightbulb' },
-  { label: 'Deneyim', href: '/deneyim', iconName: 'Award' }, 
+  { label: 'Deneyim', href: '/deneyim', iconName: 'Award' },
   { label: 'Blog', href: '/blog', iconName: 'BookOpen' },
   { label: 'İletişim', href: '/iletisim', iconName: 'MessageSquare' },
 ];
@@ -38,7 +38,6 @@ export default function Header() {
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
-  const [authCounter, setAuthCounter] = React.useState(0); // Counter to force useEffect refresh
 
   const router = useRouter();
   const pathname = usePathname();
@@ -52,12 +51,12 @@ export default function Header() {
         setIsAuthenticated(auth.isAuthenticated);
       } catch (e) {
         console.error("Header useEffect: Error fetching auth status:", e);
-        setIsAuthenticated(false); 
+        setIsAuthenticated(false);
       }
       setIsLoadingAuth(false);
     };
     fetchAuthStatus();
-  }, [pathname, authCounter]); // Added authCounter to dependencies
+  }, [pathname]); // Rely on pathname changes (navigation, router.refresh)
 
   const NavLink = ({ href, children, onClick, className, disabled, iconName }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string, disabled?: boolean, iconName?: string }) => {
     const IconComponent = getLucideIcon(iconName);
@@ -65,20 +64,20 @@ export default function Header() {
     return (
       <Button asChild variant="ghost" className={cn(
         "text-foreground hover:bg-accent/10 hover:text-accent-foreground",
-        "w-full justify-start", 
-        "md:w-auto md:justify-center", 
+        "w-full justify-start",
+        "md:w-auto md:justify-center",
         isActive && "bg-accent/10 text-accent-foreground font-semibold",
-        className, 
+        className,
         disabled && "opacity-50 cursor-not-allowed"
       )} disabled={disabled} >
         <Link href={href} onClick={onClick}>
-          {IconComponent && <IconComponent className={cn("h-5 w-5", children ? "mr-2" : "")} />} 
+          {IconComponent && <IconComponent className={cn("h-5 w-5", children ? "mr-2" : "")} />}
           <span>{children}</span>
         </Link>
       </Button>
     );
   };
-  
+
   const handleLoginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmittingLogin(true);
@@ -95,9 +94,9 @@ export default function Header() {
       if (sessionResult.success) {
         setIsLoginDialogOpen(false);
         toast({ title: "Giriş Başarılı!", description: "Admin paneline yönlendiriliyorsunuz..." });
-        router.push('/admin'); 
-        router.refresh(); 
-        setAuthCounter(c => c + 1); // Increment counter to trigger useEffect
+        // isAuthenticated will be updated by useEffect due to pathname change or refresh
+        router.push('/admin'); // This will trigger useEffect in Header due to pathname change
+        router.refresh(); // Ensures data is fresh across the app
       } else {
         setLoginError(sessionResult.error || "Giriş yapılamadı. Lütfen tekrar deneyin.");
         toast({ title: "Giriş Başarısız", description: sessionResult.error || "Bir hata oluştu.", variant: "destructive" });
@@ -120,10 +119,10 @@ export default function Header() {
   const renderNavItems = (items: typeof staticNavItems, isMobile = false) => {
     return items.map((item) => {
       const itemKey = `${isMobile ? 'mobile' : 'desktop'}-${item.href}`;
-      
+
       const navLinkInstance = (
         <NavLink
-          key={itemKey} 
+          key={itemKey}
           href={item.href}
           onClick={isMobile ? () => setIsMobileMenuOpen(false) : undefined}
           className={isMobile ? "text-base" : ""}
@@ -132,10 +131,10 @@ export default function Header() {
           {item.label}
         </NavLink>
       );
-  
+
       if (isMobile) {
         return (
-          <SheetClose asChild key={`sheetclose-${itemKey}`}> 
+          <SheetClose asChild key={`sheetclose-${itemKey}`}>
             {navLinkInstance}
           </SheetClose>
         );
@@ -155,7 +154,7 @@ export default function Header() {
 
           <nav className="hidden md:flex space-x-1 items-center flex-wrap">
             {renderNavItems(staticNavItems, false)}
-            
+
             {isLoadingAuth ? (
               <Button variant="ghost" disabled><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Yükleniyor...</Button>
             ) : isAuthenticated ? (
@@ -171,7 +170,7 @@ export default function Header() {
               </Button>
             )}
           </nav>
-          
+
           <div className="md:hidden">
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
@@ -192,7 +191,7 @@ export default function Header() {
                 </div>
                 <nav className="flex flex-col space-y-1 px-2">
                   {renderNavItems(staticNavItems, true)}
-                  
+
                   {isLoadingAuth ? (
                      <Button variant="ghost" disabled className="text-base justify-start"><Loader2 className="mr-3 h-5 w-5 animate-spin" /> Yükleniyor...</Button>
                   ) : isAuthenticated ? (
