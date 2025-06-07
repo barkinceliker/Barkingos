@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, BrainCircuit, Settings, Newspaper, FolderKanban } from 'lucide-react';
+import { BookOpen, Settings, Newspaper, FolderKanban } from 'lucide-react';
 
 export default function AdminPage() {
   return (
@@ -15,6 +15,8 @@ export default function AdminPage() {
       </section>
 
       <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* AI Blog Assistant Card Removed */}
+        {/* 
         <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
           <CardHeader>
             <div className="flex justify-center mb-4">
@@ -31,6 +33,7 @@ export default function AdminPage() {
             </Link>
           </CardContent>
         </Card>
+        */}
 
         <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
           <CardHeader>
