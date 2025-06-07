@@ -5,7 +5,7 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,14 +22,31 @@ export default function AdminLoginPage() {
   const router = useRouter();
   const [authError, setAuthError] = useState<string | null>(null);
   const { toast } = useToast();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true); // Ensure navigator object is available
+  }, []);
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     setAuthError(null);
     console.log("LoginPage: onSubmit triggered with values:", data);
+
+    if (isClient && !navigator.cookieEnabled) {
+      console.error("CRITICAL: Cookies are disabled in this browser!");
+      setAuthError("Tarayıcınızda çerezler devre dışı bırakılmış. Lütfen etkinleştirip tekrar deneyin.");
+      toast({
+        title: "Çerez Hatası",
+        description: "Tarayıcınızda çerezler devre dışı bırakılmış. Lütfen etkinleştirip tekrar deneyin.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       console.log("LoginPage: Attempting Firebase sign-in...");
       const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
-      console.log("LoginPage: Firebase sign-in successful.");
+      console.log("LoginPage: Firebase sign-in successful. User email:", userCredential.user?.email);
 
       if (userCredential.user) {
         const token = await userCredential.user.getIdToken();
@@ -42,13 +59,18 @@ export default function AdminLoginPage() {
           return;
         }
 
+        // Using a simpler cookie string for maximum compatibility, though the previous one was fine.
+        // Max-age is in seconds (1 hour = 3600 seconds)
         const cookieString = `firebaseIdToken=${token}; path=/; max-age=3600; SameSite=Lax`;
         
         console.log("LoginPage: About to set firebaseIdToken cookie. Initial document.cookie:", document.cookie);
         console.log("LoginPage: Cookie string to be set:", cookieString);
         document.cookie = cookieString;
         console.log("LoginPage: firebaseIdToken cookie set command executed.");
-        console.log("LoginPage: document.cookie state immediately after set:", document.cookie);
+        // Allow a brief moment for the cookie to be processed by the browser
+        // Reading document.cookie immediately after setting it might not always reflect the change synchronously in all environments/browsers.
+        console.log("LoginPage: document.cookie state immediately after set (may not be final):", document.cookie);
+
 
         toast({
           title: "Giriş Başarılı!",
@@ -58,9 +80,11 @@ export default function AdminLoginPage() {
         // Small delay to help ensure cookie is processed by browser before redirect
         setTimeout(() => {
           console.log("LoginPage: document.cookie state after 100ms delay:", document.cookie);
-          if (!document.cookie.includes('firebaseIdToken=')) {
+          const isCookieSet = document.cookie.includes('firebaseIdToken=');
+          console.log("LoginPage: Does document.cookie include 'firebaseIdToken=' after delay?", isCookieSet);
+
+          if (!isCookieSet) {
             console.error("CRITICAL: Cookie 'firebaseIdToken' was not found client-side after setting and delay. Redirect might fail or loop.");
-            // alert("CRITICAL: Cookie 'firebaseIdToken' was not found client-side. Redirect might be problematic.");
           }
           console.log("LoginPage: Attempting redirect to /admin via router.push...");
           router.push("/admin");
