@@ -1,26 +1,36 @@
+
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Briefcase, Award, Users } from 'lucide-react';
+import { getHakkimdaContent, HakkimdaPageContent } from '@/lib/actions/page-content-actions';
+import { notFound } from 'next/navigation';
 
-export default function HakkimdaPage() {
+export default async function HakkimdaPage() {
+  const content = await getHakkimdaContent();
+
+  if (!content) {
+    notFound();
+  }
+
   return (
     <div className="space-y-12">
       <section className="text-center">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-4">Hakkımda</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-4">{content.pageTitle}</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Benim hikayem, tutkularım ve profesyonel yolculuğum hakkında daha fazla bilgi edinin.
+          {content.pageSubtitle}
         </p>
       </section>
 
       <section className="grid md:grid-cols-3 gap-8 items-center">
         <div className="md:col-span-1 flex justify-center">
           <Image
-            src="https://placehold.co/400x400.png"
+            src={content.profileImageUrl || "https://placehold.co/400x400.png"}
             alt="Benim Profil Fotoğrafım"
             width={300}
             height={300}
             className="rounded-full shadow-lg border-4 border-primary/50 object-cover"
-            data-ai-hint="professional portrait"
+            data-ai-hint={content.profileImageAiHint || "professional portrait"}
+            priority // Mark as priority if it's above the fold or LCP
           />
         </div>
         <div className="md:col-span-2">
@@ -29,15 +39,9 @@ export default function HakkimdaPage() {
               <CardTitle className="font-headline text-2xl text-primary">Ben Kimim?</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-lg">
-              <p>
-                Merhaba! Ben [Adınız Soyadınız]. Teknolojiye ve tasarıma olan tutkumla, dijital dünyada fark yaratan projeler geliştirmek için buradayım. Yıllar içinde edindiğim bilgi ve deneyimle, kullanıcı odaklı ve estetik açıdan tatmin edici çözümler sunmayı hedefliyorum.
-              </p>
-              <p>
-                Problem çözmeyi, yeni şeyler öğrenmeyi ve yaratıcı süreçlerin bir parçası olmayı seviyorum. Ekip çalışmasına inanıyor ve her projeye pozitif bir enerjiyle yaklaşıyorum.
-              </p>
-              <p>
-                Boş zamanlarımda [Hobilerinizden birkaçı, örneğin: yeni teknolojileri araştırmak, fotoğraf çekmek, doğa yürüyüşleri yapmak] gibi aktivitelerle ilgileniyorum.
-              </p>
+              {content.whoAmI_p1 && <p>{content.whoAmI_p1}</p>}
+              {content.whoAmI_p2 && <p>{content.whoAmI_p2}</p>}
+              {content.whoAmI_p3_hobbies && <p>{content.whoAmI_p3_hobbies}</p>}
             </CardContent>
           </Card>
         </div>
@@ -47,32 +51,43 @@ export default function HakkimdaPage() {
         <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow">
           <Briefcase className="h-12 w-12 text-accent mx-auto mb-4" />
           <h3 className="text-xl font-headline font-semibold text-primary mb-2">Deneyim</h3>
-          <p className="text-muted-foreground">[X]+ Yıl Sektör Deneyimi</p>
+          <p className="text-muted-foreground">{content.stat_experience_value}</p>
         </Card>
         <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow">
           <Award className="h-12 w-12 text-accent mx-auto mb-4" />
           <h3 className="text-xl font-headline font-semibold text-primary mb-2">Uzmanlık Alanları</h3>
-          <p className="text-muted-foreground">Web Geliştirme, UI/UX Tasarımı, Mobil Uygulamalar</p>
+          <p className="text-muted-foreground">{content.stat_expertise_value}</p>
         </Card>
         <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow">
           <Users className="h-12 w-12 text-accent mx-auto mb-4" />
           <h3 className="text-xl font-headline font-semibold text-primary mb-2">Takım Çalışması</h3>
-          <p className="text-muted-foreground">İşbirlikçi ve Çevik Metodolojilere Hakim</p>
+          <p className="text-muted-foreground">{content.stat_teamwork_value}</p>
         </Card>
       </section>
       
       <section>
         <Card className="shadow-xl">
             <CardHeader>
-              <CardTitle className="font-headline text-2xl text-primary">Misyonum</CardTitle>
+              <CardTitle className="font-headline text-2xl text-primary">{content.mission_title}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-lg">
-              <p>
-                Teknolojinin gücünü kullanarak insanların hayatını kolaylaştıran, estetik ve işlevsel ürünler ortaya koymak. Her zaman en son trendleri takip ederek ve kendimi sürekli geliştirerek, projelerime değer katmayı amaçlıyorum.
-              </p>
+              {content.mission_p1 && <p>{content.mission_p1}</p>}
             </CardContent>
           </Card>
       </section>
     </div>
   );
+}
+
+export async function generateMetadata() {
+  const content = await getHakkimdaContent();
+  if (!content) {
+    return {
+      title: 'Hakkımda | Sayfa Bulunamadı',
+    }
+  }
+  return {
+    title: `${content.pageTitle} | BenimSitem`,
+    description: content.pageSubtitle,
+  }
 }

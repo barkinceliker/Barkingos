@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Settings, Newspaper, FolderKanban } from 'lucide-react';
+import { FileText, Settings, Newspaper, FolderKanban } from 'lucide-react'; // Updated Icon
 
 export default async function AdminDashboardPage() {
   return (
@@ -15,7 +15,6 @@ export default async function AdminDashboardPage() {
       </section>
 
       <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {/* Navigasyon Yönetimi Kartı Kaldırıldı */}
         <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
           <CardHeader>
              <div className="flex justify-center mb-4">
@@ -50,18 +49,20 @@ export default async function AdminDashboardPage() {
           </CardContent>
         </Card>
         
-        <Card className="shadow-xl opacity-50 cursor-not-allowed"> 
+        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300"> 
           <CardHeader>
              <div className="flex justify-center mb-4">
-                <BookOpen className="h-12 w-12 text-muted-foreground" />
+                <FileText className="h-12 w-12 text-accent" /> {/* Updated Icon */}
             </div>
             <CardTitle className="font-headline text-2xl text-center">Sayfa İçerik Yönetimi</CardTitle>
             <CardDescription className="text-center">
-             Site sayfalarının (Hakkımda, Hizmetler vb.) içeriklerini düzenleyin. (Yakında)
+             Site sayfalarının (Hakkımda, Hizmetler vb.) içeriklerini düzenleyin.
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <Button className="w-full" disabled>Sayfaları Yönet</Button>
+            <Link href="/admin/manage-content" passHref> {/* Updated Link */}
+              <Button className="w-full">Sayfaları Yönet</Button>
+            </Link>
           </CardContent>
         </Card>
 
