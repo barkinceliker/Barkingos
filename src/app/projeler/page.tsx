@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Zap, Users, BarChart } from 'lucide-react';
-import { getAllProjects, ProjectItem } from '@/lib/project-data'; // Updated import
+import { getAllProjectsFromDb, ProjectInput } from '@/lib/actions/project-actions'; // Updated import
 
 export default async function ProjelerPage() {
-  const projectItems = await getAllProjects(); // Fetch projects from centralized data
+  const projectItems: ProjectInput[] = await getAllProjectsFromDb(); // Fetch projects from Firestore
 
   return (
     <div className="space-y-12">
@@ -24,7 +24,7 @@ export default async function ProjelerPage() {
             <div className="md:flex">
               <div className="md:w-1/3">
                 <Image
-                  src={item.imageUrl}
+                  src={item.imageUrl || 'https://placehold.co/800x500.png'}
                   alt={item.title}
                   width={800}
                   height={500}
@@ -74,17 +74,29 @@ export default async function ProjelerPage() {
                       </Button>
                     </Link>
                   )}
-                   <Link href={`/projeler/${item.id}/detay`} passHref> {/* Placeholder for potential detailed page */}
+                   {/* Detay sayfası şu an için linklenmiyor, gerekirse eklenebilir.
+                   <Link href={`/projeler/${item.id}/detay`} passHref> 
                       <Button variant="ghost">
                         <BarChart className="mr-2 h-4 w-4" /> Daha Fazla Bilgi
                       </Button>
                     </Link>
+                   */}
                 </CardFooter>
               </div>
             </div>
           </Card>
         ))}
+         {projectItems.length === 0 && (
+          <div className="col-span-full text-center py-10">
+            <p className="text-muted-foreground text-lg">Henüz yayınlanmış bir proje bulunmuyor.</p>
+            <Link href="/" passHref>
+              <Button variant="link" className="mt-4">Anasayfaya Dön</Button>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
+    

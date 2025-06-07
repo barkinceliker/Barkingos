@@ -4,11 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Pencil, Trash2, PlusCircle } from 'lucide-react';
-import { getAllProjects, ProjectItem } from '@/lib/project-data';
+import { Pencil, PlusCircle } from 'lucide-react';
+import { getAllProjectsFromDb } from '@/lib/actions/project-actions'; // Updated import
+import DeleteProjectButton from './_components/DeleteProjectButton'; // New or updated component
 
 export default async function ManageProjectsPage() {
-  const projects = await getAllProjects();
+  const projects = await getAllProjectsFromDb();
 
   return (
     <div className="space-y-8">
@@ -33,6 +34,7 @@ export default async function ManageProjectsPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>ID (Slug)</TableHead>
                 <TableHead>Başlık</TableHead>
                 <TableHead>Durum</TableHead>
                 <TableHead>Teknolojiler</TableHead>
@@ -42,6 +44,7 @@ export default async function ManageProjectsPage() {
             <TableBody>
               {projects.map((project) => (
                 <TableRow key={project.id}>
+                  <TableCell className="font-mono text-xs">{project.id}</TableCell>
                   <TableCell className="font-medium">{project.title}</TableCell>
                   <TableCell>
                     <Badge 
@@ -67,20 +70,17 @@ export default async function ManageProjectsPage() {
                   </TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button variant="outline" size="sm" asChild>
-                      {/* Placeholder for edit functionality */}
                       <Link href={`/admin/manage-projects/edit/${project.id}`}>
                         <Pencil className="mr-1 h-4 w-4" /> Düzenle
                       </Link>
                     </Button>
-                    <Button variant="destructive" size="sm" disabled> {/* Placeholder for delete functionality */}
-                      <Trash2 className="mr-1 h-4 w-4" /> Sil
-                    </Button>
+                    <DeleteProjectButton projectId={project.id} projectTitle={project.title} />
                   </TableCell>
                 </TableRow>
               ))}
               {projects.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center text-muted-foreground">
+                  <TableCell colSpan={5} className="text-center text-muted-foreground">
                     Henüz proje bulunmuyor.
                   </TableCell>
                 </TableRow>
@@ -92,3 +92,5 @@ export default async function ManageProjectsPage() {
     </div>
   );
 }
+
+    
