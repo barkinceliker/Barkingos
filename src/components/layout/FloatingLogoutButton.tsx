@@ -7,31 +7,23 @@ import { Button } from '@/components/ui/button';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
 import { auth as firebaseClientAuth } from '@/lib/firebase';
-import { logout as serverLogout, checkAuthStatus } from '@/lib/actions/auth';
+import { logout as serverLogout } from '@/lib/actions/auth'; // checkAuthStatus removed
 
-export default function FloatingLogoutButton() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+interface FloatingLogoutButtonProps {
+  initialIsAuthenticated: boolean;
+}
+
+export default function FloatingLogoutButton({ initialIsAuthenticated }: FloatingLogoutButtonProps) {
+  const [isAuthenticated, setIsAuthenticated] = useState(initialIsAuthenticated);
   const [isSubmittingLogout, setIsSubmittingLogout] = useState(false);
 
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = usePathname(); // Keep for redirect logic in handleLogout
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchAuthStatus = async () => {
-      setIsLoadingAuth(true);
-      try {
-        const auth = await checkAuthStatus();
-        setIsAuthenticated(auth.isAuthenticated);
-      } catch (e) {
-        console.error("FloatingLogoutButton: Error fetching auth status:", e);
-        setIsAuthenticated(false);
-      }
-      setIsLoadingAuth(false);
-    };
-    fetchAuthStatus();
-  }, [pathname]); // Re-check on route change, or after login/logout actions
+    setIsAuthenticated(initialIsAuthenticated);
+  }, [initialIsAuthenticated]);
 
   const handleLogout = async () => {
     setIsSubmittingLogout(true);
@@ -39,12 +31,12 @@ export default function FloatingLogoutButton() {
       await firebaseClientAuth.signOut();
       const result = await serverLogout();
       if (result.success) {
-        setIsAuthenticated(false); // Update local state
+        // setIsAuthenticated(false); // No longer needed, prop will update after refresh
         toast({ title: "Başarıyla çıkış yapıldı." });
         if (pathname.startsWith('/admin')) {
           router.push('/');
         }
-        router.refresh(); // Important to re-trigger auth checks and clear server session state
+        router.refresh(); // Important to re-trigger AuthAwareUIComponents in layout.tsx
       } else {
         toast({ title: "Çıkış Hatası", description: result.error || "Çıkış sırasında bir sorun oluştu.", variant: "destructive" });
       }
@@ -56,10 +48,6 @@ export default function FloatingLogoutButton() {
     }
   };
 
-  if (isLoadingAuth) {
-    return null; 
-  }
-
   if (!isAuthenticated) {
     return null;
   }
@@ -67,8 +55,8 @@ export default function FloatingLogoutButton() {
   return (
     <div className="fixed bottom-6 right-6 z-[100]"> {/* Ensure z-index is high enough */}
       <Button
-        variant="destructive" 
-        size="lg" 
+        variant="destructive"
+        size="lg"
         onClick={handleLogout}
         disabled={isSubmittingLogout}
         className="shadow-xl rounded-full p-4"
@@ -84,4 +72,3 @@ export default function FloatingLogoutButton() {
     </div>
   );
 }
-
