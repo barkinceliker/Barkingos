@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'; // Keep useRouter if needed elsewhere, though not directly for login redirect
 import { Menu, X, Briefcase, Home, User, BookOpen, Code, BarChart, MessageSquare, Settings, FileText, Shield, LogIn, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
@@ -25,12 +25,13 @@ const mainNavItems = [
 ];
 
 const adminNavItem = { label: 'Admin Panel', href: '/admin', icon: Shield };
+const loginNavItem = { label: 'Giriş Yap', href: '/login', icon: LogIn };
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
-  const router = useRouter();
+  // const router = useRouter(); // Kept if used for other purposes
 
   useEffect(() => {
     setIsMounted(true);
@@ -45,8 +46,8 @@ export default function Header() {
       await signOut(auth);
       // Clear the login cookie
       document.cookie = "isLoggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
-      // Redirect to login page
-      window.location.href = '/login'; // Full page redirect
+      // Full page redirect to login page
+      window.location.href = '/login'; 
     } catch (error) {
       console.error("Logout error:", error);
       // Optionally, show a toast error
@@ -63,6 +64,7 @@ export default function Header() {
   );
   
   if (!isMounted) {
+    // Simplified skeleton for SSR/initial load to avoid layout shifts
     return (
       <header className="bg-card shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex justify-between items-center">
@@ -103,8 +105,8 @@ export default function Header() {
               </Button>
             </>
           ) : (
-            <NavLink key="login-desktop-nav" href="/login">
-              <LogIn className="mr-2 h-5 w-5" /> Giriş Yap
+            <NavLink key={loginNavItem.label} href={loginNavItem.href}>
+              <LogInIcon className="mr-2 h-5 w-5" /> {loginNavItem.label}
             </NavLink>
           )}
         </nav>
@@ -155,10 +157,10 @@ export default function Header() {
                     </SheetClose>
                   </>
                 ) : (
-                  <SheetClose asChild key="login-mobile-nav">
-                     <NavLink href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-base">
-                        <LogIn className="mr-3 h-5 w-5" />
-                        Giriş Yap
+                  <SheetClose asChild key={loginNavItem.label}>
+                     <NavLink href={loginNavItem.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base">
+                        <loginNavItem.icon className="mr-3 h-5 w-5" />
+                        {loginNavItem.label}
                       </NavLink>
                   </SheetClose>
                 )}

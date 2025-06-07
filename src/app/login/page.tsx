@@ -47,7 +47,8 @@ export default function LoginPage() {
         description: "Admin paneline yönlendiriliyorsunuz...",
       });
       // Set a cookie to indicate logged-in state for middleware
-      document.cookie = "isLoggedIn=true; path=/; max-age=3600; SameSite=Lax"; // Expires in 1 hour
+      // Expires in 1 hour, SameSite=Lax for security
+      document.cookie = "isLoggedIn=true; path=/; max-age=3600; SameSite=Lax"; 
       // Full page redirect to ensure cookie is sent with the request
       window.location.href = '/admin';
     } catch (error: any) {

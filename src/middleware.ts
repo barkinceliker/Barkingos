@@ -28,7 +28,6 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * 
-     * We need to be careful not to block Next.js internal routes.
      * A simpler matcher targeting only /admin/* and /login is safer.
      */
     '/admin/:path*',
