@@ -2,27 +2,36 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Settings, Newspaper, FolderKanban } from 'lucide-react';
-// import { logout } from '@/lib/actions/auth'; // Logout action no longer needed here
-// import { redirect } from 'next/navigation'; // Redirect no longer needed based on auth
+import { BookOpen, Settings, Newspaper, FolderKanban, List } from 'lucide-react';
 
 export default async function AdminDashboardPage() {
-  // Authentication check removed
-  // const { isAuthenticated } = await checkAuthStatus();
-  // if (!isAuthenticated) {
-  //   redirect('/admin/login');
-  // }
-
   return (
     <div className="space-y-12">
       <section className="text-center">
         <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-4">Admin Paneli</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Web sitesi yönetimi ve içerik araçlarına buradan ulaşabilirsiniz. (Giriş sistemi devredışı)
+          Web sitesi yönetimi ve içerik araçlarına buradan ulaşabilirsiniz.
         </p>
       </section>
 
       <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
+          <CardHeader>
+             <div className="flex justify-center mb-4">
+                <List className="h-12 w-12 text-accent" />
+            </div>
+            <CardTitle className="font-headline text-2xl text-center">Navigasyon Yönetimi</CardTitle>
+            <CardDescription className="text-center">
+              Site menülerini (navigasyon linklerini) yönetin.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <Link href="/admin/manage-navigation" passHref>
+              <Button className="w-full">Navigasyonu Yönet</Button>
+            </Link>
+          </CardContent>
+        </Card>
+
         <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
           <CardHeader>
              <div className="flex justify-center mb-4">
@@ -62,13 +71,13 @@ export default async function AdminDashboardPage() {
              <div className="flex justify-center mb-4">
                 <BookOpen className="h-12 w-12 text-muted-foreground" />
             </div>
-            <CardTitle className="font-headline text-2xl text-center">Diğer İçerikler</CardTitle>
+            <CardTitle className="font-headline text-2xl text-center">Sayfa İçerik Yönetimi</CardTitle>
             <CardDescription className="text-center">
-              Portfolyo, hizmetler, referanslar vb. içerikleri yönetin. (Yakında)
+             Site sayfalarının (Hakkımda, Hizmetler vb.) içeriklerini düzenleyin. (Yakında)
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <Button className="w-full" disabled>Eriş</Button>
+            <Button className="w-full" disabled>Sayfaları Yönet</Button>
           </CardContent>
         </Card>
 
@@ -87,18 +96,6 @@ export default async function AdminDashboardPage() {
           </CardContent>
         </Card>
       </section>
-       {/* Logout button/form removed
-       <section className="text-center mt-12">
-        <form action={async () => {
-          "use server";
-          // await logout();
-        }}>
-          <Button type="submit" variant="destructive" size="lg">
-            <LogOut className="mr-2 h-5 w-5" /> Güvenli Çıkış
-          </Button>
-        </form>
-      </section>
-      */}
     </div>
   );
 }

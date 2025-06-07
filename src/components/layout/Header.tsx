@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Menu, X, Home, User, BookOpen, Code as CodeIcon, BarChart, MessageSquare, Settings, FileText, Shield, Briefcase, LogIn, LogOut, Loader2 } from 'lucide-react';
+import { Menu, X, Loader2, LogIn, LogOut, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
@@ -13,23 +13,13 @@ import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth as firebaseClientAuth } from '@/lib/firebase'; // Client-side auth
+import { auth as firebaseClientAuth } from '@/lib/firebase'; 
 import { createSession, logout as serverLogout, checkAuthStatus } from '@/lib/actions/auth';
+import type { NavigationItem } from '@/lib/navigation-data'; // Import the type
+import { getAllNavItems } from '@/lib/navigation-data'; // Import the server action
+import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 
-const mainNavItemsBase = [
-  { label: 'Anasayfa', href: '/', icon: Home },
-  { label: 'Hakkımda', href: '/hakkimda', icon: User },
-  { label: 'Portföy', href: '/portfoy', icon: Briefcase },
-  { label: 'Blog', href: '/blog', icon: BookOpen },
-  { label: 'Projeler', href: '/projeler', icon: CodeIcon },
-  { label: 'Yetenekler', href: '/yetenekler', icon: BarChart },
-  { label: 'Deneyim', href: '/deneyim', icon: Briefcase },
-  { label: 'İletişim', href: '/iletisim', icon: MessageSquare },
-  { label: 'Hizmetler', href: '/hizmetler', icon: Settings },
-  { label: 'CV / Özgeçmiş', href: '/resume', icon: FileText },
-];
-
-const adminNavItem = { label: 'Admin Panel', href: '/admin', icon: Shield };
+const adminNavItemData = { label: 'Admin Panel', href: '/admin', iconName: 'Shield' };
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -38,40 +28,48 @@ export default function Header() {
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
+  const [navItems, setNavItems] = useState<NavigationItem[]>([]);
+  const [isLoadingNav, setIsLoadingNav] = useState(true);
 
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
 
   useEffect(() => {
-    // This effect now only runs once on component mount
-    const checkStatus = async () => {
-      console.log("Header useEffect (mount): Checking auth status...");
+    const fetchInitialData = async () => {
       setIsLoadingAuth(true);
+      setIsLoadingNav(true);
       try {
-        const { isAuthenticated: serverAuthStatus, uid } = await checkAuthStatus();
-        console.log("Header useEffect (mount): checkAuthStatus returned:", { serverAuthStatus, uid });
-        setIsAuthenticated(serverAuthStatus);
+        const auth = await checkAuthStatus();
+        setIsAuthenticated(auth.isAuthenticated);
+        
+        const items = await getAllNavItems(); // Fetch only visible items for header
+        setNavItems(items);
+
       } catch (e) {
-        console.error("Header useEffect (mount): Error checking auth status:", e);
-        setIsAuthenticated(false); // Default to false on error
+        console.error("Header useEffect (mount): Error fetching initial data:", e);
+        setIsAuthenticated(false); 
+        setNavItems([]); 
+        toast({ title: "Veri Yükleme Hatası", description: "Navigasyon veya yetki bilgileri yüklenirken bir sorun oluştu.", variant: "destructive"});
       }
       setIsLoadingAuth(false);
-      console.log("Header useEffect (mount): Finished. isLoadingAuth is now false.");
+      setIsLoadingNav(false);
     };
-    checkStatus();
-  }, []); // Empty dependency array ensures this runs only on mount
+    fetchInitialData();
+  }, [pathname]); // Re-fetch on pathname change to ensure auth status is fresh after navigations
 
-  const NavLink = ({ href, children, onClick, className, disabled }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string, disabled?: boolean }) => (
-    <Button asChild variant="ghost" className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto", className, disabled && "opacity-50 cursor-not-allowed")} disabled={disabled} >
-      <Link href={href} onClick={onClick}>
-        {children}
-      </Link>
-    </Button>
-  );
+  const NavLink = ({ href, children, onClick, className, disabled, iconName }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string, disabled?: boolean, iconName?: string }) => {
+    const IconComponent = getLucideIcon(iconName);
+    return (
+      <Button asChild variant="ghost" className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto md:justify-center", className, disabled && "opacity-50 cursor-not-allowed")} disabled={disabled} >
+        <Link href={href} onClick={onClick}>
+          {IconComponent && <IconComponent className={cn("h-5 w-5", children ? "mr-2 md:mr-1" : "")} />}
+          <span className={cn(iconName && "hidden md:inline")}>{children}</span>
+        </Link>
+      </Button>
+    );
+  };
   
-  const mobileNavItems = [...mainNavItemsBase, ...(isAuthenticated ? [adminNavItem] : [])]; 
-
   const handleLoginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmittingLogin(true);
@@ -86,7 +84,7 @@ export default function Header() {
       const sessionResult = await createSession(idToken);
 
       if (sessionResult.success) {
-        setIsAuthenticated(true); // Explicitly set to true for immediate UI update
+        setIsAuthenticated(true);
         setIsLoginDialogOpen(false);
         toast({ title: "Giriş Başarılı!", description: "Admin paneline yönlendiriliyorsunuz..." });
         router.push('/admin'); 
@@ -94,7 +92,7 @@ export default function Header() {
       } else {
         setLoginError(sessionResult.error || "Giriş yapılamadı. Lütfen tekrar deneyin.");
         toast({ title: "Giriş Başarısız", description: sessionResult.error || "Bir hata oluştu.", variant: "destructive" });
-        setIsAuthenticated(false); // Ensure state is false on failure
+        setIsAuthenticated(false);
       }
     } catch (error: any) {
       console.error("Login error:", error);
@@ -106,7 +104,7 @@ export default function Header() {
       }
       setLoginError(message);
       toast({ title: "Giriş Hatası", description: message, variant: "destructive" });
-      setIsAuthenticated(false); // Ensure state is false on error
+      setIsAuthenticated(false);
     } finally {
       setIsSubmittingLogin(false);
     }
@@ -118,7 +116,7 @@ export default function Header() {
       await firebaseClientAuth.signOut(); 
       const result = await serverLogout(); 
       if (result.success) {
-        setIsAuthenticated(false); // Explicitly set to false for immediate UI update
+        setIsAuthenticated(false);
         toast({ title: "Başarıyla çıkış yapıldı." });
         if (pathname.startsWith('/admin')) {
           router.push('/');
@@ -135,6 +133,25 @@ export default function Header() {
     }
   };
 
+  const renderNavItems = (items: NavigationItem[], isMobile = false) => {
+    return items.map((item) => {
+      const IconComponent = getLucideIcon(item.iconName);
+      return (
+        <SheetClose asChild={isMobile} key={`${isMobile ? 'mobile' : 'desktop'}-${item.id}`}>
+          <NavLink 
+            href={item.href} 
+            onClick={isMobile ? () => setIsMobileMenuOpen(false) : undefined} 
+            className={isMobile ? "text-base" : ""}
+            iconName={item.iconName}
+          >
+            {isMobile && IconComponent && <IconComponent className="mr-3 h-5 w-5" />}
+            {item.label}
+          </NavLink>
+        </SheetClose>
+      );
+    });
+  };
+
 
   return (
     <>
@@ -145,17 +162,16 @@ export default function Header() {
           </Link>
 
           <nav className="hidden md:flex space-x-1 items-center flex-wrap">
-            {mainNavItemsBase.map((item) => (
-              <NavLink key={`desktop-${item.label}`} href={item.href}>
-                {item.label}
-              </NavLink>
-            ))}
+            {isLoadingNav ? (
+                [...Array(6)].map((_, i) => <Button key={i} variant="ghost" disabled className="w-20 h-8 animate-pulse bg-muted/50 rounded-md"></Button>)
+            ) : renderNavItems(navItems)}
+            
             {isLoadingAuth ? (
               <Button variant="ghost" disabled><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Yükleniyor...</Button>
             ) : isAuthenticated ? (
               <>
-                <NavLink key={`desktop-${adminNavItem.label}`} href={adminNavItem.href}>
-                  <adminNavItem.icon className="mr-2 h-5 w-5" /> {adminNavItem.label}
+                <NavLink href={adminNavItemData.href} iconName={adminNavItemData.iconName}>
+                  {adminNavItemData.label}
                 </NavLink>
                 <Button variant="outline" onClick={handleLogout} disabled={isSubmittingLogin}>
                   {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOut className="mr-2 h-5 w-5" />}
@@ -189,28 +205,17 @@ export default function Header() {
                   </SheetClose>
                 </div>
                 <nav className="flex flex-col space-y-1 px-2">
-                  {mainNavItemsBase.map((item) => { 
-                    const IconComponent = item.icon;
-                    return (
-                      <SheetClose asChild key={`mobile-${item.label}`}>
-                        <NavLink 
-                          href={item.href} 
-                          onClick={() => setIsMobileMenuOpen(false)} 
-                          className="text-base"
-                        >
-                          <IconComponent className="mr-3 h-5 w-5" />
-                          {item.label}
-                        </NavLink>
-                      </SheetClose>
-                    );
-                  })}
+                  {isLoadingNav ? (
+                     [...Array(6)].map((_, i) => <Button key={`mobile-skel-${i}`} variant="ghost" disabled className="w-full h-10 justify-start animate-pulse bg-muted/50 rounded-md"></Button>)
+                  ) : renderNavItems(navItems, true)}
+                  
                   {isLoadingAuth ? (
                      <Button variant="ghost" disabled className="text-base justify-start"><Loader2 className="mr-3 h-5 w-5 animate-spin" /> Yükleniyor...</Button>
                   ) : isAuthenticated ? (
                     <>
                      <SheetClose asChild>
-                        <NavLink href={adminNavItem.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base">
-                          <adminNavItem.icon className="mr-3 h-5 w-5" /> {adminNavItem.label}
+                        <NavLink href={adminNavItemData.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base" iconName={adminNavItemData.iconName}>
+                           {adminNavItemData.label}
                         </NavLink>
                       </SheetClose>
                       <SheetClose asChild>
@@ -278,3 +283,4 @@ export default function Header() {
     </>
   );
 }
+
