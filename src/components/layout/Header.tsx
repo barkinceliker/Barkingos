@@ -9,7 +9,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/s
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { cn } from '@/lib/utils';
-import { useRouter } from 'next/navigation'; // Can be used for post-logout redirect if window.location.href is problematic
+import { useRouter } from 'next/navigation'; 
 
 const mainNavItems = [
   { label: 'Anasayfa', href: '/', icon: Home },
@@ -74,7 +74,6 @@ export default function Header() {
     }
   };
 
-  // NavLink using Button asChild wrapping Link
   const NavLink = ({ href, children, onClick, className }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string }) => (
     <Button asChild variant="ghost" className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto", className)} onClick={onClick}>
       <Link href={href}>
@@ -156,7 +155,7 @@ export default function Header() {
                     </SheetClose>
                   );
                 })}
-                <SheetClose asChild key={`${adminNavItem.label}-mobile-admin`}>
+                <SheetClose asChild key={`${adminNavItem.label}-mobile`}>
                     <NavLink href={adminNavItem.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base">
                       <adminNavItem.icon className="mr-3 h-5 w-5" />
                       {adminNavItem.label}
