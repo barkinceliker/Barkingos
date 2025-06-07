@@ -2,25 +2,23 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Settings, Newspaper, FolderKanban, LogOut } from 'lucide-react';
-import { checkAuthStatus, logout } from '@/lib/actions/auth';
-import { redirect } from 'next/navigation';
-
+import { BookOpen, Settings, Newspaper, FolderKanban } from 'lucide-react';
+// import { logout } from '@/lib/actions/auth'; // Logout action no longer needed here
+// import { redirect } from 'next/navigation'; // Redirect no longer needed based on auth
 
 export default async function AdminDashboardPage() {
-  const { isAuthenticated } = await checkAuthStatus();
-
-  if (!isAuthenticated) {
-    // This check is mostly redundant due to middleware, but good for direct page access attempts
-    redirect('/admin/login');
-  }
+  // Authentication check removed
+  // const { isAuthenticated } = await checkAuthStatus();
+  // if (!isAuthenticated) {
+  //   redirect('/admin/login');
+  // }
 
   return (
     <div className="space-y-12">
       <section className="text-center">
         <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-4">Admin Paneli</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Web sitesi yönetimi ve içerik araçlarına buradan ulaşabilirsiniz. (Giriş yapıldı)
+          Web sitesi yönetimi ve içerik araçlarına buradan ulaşabilirsiniz. (Giriş sistemi devredışı)
         </p>
       </section>
 
@@ -89,17 +87,18 @@ export default async function AdminDashboardPage() {
           </CardContent>
         </Card>
       </section>
+       {/* Logout button/form removed
        <section className="text-center mt-12">
         <form action={async () => {
           "use server";
-          await logout();
+          // await logout();
         }}>
           <Button type="submit" variant="destructive" size="lg">
             <LogOut className="mr-2 h-5 w-5" /> Güvenli Çıkış
           </Button>
         </form>
       </section>
+      */}
     </div>
   );
 }
-

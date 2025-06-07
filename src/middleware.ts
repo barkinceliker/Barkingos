@@ -2,44 +2,17 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const AUTH_COOKIE_NAME = "adminAuthToken"; // Must match the cookie name in auth.ts
+// Login functionality has been removed.
+// Middleware is currently not enforcing any authentication checks.
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const cookieStore = request.cookies;
-  const authToken = cookieStore.get(AUTH_COOKIE_NAME)?.value;
-
-  const isAdminRoute = pathname.startsWith('/admin');
-  const isLoginPage = pathname === '/admin/login';
-
-  console.log(`Middleware: Path: ${pathname}, AuthToken: ${authToken ? 'Exists' : 'Missing'}`);
-
-  if (isAdminRoute) {
-    if (isLoginPage) {
-      // If user is on login page
-      if (authToken) {
-        // And already logged in, redirect to admin dashboard
-        console.log("Middleware: User on login page but already authenticated. Redirecting to /admin.");
-        return NextResponse.redirect(new URL('/admin', request.url));
-      }
-      // If not logged in, allow access to login page
-      console.log("Middleware: Allowing access to /admin/login for unauthenticated user.");
-      return NextResponse.next();
-    }
-
-    // For any other /admin/* route
-    if (!authToken) {
-      // If not logged in, redirect to login page
-      console.log("Middleware: User not authenticated for admin route. Redirecting to /admin/login.");
-      return NextResponse.redirect(new URL('/admin/login', request.url));
-    }
-    // If logged in, allow access
-    console.log("Middleware: User authenticated. Allowing access to admin route:", pathname);
-  }
-
+  console.log(`Middleware: Path: ${pathname}. Login checks are disabled.`);
   return NextResponse.next();
 }
 
 export const config = {
+  // Matcher can be kept to log access to admin paths, or removed if middleware is fully disabled.
+  // For now, it will log access to admin paths but not block them.
   matcher: ['/admin/:path*', '/admin'],
 };

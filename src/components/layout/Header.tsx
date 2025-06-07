@@ -7,8 +7,9 @@ import { Menu, X, Home, User, BookOpen, Code as CodeIcon, BarChart, MessageSquar
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
-import { logout, checkAuthStatus } from '@/lib/actions/auth'; // Updated import
-import { usePathname, useRouter } from 'next/navigation';
+// import { auth } from '@/lib/firebase'; // No longer needed for client-side auth state in header
+// import { signOut } from "firebase/auth"; // No longer needed for client-side auth state in header
+import { usePathname } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 
 
@@ -29,50 +30,11 @@ const adminNavItem = { label: 'Admin Panel', href: '/admin', icon: Shield };
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const pathname = usePathname();
-  const router = useRouter();
-  const { toast } = useToast();
+  const { toast } = useToast(); // Toast can still be used for other notifications
 
-  useEffect(() => {
-    async function fetchAuthStatus() {
-      setIsLoadingAuth(true);
-      try {
-        const authStatus = await checkAuthStatus();
-        console.log("Header: Auth status checked on client:", authStatus);
-        setIsAuthenticated(authStatus.isAuthenticated);
-      } catch (error) {
-        console.error("Header: Error checking auth status", error);
-        setIsAuthenticated(false);
-      } finally {
-        setIsLoadingAuth(false);
-      }
-    }
-    fetchAuthStatus();
-  }, [pathname]); // Re-check on path change, e.g., after login/logout redirects
+  // Login state and effects removed
 
-  const handleLogout = async () => {
-    try {
-      await logout(); // This server action handles cookie deletion and redirection
-      setIsAuthenticated(false); // Update client-side state
-      toast({
-        title: "Çıkış Başarılı",
-        description: "Giriş sayfasına yönlendirildiniz.",
-      });
-      // Redirection is handled by the server action, but good to ensure client state is updated.
-      // router.push('/admin/login'); // Fallback, normally server action handles redirect
-    } catch (error) {
-      console.error("Logout error:", error);
-      toast({
-        title: "Çıkış Hatası",
-        description: "Çıkış yapılırken bir sorun oluştu.",
-        variant: "destructive",
-      });
-    }
-    setIsMobileMenuOpen(false);
-  };
-  
   const NavLink = ({ href, children, onClick, className }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string }) => (
     <Button asChild variant="ghost" className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto", className)} >
       <Link href={href} onClick={onClick}>
@@ -82,28 +44,7 @@ export default function Header() {
   );
 
   const mobileNavItems = [...mainNavItemsBase, adminNavItem];
-  if (isAuthenticated) {
-    mobileNavItems.push({ label: 'Çıkış Yap', href: '#', icon: LogOut });
-  }
-
-
-  if (isLoadingAuth && pathname.startsWith('/admin')) {
-    // Avoid rendering auth-dependent UI elements while checking status on admin pages
-    return (
-      <header className="bg-card shadow-md sticky top-0 z-50">
-        <div className="container mx-auto px-4 h-16 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-headline font-bold text-primary">
-            BenimSitem
-          </Link>
-          <div className="md:hidden">
-            <Button variant="ghost" size="icon" aria-label="Open menu">
-              <Menu className="h-6 w-6" />
-            </Button>
-          </div>
-        </div>
-      </header>
-    );
-  }
+  // "Çıkış Yap" item removed from mobileNavItems
   
   return (
     <header className="bg-card shadow-md sticky top-0 z-50">
@@ -121,11 +62,7 @@ export default function Header() {
           <NavLink key={`desktop-${adminNavItem.label}`} href={adminNavItem.href}>
              <adminNavItem.icon className="mr-2 h-5 w-5" /> {adminNavItem.label}
           </NavLink>
-          {isAuthenticated && (
-            <Button variant="ghost" onClick={handleLogout} className="text-foreground hover:bg-accent/10 hover:text-accent-foreground">
-              <LogOut className="mr-2 h-5 w-5" /> Çıkış Yap
-            </Button>
-          )}
+          {/* Logout button removed from desktop nav */}
         </nav>
         
         <div className="md:hidden">
@@ -149,16 +86,7 @@ export default function Header() {
               <nav className="flex flex-col space-y-1 px-2">
                 {mobileNavItems.map((item) => {
                   const IconComponent = item.icon;
-                  if (item.label === 'Çıkış Yap') {
-                    return (
-                       <SheetClose asChild key={`mobile-${item.label}`}>
-                        <Button variant="ghost" onClick={handleLogout} className="text-base w-full justify-start text-foreground hover:bg-accent/10 hover:text-accent-foreground">
-                          <IconComponent className="mr-3 h-5 w-5" />
-                          {item.label}
-                        </Button>
-                      </SheetClose>
-                    );
-                  }
+                  // Logic for "Çıkış Yap" button removed
                   return (
                     <SheetClose asChild key={`mobile-${item.label}`}>
                       <NavLink href={item.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base">
