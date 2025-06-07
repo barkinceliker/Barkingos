@@ -1,12 +1,13 @@
+
 "use server";
 
 import { z } from "zod";
 
 const formSchema = z.object({
-  name: z.string().min(2).max(50),
-  email: z.string().email(),
-  subject: z.string().min(5).max(100),
-  message: z.string().min(10).max(1000),
+  name: z.string().min(2, "İsim en az 2 karakter olmalıdır.").max(50, "İsim en fazla 50 karakter olabilir."),
+  email: z.string().email("Geçerli bir e-posta adresi giriniz."),
+  subject: z.string().min(5, "Konu en az 5 karakter olmalıdır.").max(100, "Konu en fazla 100 karakter olabilir."),
+  message: z.string().min(10, "Mesaj en az 10 karakter olmalıdır.").max(1000, "Mesaj en fazla 1000 karakter olabilir."),
 });
 
 export async function submitContactForm(values: z.infer<typeof formSchema>) {
@@ -23,8 +24,9 @@ export async function submitContactForm(values: z.infer<typeof formSchema>) {
   await new Promise(resolve => setTimeout(resolve, 1000));
 
   // Simulate success/failure
-  if (values.email.includes("error")) { // Simple way to test error case
-    return { success: false, message: "Bu e-posta adresiyle bir sorun oluştu." };
+  // You can test an error case by submitting an email containing "error"
+  if (values.email.toLowerCase().includes("error")) { 
+    return { success: false, message: "Bu e-posta adresiyle bir sorun oluştu. Lütfen farklı bir adres deneyin." };
   }
   
   return { success: true, message: "Mesajınız başarıyla alındı! En kısa sürede geri dönüş yapacağız." };
