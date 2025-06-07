@@ -32,16 +32,29 @@ export default function AdminLoginPage() {
 
       if (userCredential.user) {
         const token = await userCredential.user.getIdToken();
-        // Set cookie to be read by middleware
+        console.log("LoginPage: About to set firebaseIdToken cookie. Initial document.cookie:", document.cookie);
         // Max-age is 1 hour (3600 seconds)
         document.cookie = `firebaseIdToken=${token}; path=/; max-age=3600; SameSite=Lax; Secure`;
-        console.log("LoginPage: firebaseIdToken cookie set.");
+        console.log("LoginPage: firebaseIdToken cookie set command executed.");
+        console.log("LoginPage: document.cookie state immediately after set:", document.cookie);
 
         toast({
           title: "Giriş Başarılı!",
           description: "Admin paneline yönlendiriliyorsunuz...",
         });
-        router.push("/admin");
+
+        // Small delay to help ensure cookie is processed by browser before redirect
+        setTimeout(() => {
+          console.log("LoginPage: document.cookie state after 100ms delay:", document.cookie);
+          if (!document.cookie.includes('firebaseIdToken=')) {
+            console.error("CRITICAL: Cookie 'firebaseIdToken' was not found client-side after setting and delay. Redirect might fail or loop.");
+            // alert("CRITICAL: Cookie 'firebaseIdToken' was not found client-side. Redirect might be problematic.");
+          }
+          console.log("LoginPage: Attempting redirect to /admin via router.push...");
+          router.push("/admin");
+          console.log("LoginPage: router.push('/admin') called.");
+        }, 100);
+
       } else {
         throw new Error("Kullanıcı bilgileri alınamadı.");
       }
