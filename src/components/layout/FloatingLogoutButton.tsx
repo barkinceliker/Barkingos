@@ -14,16 +14,11 @@ interface FloatingLogoutButtonProps {
 }
 
 export default function FloatingLogoutButton({ initialIsAuthenticated }: FloatingLogoutButtonProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState(initialIsAuthenticated);
   const [isSubmittingLogout, setIsSubmittingLogout] = useState(false);
 
   const router = useRouter();
   const pathname = usePathname(); 
   const { toast } = useToast();
-
-  useEffect(() => {
-    setIsAuthenticated(initialIsAuthenticated);
-  }, [initialIsAuthenticated]);
 
   const handleLogout = async () => {
     setIsSubmittingLogout(true);
@@ -31,7 +26,6 @@ export default function FloatingLogoutButton({ initialIsAuthenticated }: Floatin
       await firebaseClientAuth.signOut();
       const result = await serverLogout();
       if (result.success) {
-        setIsAuthenticated(false); // Immediate local state update
         toast({ title: "Başarıyla çıkış yapıldı." });
         if (pathname.startsWith('/admin')) {
           router.push('/');
@@ -48,7 +42,7 @@ export default function FloatingLogoutButton({ initialIsAuthenticated }: Floatin
     }
   };
 
-  if (!isAuthenticated) {
+  if (!initialIsAuthenticated) {
     return null;
   }
 

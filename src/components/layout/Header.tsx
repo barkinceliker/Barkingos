@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Loader2, LogIn, Shield, LogOut as LogOutIcon } from 'lucide-react'; // LogOutIcon eklendi
+import { Menu, X, Loader2, LogIn, Shield, LogOut as LogOutIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth as firebaseClientAuth } from '@/lib/firebase';
-import { createSession, logout as serverLogout } from '@/lib/actions/auth'; // serverLogout eklendi
+import { createSession, logout as serverLogout } from '@/lib/actions/auth';
 import type { LucideIcon } from 'lucide-react';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 
@@ -38,18 +38,13 @@ interface HeaderProps {
 export default function Header({ initialIsAuthenticated }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(initialIsAuthenticated);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
-  const [isSubmittingLogout, setIsSubmittingLogout] = useState(false); // Header logout için
+  const [isSubmittingLogout, setIsSubmittingLogout] = useState(false);
 
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
-
-  useEffect(() => {
-    setIsAuthenticated(initialIsAuthenticated);
-  }, [initialIsAuthenticated]);
 
   const NavLink = ({ href, children, onClick, className, disabled, iconName }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string, disabled?: boolean, iconName?: string }) => {
     const IconComponent = getLucideIcon(iconName);
@@ -109,7 +104,6 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
       const sessionResult = await createSession(idToken);
 
       if (sessionResult.success) {
-        setIsAuthenticated(true); // Update local state immediately
         setIsLoginDialogOpen(false);
         toast({ title: "Giriş Başarılı!", description: "Admin paneline yönlendiriliyorsunuz..." });
         router.push('/admin'); 
@@ -139,7 +133,6 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
       await firebaseClientAuth.signOut();
       const result = await serverLogout();
       if (result.success) {
-        setIsAuthenticated(false); // Update local state immediately
         toast({ title: "Başarıyla çıkış yapıldı." });
         if (pathname.startsWith('/admin')) {
           router.push('/');
@@ -168,7 +161,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
           <nav className="hidden md:flex space-x-1 items-center flex-wrap">
             {renderNavItems(staticNavItems, false)}
 
-            {isAuthenticated ? (
+            {initialIsAuthenticated ? (
               <>
                 <NavLink href={adminNavItemData.href} iconName={adminNavItemData.iconName}>
                   {adminNavItemData.label}
@@ -207,7 +200,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
                 <nav className="flex flex-col space-y-1 px-2">
                   {renderNavItems(staticNavItems, true)}
 
-                  {isAuthenticated ? (
+                  {initialIsAuthenticated ? (
                      <>
                       <SheetClose asChild>
                         <NavLink href={adminNavItemData.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base" iconName={adminNavItemData.iconName}>
