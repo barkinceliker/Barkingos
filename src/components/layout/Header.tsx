@@ -63,26 +63,12 @@ export default function Header() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex space-x-1 items-center">
-          {navItems.slice(0, 5).map((item) => ( // Show first 5 items, rest can be in a dropdown or less prioritized
+        <nav className="hidden md:flex space-x-1 items-center flex-wrap">
+          {navItems.map((item) => (
             <NavLink key={item.label} href={item.href}>
               {item.label}
             </NavLink>
           ))}
-          {/* Example for a "More" dropdown if needed
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost">More <ChevronDown className="ml-1 h-4 w-4" /></Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {navItems.slice(5).map((item) => (
-                <DropdownMenuItem key={item.label} asChild>
-                  <Link href={item.href}>{item.label}</Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          */}
         </nav>
         
         {/* Mobile Navigation */}
