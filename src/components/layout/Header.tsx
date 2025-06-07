@@ -3,11 +3,10 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Menu, X, Briefcase, Home, User, BookOpen, Code, BarChart, MessageSquare, Settings, FileText, Shield, LogOut } from 'lucide-react';
+import { Menu, X, Briefcase, Home, User, BookOpen, Code, BarChart, MessageSquare, Settings, FileText, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
-import { auth } from '@/lib/firebase';
-import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
+// Firebase auth and related hooks/state are removed
 import { cn } from '@/lib/utils';
 
 const mainNavItems = [
@@ -23,35 +22,23 @@ const mainNavItems = [
   { label: 'CV / Özgeçmiş', href: '/resume', icon: FileText },
 ];
 
+// Admin nav item is now always shown, not conditional
 const adminNavItem = { label: 'Admin Panel', href: '/admin', icon: Shield };
-// loginNavItem removed
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
+  // currentUser state and onAuthStateChanged effect removed
 
   useEffect(() => {
     setIsMounted(true);
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-    });
-    return () => unsubscribe();
+    // Firebase onAuthStateChanged listener removed
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      document.cookie = "isLoggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
-      window.location.href = '/login'; 
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
-    setIsMobileMenuOpen(false); 
-  };
+  // handleLogout function removed
 
   const NavLink = ({ href, children, onClick, className }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string }) => (
-     <Button asChild variant="ghost" className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto", className)} onClick={onClick}>
+    <Button asChild variant="ghost" className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto", className)} onClick={onClick}>
       <Link href={href}>
         {children}
       </Link>
@@ -88,21 +75,11 @@ export default function Header() {
               {item.label}
             </NavLink>
           ))}
-          {currentUser ? (
-            <>
-              <NavLink key={adminNavItem.label} href={adminNavItem.href}>
-                 <adminNavItem.icon className="mr-2 h-5 w-5" /> {adminNavItem.label}
-              </NavLink>
-              <Button variant="ghost" onClick={handleLogout} className="text-foreground hover:bg-accent/10 hover:text-accent-foreground">
-                <LogOut className="mr-2 h-5 w-5" /> Çıkış Yap
-              </Button>
-            </>
-          ) : (
-             // If no user, show Admin Panel link which will redirect to login via middleware
-            <NavLink key={adminNavItem.label} href={adminNavItem.href}>
-              <adminNavItem.icon className="mr-2 h-5 w-5" /> {adminNavItem.label}
-            </NavLink>
-          )}
+          {/* Admin Panel link is now always visible */}
+          <NavLink key={adminNavItem.label} href={adminNavItem.href}>
+             <adminNavItem.icon className="mr-2 h-5 w-5" /> {adminNavItem.label}
+          </NavLink>
+          {/* Login/Logout button logic removed */}
         </nav>
         
         <div className="md:hidden">
@@ -135,29 +112,14 @@ export default function Header() {
                     </SheetClose>
                   );
                 })}
-                {currentUser ? (
-                  <>
-                    <SheetClose asChild key="admin-panel-mobile-nav">
-                        <NavLink href={adminNavItem.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base">
-                          <adminNavItem.icon className="mr-3 h-5 w-5" />
-                          {adminNavItem.label}
-                        </NavLink>
-                    </SheetClose>
-                     <SheetClose asChild key="logout-mobile-nav">
-                        <Button variant="ghost" onClick={handleLogout} className="text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start text-base">
-                            <LogOut className="mr-3 h-5 w-5" /> Çıkış Yap
-                        </Button>
-                    </SheetClose>
-                  </>
-                ) : (
-                  // If no user, show Admin Panel link which will redirect to login via middleware
-                  <SheetClose asChild key="admin-panel-login-mobile-nav">
-                     <NavLink href={adminNavItem.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base">
-                        <adminNavItem.icon className="mr-3 h-5 w-5" />
-                        {adminNavItem.label}
-                      </NavLink>
-                  </SheetClose>
-                )}
+                {/* Admin Panel link is now always visible in mobile menu */}
+                <SheetClose asChild key="admin-panel-mobile-nav">
+                    <NavLink href={adminNavItem.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base">
+                      <adminNavItem.icon className="mr-3 h-5 w-5" />
+                      {adminNavItem.label}
+                    </NavLink>
+                </SheetClose>
+                {/* Login/Logout button logic removed from mobile menu */}
               </nav>
             </SheetContent>
           </Sheet>
