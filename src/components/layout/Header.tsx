@@ -3,12 +3,13 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // Added
-import { Menu, X, Briefcase, Home, User, BookOpen, Code, BarChart, MessageSquare, Settings, FileText, Shield, LogOut } from 'lucide-react'; // Added LogOut
+import { useRouter } from 'next/navigation';
+import { Menu, X, Briefcase, Home, User, BookOpen, Code, BarChart, MessageSquare, Settings, FileText, Shield, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
-import { auth } from '@/lib/firebase'; // Added
-import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth'; // Added
+import { auth } from '@/lib/firebase';
+import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
+import { cn } from '@/lib/utils'; // Added missing import
 
 const mainNavItems = [
   { label: 'Anasayfa', href: '/', icon: Home },
@@ -28,8 +29,8 @@ const adminNavItem = { label: 'Admin Panel', href: '/admin', icon: Shield };
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null); // Added
-  const router = useRouter(); // Added
+  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
