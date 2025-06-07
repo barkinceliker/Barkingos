@@ -13,7 +13,7 @@ export function middleware(request: NextRequest) {
 
   // Log all cookies received by the middleware for debugging
   const allCookies = request.cookies.getAll();
-  console.log(`Middleware: Path: ${pathname}, All cookies received:`, allCookies.map(c => `${c.name}=${c.value}`).join('; '));
+  console.log(`Middleware: Path: ${pathname}, All cookies received:`, allCookies.map(c => `${c.name}=${c.value.substring(0, 30)}...`).join('; ')); // Log only prefix of cookie value
   console.log(`Middleware: Path: ${pathname}, Parsed isLoggedIn from firebaseIdToken: ${isLoggedIn}`);
 
 

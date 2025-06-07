@@ -48,6 +48,7 @@ export default function AdminLoginPage() {
           console.log("LoginPage: document.cookie state after 100ms delay:", document.cookie);
           if (!document.cookie.includes('firebaseIdToken=')) {
             console.error("CRITICAL: Cookie 'firebaseIdToken' was not found client-side after setting and delay. Redirect might fail or loop.");
+            // You could even add an alert here for very explicit debugging on the client:
             // alert("CRITICAL: Cookie 'firebaseIdToken' was not found client-side. Redirect might be problematic.");
           }
           console.log("LoginPage: Attempting redirect to /admin via router.push...");
