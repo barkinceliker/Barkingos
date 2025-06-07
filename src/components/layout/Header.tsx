@@ -42,19 +42,16 @@ export default function Header() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      // Clear the login cookie
       document.cookie = "isLoggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
-      // Full page redirect to login page
       window.location.href = '/login'; 
     } catch (error) {
       console.error("Logout error:", error);
-      // Optionally, show a toast error
     }
-    setIsMobileMenuOpen(false);
+    setIsMobileMenuOpen(false); // Close mobile menu on logout
   };
 
   const NavLink = ({ href, children, onClick, className }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string }) => (
-    <Link href={href} passHref>
+    <Link href={href} asChild>
       <Button variant="ghost" className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto", className)} onClick={onClick}>
         {children}
       </Button>
@@ -62,7 +59,6 @@ export default function Header() {
   );
   
   if (!isMounted) {
-    // Simplified skeleton for SSR/initial load to avoid layout shifts
     return (
       <header className="bg-card shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex justify-between items-center">
@@ -86,7 +82,6 @@ export default function Header() {
           BenimSitem
         </Link>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-1 items-center flex-wrap">
           {mainNavItems.map((item) => (
             <NavLink key={item.label} href={item.href}>
@@ -109,7 +104,6 @@ export default function Header() {
           )}
         </nav>
         
-        {/* Mobile Navigation */}
         <div className="md:hidden">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
@@ -148,7 +142,7 @@ export default function Header() {
                           {adminNavItem.label}
                         </NavLink>
                     </SheetClose>
-                     <SheetClose asChild key="logout-mobile-nav">
+                     <SheetClose asChild key="logout-mobile">
                         <Button variant="ghost" onClick={handleLogout} className="text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start text-base">
                             <LogOut className="mr-3 h-5 w-5" /> Çıkış Yap
                         </Button>
