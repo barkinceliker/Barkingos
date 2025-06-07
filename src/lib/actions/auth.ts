@@ -9,10 +9,12 @@ const COOKIE_NAME = 'adminAuthToken';
 const MAX_AGE = 60 * 60 * 24 * 7; // 1 week in seconds
 
 export async function createSession(idToken: string) {
-  console.log("AuthActions: createSession called with ID token.");
+  console.log("AuthActions: createSession called with ID token (first 20 chars):", idToken.substring(0,20) + "...");
   if (!admin.apps.length || !admin.app()) {
-    console.error("AuthActions: Firebase Admin SDK not initialized. Cannot create session. Ensure FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, and FIREBASE_CLIENT_EMAIL environment variables are correctly set.");
-    return { success: false, error: "Sunucu yapılandırma hatası: Firebase Admin SDK başlatılamadı. Lütfen Firebase Admin SDK için gerekli ortam değişkenlerinin (.env dosyasında) doğru ayarlandığından emin olun." };
+    console.error("AuthActions Critical Error: Firebase Admin SDK not initialized. Cannot create session.");
+    console.error("AuthActions: This usually means the environment variables (FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, FIREBASE_CLIENT_EMAIL) are missing, incorrect in .env, or the server was not restarted after .env changes.");
+    console.error("AuthActions: Check server logs for 'FirebaseAdmin: ...' messages from firebaseAdmin.ts for more details on what it sees.");
+    return { success: false, error: "Sunucu yapılandırma hatası: Firebase Admin SDK başlatılamadı. Lütfen .env dosyasındaki Firebase Admin SDK için gerekli ortam değişkenlerinin (FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, FIREBASE_CLIENT_EMAIL) doğru ayarlandığından ve sunucunun yeniden başlatıldığından emin olun. Özel anahtar formatına dikkat edin (tırnak içinde ve \\n karakterleri \\\\n olmalı)." };
   }
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
@@ -56,7 +58,8 @@ export async function checkAuthStatus() {
   }
 
   if (!admin.apps.length || !admin.app()) {
-    console.warn("AuthActions: Firebase Admin SDK not initialized during checkAuthStatus. Assuming token is invalid. Ensure Firebase Admin environment variables are set.");
+    console.warn("AuthActions Warning: Firebase Admin SDK not initialized during checkAuthStatus. Assuming token is invalid.");
+    console.warn("AuthActions: Check .env variables and server restart. See logs from firebaseAdmin.ts.");
     return { isAuthenticated: false };
   }
 
@@ -74,3 +77,4 @@ export async function checkAuthStatus() {
     return { isAuthenticated: false };
   }
 }
+
