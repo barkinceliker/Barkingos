@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { admin } from '@/lib/firebaseAdmin'; // For potential server-side token verification
 
+export const runtime = 'nodejs'; // Specify Node.js runtime
+
 const COOKIE_NAME = 'adminAuthToken';
 
 export async function middleware(request: NextRequest) {
