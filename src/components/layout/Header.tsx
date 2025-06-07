@@ -19,8 +19,8 @@ import type { LucideIcon } from 'lucide-react';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 
 const staticNavItems = [
-  { label: 'Anasayfa', href: '/', iconName: 'HomeIcon' },
-  { label: 'Hakkımda', href: '/hakkimda', iconName: 'UserIcon' },
+  { label: 'Anasayfa', href: '/', iconName: 'Home' },
+  { label: 'Hakkımda', href: '/hakkimda', iconName: 'User' },
   { label: 'Hizmetler', href: '/hizmetler', iconName: 'Sparkles' },
   { label: 'Projeler', href: '/projeler', iconName: 'Laptop' },
   { label: 'Yetenekler', href: '/yetenekler', iconName: 'Lightbulb' },
@@ -42,6 +42,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
+  // No local isAuthenticated state, rely solely on initialIsAuthenticated prop
 
   const router = useRouter();
   const pathname = usePathname();
@@ -108,7 +109,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
         setIsLoginDialogOpen(false);
         toast({ title: "Giriş Başarılı!", description: "Admin paneline yönlendiriliyorsunuz..." });
         router.push('/admin'); 
-        router.refresh(); 
+        router.refresh(); // This should trigger AuthAwareUIComponents to re-run
       } else {
         setLoginError(sessionResult.error || "Giriş yapılamadı. Lütfen tekrar deneyin.");
         toast({ title: "Giriş Başarısız", description: sessionResult.error || "Bir hata oluştu.", variant: "destructive" });
@@ -136,15 +137,14 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
             BenimSitem
           </Link>
 
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-1 items-center flex-wrap">
             {renderNavItems(staticNavItems, false)}
 
             {initialIsAuthenticated ? (
-              <>
-                <NavLink key="admin-panel-link-desktop" href={adminNavItemData.href} iconName={adminNavItemData.iconName}>
-                  {adminNavItemData.label}
-                </NavLink>
-              </>
+              <NavLink key={`admin-panel-link-desktop-${adminNavItemData.href}`} href={adminNavItemData.href} iconName={adminNavItemData.iconName}>
+                {adminNavItemData.label}
+              </NavLink>
             ) : (
               <Button variant="default" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin}>
                 {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-5 w-5" />}
@@ -153,6 +153,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
             )}
           </nav>
 
+          {/* Mobile Navigation Trigger */}
           <div className="md:hidden">
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
@@ -175,13 +176,11 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
                   {renderNavItems(staticNavItems, true)}
 
                   {initialIsAuthenticated ? (
-                    <>
-                      <SheetClose asChild>
-                        <NavLink key="admin-panel-link-mobile" href={adminNavItemData.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base" iconName={adminNavItemData.iconName}>
-                           {adminNavItemData.label}
-                        </NavLink>
-                      </SheetClose>
-                    </>
+                    <SheetClose asChild>
+                      <NavLink key={`admin-panel-link-mobile-${adminNavItemData.href}`} href={adminNavItemData.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base" iconName={adminNavItemData.iconName}>
+                         {adminNavItemData.label}
+                      </NavLink>
+                    </SheetClose>
                   ) : (
                      <SheetClose asChild>
                         <Button variant="default" onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }} className="text-base justify-start w-full mt-2" disabled={isSubmittingLogin}>

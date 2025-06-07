@@ -12,7 +12,9 @@ export const metadata: Metadata = {
   description: 'Kişisel portfolyo ve blog sitesi',
 };
 
-// New Server Component to read auth status and pass to Header and FloatingLogoutButton
+// Force dynamic rendering for this layout and its children
+export const dynamic = 'force-dynamic';
+
 async function AuthAwareUIComponents() {
   const auth = await checkAuthStatus();
   // Log to see if this component re-runs and gets fresh auth status
