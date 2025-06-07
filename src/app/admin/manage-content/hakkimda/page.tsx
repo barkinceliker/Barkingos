@@ -16,8 +16,8 @@ export default async function EditHakkimdaContentPage() {
         <CardHeader>
           <CardTitle className="text-2xl font-headline text-primary">"Hakkımda" Sayfası İçeriğini Düzenle</CardTitle>
           <CardDescription>
-            Bu sayfadaki bilgileri güncelleyerek sitenizdeki "Hakkımda" sayfasının içeriğini değiştirebilirsiniz.
-            Değişiklikler kaydedildikten sonra canlı sitede görünecektir.
+            Sitenizin "Hakkımda" bölümünde görünecek tüm metinleri, başlıkları ve profil resmi bilgilerini buradan kolayca yönetebilirsiniz.
+            Yaptığınız değişiklikler kaydedildikten sonra canlı sitede anında güncellenecektir.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -25,3 +25,4 @@ export default async function EditHakkimdaContentPage() {
     </div>
   );
 }
+
