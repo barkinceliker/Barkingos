@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
-// import Header from '@/components/layout/Header';
-// import Footer from '@/components/layout/Footer';
-// import { Toaster } from "@/components/ui/toaster";
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: 'BenimSitem',
@@ -24,13 +24,12 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased flex flex-col min-h-screen">
-        {/* <Header /> */}
+        <Header />
         <main className="flex-grow container mx-auto px-4 py-8">
-          <div>Root Layout Simplified - Test Content. Waiting for children:</div>
           {children}
         </main>
-        {/* <Footer /> */}
-        {/* <Toaster /> */}
+        <Footer />
+        <Toaster />
       </body>
     </html>
   );
