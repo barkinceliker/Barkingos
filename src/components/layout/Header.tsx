@@ -38,6 +38,7 @@ export default function Header() {
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
+  const [authCounter, setAuthCounter] = React.useState(0); // Counter to force useEffect refresh
 
   const router = useRouter();
   const pathname = usePathname();
@@ -50,13 +51,13 @@ export default function Header() {
         const auth = await checkAuthStatus();
         setIsAuthenticated(auth.isAuthenticated);
       } catch (e) {
-        console.error("Header useEffect (mount): Error fetching auth status:", e);
+        console.error("Header useEffect: Error fetching auth status:", e);
         setIsAuthenticated(false); 
       }
       setIsLoadingAuth(false);
     };
     fetchAuthStatus();
-  }, [pathname]); 
+  }, [pathname, authCounter]); // Added authCounter to dependencies
 
   const NavLink = ({ href, children, onClick, className, disabled, iconName }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string, disabled?: boolean, iconName?: string }) => {
     const IconComponent = getLucideIcon(iconName);
@@ -95,7 +96,8 @@ export default function Header() {
         setIsLoginDialogOpen(false);
         toast({ title: "Giriş Başarılı!", description: "Admin paneline yönlendiriliyorsunuz..." });
         router.push('/admin'); 
-        router.refresh(); // This should trigger the useEffect to update isAuthenticated
+        router.refresh(); 
+        setAuthCounter(c => c + 1); // Increment counter to trigger useEffect
       } else {
         setLoginError(sessionResult.error || "Giriş yapılamadı. Lütfen tekrar deneyin.");
         toast({ title: "Giriş Başarısız", description: sessionResult.error || "Bir hata oluştu.", variant: "destructive" });
@@ -121,7 +123,7 @@ export default function Header() {
       
       const navLinkInstance = (
         <NavLink
-          key={itemKey} // Key'i doğrudan NavLink'e ver
+          key={itemKey} 
           href={item.href}
           onClick={isMobile ? () => setIsMobileMenuOpen(false) : undefined}
           className={isMobile ? "text-base" : ""}
@@ -132,7 +134,6 @@ export default function Header() {
       );
   
       if (isMobile) {
-        // SheetClose asChild ile NavLink'i sarmalıyor, key SheetClose'da olmalı.
         return (
           <SheetClose asChild key={`sheetclose-${itemKey}`}> 
             {navLinkInstance}
