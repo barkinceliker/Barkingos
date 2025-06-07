@@ -30,7 +30,7 @@ const formSchema = z.object({
 });
 
 export default function LoginPage() {
-  const router = useRouter();
+  const router = useRouter(); // Keep for other potential uses, though not for this redirect
   const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
 
@@ -51,8 +51,7 @@ export default function LoginPage() {
     }
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
-      // Set a simple cookie flag to be checked by middleware
-      // Expires in 1 hour, adjust as needed
+      
       const expires = new Date(Date.now() + 60 * 60 * 1000).toUTCString();
       document.cookie = `isLoggedIn=true;path=/;expires=${expires};SameSite=Lax`;
       
@@ -60,7 +59,11 @@ export default function LoginPage() {
         title: "Giriş Başarılı!",
         description: "Admin paneline yönlendiriliyorsunuz...",
       });
-      router.push("/admin");
+      
+      // Use window.location.href for a full page redirect
+      // This ensures the cookie is sent with the request to /admin
+      window.location.href = "/admin";
+
     } catch (err: any) {
       let errorMessage = "Giriş yapılamadı. Lütfen bilgilerinizi kontrol edin.";
       if (err.code === "auth/user-not-found" || err.code === "auth/wrong-password" || err.code === "auth/invalid-credential") {
