@@ -107,7 +107,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
         setIsLoginDialogOpen(false);
         toast({ title: "Giriş Başarılı!", description: "Admin paneline yönlendiriliyorsunuz..." });
         router.push('/admin'); 
-        router.refresh(); 
+        router.refresh(); // This should trigger AuthAwareUIComponents to re-run and pass new prop
       } else {
         setLoginError(sessionResult.error || "Giriş yapılamadı. Lütfen tekrar deneyin.");
         toast({ title: "Giriş Başarısız", description: sessionResult.error || "Bir hata oluştu.", variant: "destructive" });
@@ -137,7 +137,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
         if (pathname.startsWith('/admin')) {
           router.push('/');
         }
-        router.refresh(); 
+        router.refresh(); // This should trigger AuthAwareUIComponents to re-run and pass new prop
       } else {
         toast({ title: "Çıkış Hatası", description: result.error || "Çıkış sırasında bir sorun oluştu.", variant: "destructive" });
       }

@@ -15,10 +15,12 @@ export const metadata: Metadata = {
 // New Server Component to read auth status and pass to Header and FloatingLogoutButton
 async function AuthAwareUIComponents() {
   const auth = await checkAuthStatus();
+  // Log to see if this component re-runs and gets fresh auth status
+  console.log("AuthAwareUIComponents: Current auth status - isAuthenticated:", auth.isAuthenticated);
   return (
     <>
-      <Header initialIsAuthenticated={auth.isAuthenticated} />
-      <FloatingLogoutButton initialIsAuthenticated={auth.isAuthenticated} />
+      <Header key={`header-${auth.isAuthenticated}`} initialIsAuthenticated={auth.isAuthenticated} />
+      <FloatingLogoutButton key={`logout-btn-${auth.isAuthenticated}`} initialIsAuthenticated={auth.isAuthenticated} />
     </>
   );
 }
@@ -44,7 +46,6 @@ export default function RootLayout({
         </main>
         <Footer />
         <Toaster />
-        {/* FloatingLogoutButton is now rendered by AuthAwareUIComponents */}
       </body>
     </html>
   );

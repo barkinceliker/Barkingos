@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { LogOut, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/hooks/use-toast";
@@ -30,7 +30,7 @@ export default function FloatingLogoutButton({ initialIsAuthenticated }: Floatin
         if (pathname.startsWith('/admin')) {
           router.push('/');
         }
-        router.refresh(); 
+        router.refresh(); // This should trigger AuthAwareUIComponents to re-run and pass new prop
       } else {
         toast({ title: "Çıkış Hatası", description: result.error || "Çıkış sırasında bir sorun oluştu.", variant: "destructive" });
       }
