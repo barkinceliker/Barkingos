@@ -22,7 +22,6 @@ const staticNavItems = [
   { label: 'Anasayfa', href: '/', iconName: 'Home' },
   { label: 'Hakkımda', href: '/hakkimda', iconName: 'User' },
   { label: 'Hizmetler', href: '/hizmetler', iconName: 'Sparkles' },
-  { label: 'Portföy', href: '/portfoy', iconName: 'Briefcase' },
   { label: 'Projeler', href: '/projeler', iconName: 'Laptop' },
   { label: 'Yetenekler', href: '/yetenekler', iconName: 'Lightbulb' },
   { label: 'Deneyim', href: '/deneyim', iconName: 'Award' }, 
@@ -72,7 +71,6 @@ export default function Header() {
       )} disabled={disabled} >
         <Link href={href} onClick={onClick}>
           {IconComponent && <IconComponent className={cn("h-5 w-5", children ? "mr-2" : "")} />} 
-          {/* Simplified icon rendering, span for label added for consistency */}
           <span>{children}</span>
         </Link>
       </Button>
@@ -146,12 +144,11 @@ export default function Header() {
     return items.map((item) => {
       const itemKey = `${isMobile ? 'mobile' : 'desktop'}-${item.href}`;
       
-      // NavLink component itself. item.label is passed as children.
       const navLinkElement = (
         <NavLink 
           href={item.href} 
           onClick={isMobile ? () => setIsMobileMenuOpen(false) : undefined} 
-          className={isMobile ? "text-base" : ""} // Apply mobile-specific class if any
+          className={isMobile ? "text-base" : ""}
           iconName={item.iconName}
         >
           {item.label}
@@ -162,17 +159,21 @@ export default function Header() {
         // For mobile, wrap NavLink with SheetClose
         return (
           <SheetClose asChild key={itemKey}>
-            {navLinkElement}
+            {React.cloneElement(navLinkElement, { onClick: () => {
+                setIsMobileMenuOpen(false);
+                if (navLinkElement.props.onClick) {
+                  navLinkElement.props.onClick(); 
+                }
+              }})}
           </SheetClose>
         );
       } else {
-        // For desktop, render NavLink directly.
-        // The key needs to be on the NavLink as it's the top-level mapped item.
-        // Cloning the element to add the key.
+        // For desktop, render NavLink directly with a key.
         return React.cloneElement(navLinkElement, { key: itemKey });
       }
     });
   };
+
 
   return (
     <>
@@ -183,7 +184,7 @@ export default function Header() {
           </Link>
 
           <nav className="hidden md:flex space-x-1 items-center flex-wrap">
-            {renderNavItems(staticNavItems, false)} {/* isMobile is false for desktop */}
+            {renderNavItems(staticNavItems, false)}
             
             {isLoadingAuth ? (
               <Button variant="ghost" disabled><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Yükleniyor...</Button>
@@ -224,7 +225,7 @@ export default function Header() {
                   </SheetClose>
                 </div>
                 <nav className="flex flex-col space-y-1 px-2">
-                  {renderNavItems(staticNavItems, true)} {/* isMobile is true for mobile sheet */}
+                  {renderNavItems(staticNavItems, true)}
                   
                   {isLoadingAuth ? (
                      <Button variant="ghost" disabled className="text-base justify-start"><Loader2 className="mr-3 h-5 w-5 animate-spin" /> Yükleniyor...</Button>
@@ -284,10 +285,8 @@ export default function Header() {
               )}
             </div>
             <DialogFooter>
-              {/* No explicit DialogClose needed here, handled by DialogContent's X or onOpenChange */}
-              <Button type="button" variant="outline" onClick={() => setIsLoginDialogOpen(false)} disabled={isSubmittingLogin}>
-                İptal
-              </Button>
+              {/* The "İptal" button was removed in a previous step to debug a DialogClose error */}
+              {/* If needed, it can be re-added carefully, ensuring DialogClose is used correctly or Dialog onOpenChange is leveraged */}
               <Button type="submit" disabled={isSubmittingLogin}>
                 {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Giriş Yap
@@ -299,5 +298,3 @@ export default function Header() {
     </>
   );
 }
-
-    
