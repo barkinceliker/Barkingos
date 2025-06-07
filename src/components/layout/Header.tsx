@@ -5,8 +5,8 @@ import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Loader2, LogIn, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetTitle } from '@/components/ui/sheet'; // Added SheetTitle
+import { Dialog, DialogContent, DialogHeader, DialogTitle as RadixDialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth as firebaseClientAuth } from '@/lib/firebase';
-import { createSession } from '@/lib/actions/auth';
+import { createSession, serverLogout } from '@/lib/actions/auth'; // Removed checkAuthStatus as it's handled by layout
 import type { LucideIcon } from 'lucide-react';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 
@@ -42,7 +42,9 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
-  // No local isAuthenticated state, rely solely on initialIsAuthenticated prop
+  // Removed local isAuthenticated state, directly using initialIsAuthenticated prop.
+  const [isSubmittingLogout, setIsSubmittingLogout] = useState(false);
+
 
   const router = useRouter();
   const pathname = usePathname();
@@ -109,7 +111,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
         setIsLoginDialogOpen(false);
         toast({ title: "Giriş Başarılı!", description: "Admin paneline yönlendiriliyorsunuz..." });
         router.push('/admin'); 
-        router.refresh(); // This should trigger AuthAwareUIComponents to re-run
+        router.refresh(); 
       } else {
         setLoginError(sessionResult.error || "Giriş yapılamadı. Lütfen tekrar deneyin.");
         toast({ title: "Giriş Başarısız", description: sessionResult.error || "Bir hata oluştu.", variant: "destructive" });
@@ -129,6 +131,29 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
     }
   };
 
+  const handleHeaderLogout = async () => {
+    setIsSubmittingLogout(true);
+    try {
+      await firebaseClientAuth.signOut();
+      const result = await serverLogout();
+      if (result.success) {
+        toast({ title: "Başarıyla çıkış yapıldı." });
+        if (pathname.startsWith('/admin')) {
+          router.push('/');
+        }
+        router.refresh();
+      } else {
+        toast({ title: "Çıkış Hatası", description: result.error || "Çıkış sırasında bir sorun oluştu.", variant: "destructive" });
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast({ title: "Çıkış Hatası", description: "Bir hata oluştu.", variant: "destructive" });
+    } finally {
+      setIsSubmittingLogout(false);
+    }
+  };
+
+
   return (
     <>
       <header className="bg-card shadow-md sticky top-0 z-50">
@@ -142,9 +167,12 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
             {renderNavItems(staticNavItems, false)}
 
             {initialIsAuthenticated ? (
-              <NavLink key={`admin-panel-link-desktop-${adminNavItemData.href}`} href={adminNavItemData.href} iconName={adminNavItemData.iconName}>
-                {adminNavItemData.label}
-              </NavLink>
+              <>
+                <NavLink key={`admin-panel-link-desktop-${adminNavItemData.href}`} href={adminNavItemData.href} iconName={adminNavItemData.iconName}>
+                  {adminNavItemData.label}
+                </NavLink>
+                {/* Logout button removed from here as per user request, FloatingLogoutButton will be used */}
+              </>
             ) : (
               <Button variant="default" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin}>
                 {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-5 w-5" />}
@@ -163,24 +191,25 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-card">
                 <div className="flex justify-between items-center mb-6 p-4 border-b">
-                   <Link href="/" className="text-xl font-headline font-bold text-primary" onClick={() => setIsMobileMenuOpen(false)}>
+                  <SheetTitle asChild>
+                    <Link href="/" className="text-xl font-headline font-bold text-primary" onClick={() => setIsMobileMenuOpen(false)}>
                       BenimSitem
                     </Link>
-                  <SheetClose asChild>
-                     <Button variant="ghost" size="icon" aria-label="Close menu">
-                      <X className="h-6 w-6" />
-                    </Button>
-                  </SheetClose>
+                  </SheetTitle>
+                  {/* The default SheetContent close button will be used. Custom one removed. */}
                 </div>
                 <nav className="flex flex-col space-y-1 px-2">
                   {renderNavItems(staticNavItems, true)}
 
                   {initialIsAuthenticated ? (
-                    <SheetClose asChild>
-                      <NavLink key={`admin-panel-link-mobile-${adminNavItemData.href}`} href={adminNavItemData.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base" iconName={adminNavItemData.iconName}>
-                         {adminNavItemData.label}
-                      </NavLink>
-                    </SheetClose>
+                    <>
+                      <SheetClose asChild>
+                        <NavLink key={`admin-panel-link-mobile-${adminNavItemData.href}`} href={adminNavItemData.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base" iconName={adminNavItemData.iconName}>
+                          {adminNavItemData.label}
+                        </NavLink>
+                      </SheetClose>
+                      {/* Logout button removed from here */}
+                    </>
                   ) : (
                      <SheetClose asChild>
                         <Button variant="default" onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }} className="text-base justify-start w-full mt-2" disabled={isSubmittingLogin}>
@@ -199,7 +228,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
       <Dialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle className="font-headline text-primary">Admin Girişi</DialogTitle>
+            <RadixDialogTitle className="font-headline text-primary">Admin Girişi</RadixDialogTitle> {/* Changed to RadixDialogTitle for clarity */}
             <DialogDescription>
               Lütfen admin paneline erişmek için e-posta ve şifrenizi girin.
             </DialogDescription>
