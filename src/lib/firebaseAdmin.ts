@@ -8,18 +8,36 @@ const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
 
 // Log environment variables for debugging
 console.log("FirebaseAdmin: Attempting to initialize...");
-console.log(`FirebaseAdmin: FIREBASE_PROJECT_ID is ${projectId ? 'SET' : 'NOT SET'}`);
-console.log(`FirebaseAdmin: FIREBASE_CLIENT_EMAIL is ${clientEmail ? 'SET' : 'NOT SET'}`);
-console.log(`FirebaseAdmin: FIREBASE_PRIVATE_KEY is ${privateKeyRaw ? 'SET (partially hidden for security)' : 'NOT SET'}`);
+console.log(`FirebaseAdmin: FIREBASE_PROJECT_ID (raw from env): '${projectId}' (type: ${typeof projectId})`);
+console.log(`FirebaseAdmin: FIREBASE_CLIENT_EMAIL (raw from env): '${clientEmail}' (type: ${typeof clientEmail})`);
+console.log(`FirebaseAdmin: FIREBASE_PRIVATE_KEY (raw from env) is ${privateKeyRaw ? 'SET' : 'NOT SET'} (type: ${typeof privateKeyRaw})`);
+
 if (privateKeyRaw) {
-  console.log(`FirebaseAdmin: Private key starts with: ${privateKeyRaw.substring(0, 30)}...`); // Log a small part for verification
+  console.log(`FirebaseAdmin: FIREBASE_PRIVATE_KEY (raw from env) starts with: ${privateKeyRaw.substring(0, 30)}...`);
+  console.log(`FirebaseAdmin: FIREBASE_PRIVATE_KEY (raw from env) ends with: ...${privateKeyRaw.substring(privateKeyRaw.length - 30)}`);
 }
 
 
 if (!admin.apps.length) {
   if (projectId && privateKeyRaw && clientEmail) {
     try {
+      // This is the crucial step: replace escaped newlines with actual newlines
       const privateKey = privateKeyRaw.replace(/\\n/g, "\n");
+      
+      console.log("FirebaseAdmin: Processed privateKey for initialization starts with: " + privateKey.substring(0, 30) + "...");
+      console.log("FirebaseAdmin: Processed privateKey for initialization ends with: ..." + privateKey.substring(privateKey.length - 30));
+      console.log("FirebaseAdmin: Type of processed privateKey: " + typeof privateKey);
+
+      if (typeof projectId !== 'string' || projectId.trim() === '') {
+        throw new Error('FIREBASE_PROJECT_ID is not a valid string or is empty.');
+      }
+      if (typeof clientEmail !== 'string' || clientEmail.trim() === '') {
+        throw new Error('FIREBASE_CLIENT_EMAIL is not a valid string or is empty.');
+      }
+      if (typeof privateKey !== 'string' || privateKey.trim() === '' || !privateKey.includes("-----BEGIN PRIVATE KEY-----") || !privateKey.includes("-----END PRIVATE KEY-----")) {
+        throw new Error('Processed FIREBASE_PRIVATE_KEY is not a valid string, is empty, or does not seem to be a valid PEM key.');
+      }
+
       admin.initializeApp({
         credential: admin.credential.cert({
           projectId: projectId,
@@ -34,6 +52,7 @@ if (!admin.apps.length) {
         (error as Error).message
       );
       console.error("Firebase Admin SDK - Detailed error stack:", error);
+      console.error("FirebaseAdmin: Check the format of FIREBASE_PRIVATE_KEY in your .env file. It must be enclosed in quotes and all newline characters (\\n) within the key must be escaped as \\\\n. Also ensure projectId and clientEmail are correct.");
     }
   } else {
     console.warn(
@@ -61,4 +80,3 @@ export async function verifyFirebaseIdToken(token: string) {
     return null;
   }
 }
-
