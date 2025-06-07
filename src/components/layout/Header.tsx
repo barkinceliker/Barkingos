@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Menu, X, Briefcase, Home, User, BookOpen, Code, BarChart, MessageSquare, Settings, FileText, Shield, LogIn, LogOut } from 'lucide-react';
+import { Menu, X, Briefcase, Home, User, BookOpen, Code, BarChart, MessageSquare, Settings, FileText, Shield, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { auth } from '@/lib/firebase';
@@ -24,7 +24,7 @@ const mainNavItems = [
 ];
 
 const adminNavItem = { label: 'Admin Panel', href: '/admin', icon: Shield };
-const loginNavItem = { label: 'Giriş Yap', href: '/login', icon: LogIn };
+// loginNavItem removed
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -51,12 +51,7 @@ export default function Header() {
   };
 
   const NavLink = ({ href, children, onClick, className }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string }) => (
-    <Button
-      asChild
-      variant="ghost"
-      className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto", className)}
-      onClick={onClick} 
-    >
+     <Button asChild variant="ghost" className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto", className)} onClick={onClick}>
       <Link href={href}>
         {children}
       </Link>
@@ -103,8 +98,9 @@ export default function Header() {
               </Button>
             </>
           ) : (
-            <NavLink key={loginNavItem.label} href={loginNavItem.href}>
-              <loginNavItem.icon className="mr-2 h-5 w-5" /> {loginNavItem.label}
+             // If no user, show Admin Panel link which will redirect to login via middleware
+            <NavLink key={adminNavItem.label} href={adminNavItem.href}>
+              <adminNavItem.icon className="mr-2 h-5 w-5" /> {adminNavItem.label}
             </NavLink>
           )}
         </nav>
@@ -154,10 +150,11 @@ export default function Header() {
                     </SheetClose>
                   </>
                 ) : (
-                  <SheetClose asChild key="login-mobile-nav">
-                     <NavLink href={loginNavItem.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base">
-                        <loginNavItem.icon className="mr-3 h-5 w-5" />
-                        {loginNavItem.label}
+                  // If no user, show Admin Panel link which will redirect to login via middleware
+                  <SheetClose asChild key="admin-panel-login-mobile-nav">
+                     <NavLink href={adminNavItem.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base">
+                        <adminNavItem.icon className="mr-3 h-5 w-5" />
+                        {adminNavItem.label}
                       </NavLink>
                   </SheetClose>
                 )}

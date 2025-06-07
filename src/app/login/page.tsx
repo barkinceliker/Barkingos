@@ -50,17 +50,23 @@ export default function LoginPage() {
         description: "Admin paneline yönlendiriliyorsunuz...",
       });
       
-      const cookieValue = "isLoggedIn=true; path=/; max-age=3600; SameSite=Lax";
+      // Set a cookie to indicate the user is logged in
+      // This cookie will be checked by the middleware
+      const cookieValue = "isLoggedIn=true; path=/; max-age=3600; SameSite=Lax"; // Expires in 1 hour
       document.cookie = cookieValue;
       console.log("LoginPage: Cookie set:", cookieValue);
-      console.log("LoginPage: Current document.cookie state:", document.cookie); // Check what document.cookie reports
+      console.log("LoginPage: Current document.cookie state:", document.cookie);
 
+
+      // Redirect to admin page. Full page navigation ensures cookie is sent.
       console.log("LoginPage: Attempting redirect to /admin...");
       window.location.href = '/admin';
+      // Note: Code after window.location.href might not execute if redirect is immediate.
       console.log("LoginPage: window.location.href called. If you see this, redirect might be blocked or overridden.");
 
     } catch (error: any) {
       let errorMessage = "Giriş sırasında bir hata oluştu.";
+      // More specific error messages based on Firebase error codes
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
         errorMessage = "E-posta veya şifre hatalı.";
       }
