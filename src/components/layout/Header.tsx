@@ -17,8 +17,8 @@ const navItems = [
   { label: 'Deneyim', href: '/deneyim', icon: Briefcase },
   { label: 'İletişim', href: '/iletisim', icon: MessageSquare },
   { label: 'Hizmetler', href: '/hizmetler', icon: Settings },
-  { label: 'Resume', href: '/resume', icon: FileText },
-  { label: 'Admin', href: '/admin', icon: Shield },
+  { label: 'CV / Özgeçmiş', href: '/resume', icon: FileText },
+  { label: 'Admin Panel', href: '/admin', icon: Shield },
 ];
 
 export default function Header() {
