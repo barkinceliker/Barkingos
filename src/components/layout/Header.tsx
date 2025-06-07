@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Loader2, LogIn, Shield, LogOut as LogOutIcon } from 'lucide-react';
+import { Menu, X, Loader2, LogIn, Shield } from 'lucide-react'; // LogOutIcon removed
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth as firebaseClientAuth } from '@/lib/firebase';
-import { createSession, logout as serverLogout } from '@/lib/actions/auth';
+import { createSession } from '@/lib/actions/auth'; // serverLogout removed as it's not used here anymore
 import type { LucideIcon } from 'lucide-react';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 
@@ -36,13 +36,13 @@ interface HeaderProps {
 }
 
 export default function Header({ initialIsAuthenticated }: HeaderProps) {
-  console.log("[Header] Received initialIsAuthenticated prop:", initialIsAuthenticated);
+  console.log("[Header] Rendering with initialIsAuthenticated prop:", initialIsAuthenticated);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
-  const [isSubmittingLogout, setIsSubmittingLogout] = useState(false);
+  // isSubmittingLogout state is removed
 
   const router = useRouter();
   const pathname = usePathname();
@@ -109,7 +109,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
         setIsLoginDialogOpen(false);
         toast({ title: "Giriş Başarılı!", description: "Admin paneline yönlendiriliyorsunuz..." });
         router.push('/admin'); 
-        router.refresh(); 
+        router.refresh(); // This will trigger AuthAwareUIComponents to re-fetch and pass new prop
       } else {
         setLoginError(sessionResult.error || "Giriş yapılamadı. Lütfen tekrar deneyin.");
         toast({ title: "Giriş Başarısız", description: sessionResult.error || "Bir hata oluştu.", variant: "destructive" });
@@ -129,27 +129,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
     }
   };
 
-  const handleHeaderLogout = async () => {
-    setIsSubmittingLogout(true);
-    try {
-      await firebaseClientAuth.signOut();
-      const result = await serverLogout();
-      if (result.success) {
-        toast({ title: "Başarıyla çıkış yapıldı." });
-        if (pathname.startsWith('/admin')) {
-          router.push('/');
-        }
-        router.refresh();
-      } else {
-        toast({ title: "Çıkış Hatası", description: result.error || "Çıkış sırasında bir sorun oluştu.", variant: "destructive" });
-      }
-    } catch (error) {
-      console.error("Logout error (Header):", error);
-      toast({ title: "Çıkış Hatası", description: "Bir hata oluştu.", variant: "destructive" });
-    } finally {
-      setIsSubmittingLogout(false);
-    }
-  };
+  // handleHeaderLogout function is removed
 
   return (
     <>
@@ -163,15 +143,9 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
             {renderNavItems(staticNavItems, false)}
 
             {initialIsAuthenticated ? (
-              <>
-                <NavLink href={adminNavItemData.href} iconName={adminNavItemData.iconName}>
-                  {adminNavItemData.label}
-                </NavLink>
-                <Button variant="outline" onClick={handleHeaderLogout} disabled={isSubmittingLogout}>
-                  {isSubmittingLogout ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOutIcon className="mr-2 h-5 w-5" />}
-                  Çıkış Yap
-                </Button>
-              </>
+              <NavLink href={adminNavItemData.href} iconName={adminNavItemData.iconName}>
+                {adminNavItemData.label}
+              </NavLink>
             ) : (
               <Button variant="default" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin}>
                 {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-5 w-5" />}
@@ -202,19 +176,11 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
                   {renderNavItems(staticNavItems, true)}
 
                   {initialIsAuthenticated ? (
-                     <>
                       <SheetClose asChild>
                         <NavLink href={adminNavItemData.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base" iconName={adminNavItemData.iconName}>
                            {adminNavItemData.label}
                         </NavLink>
                       </SheetClose>
-                      <SheetClose asChild>
-                        <Button variant="outline" onClick={() => { handleHeaderLogout(); setIsMobileMenuOpen(false); }} className="text-base justify-start w-full mt-2" disabled={isSubmittingLogout}>
-                            {isSubmittingLogout ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <LogOutIcon className="mr-3 h-5 w-5" />}
-                            Çıkış Yap
-                        </Button>
-                      </SheetClose>
-                     </>
                   ) : (
                      <SheetClose asChild>
                         <Button variant="default" onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }} className="text-base justify-start w-full mt-2" disabled={isSubmittingLogin}>
@@ -257,7 +223,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
               )}
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={isSubmittingLogin || isSubmittingLogout}>
+              <Button type="submit" disabled={isSubmittingLogin}>
                 {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Giriş Yap
               </Button>
