@@ -2,8 +2,8 @@
 "use server";
 
 import { cookies } from 'next/headers';
+// Using relative path from src/lib/actions/auth.ts to src/lib/firebaseAdmin.ts
 import { admin, getAdminInitializationError } from '../firebaseAdmin'; 
-import { redirect } from 'next/navigation'; // Not used for redirect in createSession return
 
 const COOKIE_NAME = 'adminAuthToken';
 const MAX_AGE = 60 * 60 * 24 * 7; // 1 week in seconds
@@ -13,14 +13,15 @@ export async function createSession(idToken: string) {
   
   const adminInitError = getAdminInitializationError();
   if (adminInitError) {
-    const adminInitErrorMsg = `Sunucu yapılandırma hatası: ${adminInitError}`;
+    const adminInitErrorMsg = `Sunucu yapılandırma hatası (Admin SDK): ${adminInitError}`;
     console.error("AuthActions Critical Error (Admin SDK Init):", adminInitErrorMsg);
     return { success: false, error: adminInitErrorMsg };
   }
 
+  // Check if admin.auth itself is available
   if (!admin || typeof admin.auth !== 'function') {
-    const adminStructureErrorMsg = "Sunucu yapılandırma hatası: Firebase Admin SDK beklenen yapıda değil.";
-    console.error("AuthActions Critical Error: Firebase Admin SDK not as expected.");
+    const adminStructureErrorMsg = "Sunucu yapılandırma hatası: Firebase Admin SDK beklenen yapıda değil (admin.auth fonksiyonu eksik).";
+    console.error("AuthActions Critical Error: Firebase Admin SDK not as expected.", admin);
     return { success: false, error: adminStructureErrorMsg };
   }
   console.log("AuthActions: Using REAL admin.auth() for token verification.");
@@ -46,12 +47,12 @@ export async function createSession(idToken: string) {
   } catch (error: any) {
     console.error("AuthActions: Error during verifyIdToken or setting cookie:", error);
     let errorMessage = "Token doğrulama hatası.";
-    if (error.code) { // Firebase errors often have a 'code' property
+    if (error.code && error.message) { 
         errorMessage = `Token doğrulama hatası: ${error.code} - ${error.message}`;
     } else if (error.message) {
         errorMessage = `Token doğrulama hatası: ${error.message}`;
     }
-    console.error("AuthActions: Specific error code/message:", error.code, error.message);
+    console.error("AuthActions: Specific error for verifyIdToken:", errorMessage, "Full error object:", error);
     return { success: false, error: errorMessage };
   }
 }
@@ -80,26 +81,26 @@ export async function checkAuthStatus() {
 
   const adminInitError = getAdminInitializationError();
   if (adminInitError) {
-    console.warn("AuthActions Warning: Firebase Admin SDK reported an initialization error during checkAuthStatus:", adminInitError);
+    console.warn("AuthActions Warning (checkAuthStatus): Firebase Admin SDK reported an initialization error:", adminInitError, ". Assuming not authenticated.");
     return { isAuthenticated: false }; // Cannot verify token if SDK is broken
   }
 
   if (!admin || typeof admin.auth !== 'function') {
-    console.warn("AuthActions Warning: Firebase Admin SDK not as expected during checkAuthStatus.");
+    console.warn("AuthActions Warning (checkAuthStatus): Firebase Admin SDK (admin.auth) not as expected. Assuming not authenticated.");
     return { isAuthenticated: false }; // Cannot verify token
   }
 
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
     if (decodedToken && decodedToken.uid) {
-       console.log(`AuthActions: Auth token cookie is valid for UID: ${decodedToken.uid}.`);
+       console.log(`AuthActions (checkAuthStatus): Auth token cookie is valid for UID: ${decodedToken.uid}.`);
       return { isAuthenticated: true, uid: decodedToken.uid };
     }
-    console.log("AuthActions: Auth token cookie found but verification failed (no UID). Invalidating session.");
+    console.log("AuthActions (checkAuthStatus): Auth token cookie found but verification failed (no UID). Invalidating session.");
     cookies().delete(COOKIE_NAME);
     return { isAuthenticated: false };
   } catch (error: any) {
-    console.warn("AuthActions: Error during auth token check during checkAuthStatus:", (error as Error).message);
+    console.warn("AuthActions (checkAuthStatus): Error during auth token check:", (error as Error).message, ". Invalidating session.");
     cookies().delete(COOKIE_NAME);
     return { isAuthenticated: false };
   }
