@@ -2,12 +2,10 @@
 "use client";
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
-import { Menu, X, Loader2, LogIn, LogOut, Shield, Home, User, Briefcase, Sparkles, Laptop, Lightbulb, MessageSquare, BookOpen, Award } from 'lucide-react'; // Added Award
+import React, { useState, useEffect } from 'react'; // Added React import for React.cloneElement
+import { Menu, X, Loader2, LogIn, LogOut, Shield, Home, User, Briefcase, Sparkles, Laptop, Lightbulb, MessageSquare, BookOpen, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
-// Import DialogPrimitive directly
-import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,8 +18,6 @@ import { createSession, logout as serverLogout, checkAuthStatus } from '@/lib/ac
 import type { LucideIcon } from 'lucide-react';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 
-
-// Statik Navigasyon Öğeleri
 const staticNavItems = [
   { label: 'Anasayfa', href: '/', iconName: 'Home' },
   { label: 'Hakkımda', href: '/hakkimda', iconName: 'User' },
@@ -67,10 +63,17 @@ export default function Header() {
   const NavLink = ({ href, children, onClick, className, disabled, iconName }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string, disabled?: boolean, iconName?: string }) => {
     const IconComponent = getLucideIcon(iconName);
     return (
-      <Button asChild variant="ghost" className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto md:justify-center", className, disabled && "opacity-50 cursor-not-allowed")} disabled={disabled} >
+      <Button asChild variant="ghost" className={cn(
+        "text-foreground hover:bg-accent/10 hover:text-accent-foreground",
+        "w-full justify-start", // Default for mobile-first approach (full width, justify start)
+        "md:w-auto md:justify-center", // Desktop overrides
+        className, 
+        disabled && "opacity-50 cursor-not-allowed"
+      )} disabled={disabled} >
         <Link href={href} onClick={onClick}>
-          {IconComponent && <IconComponent className={cn("h-5 w-5", children ? "mr-2 md:mr-1" : "")} />}
-          <span className={cn(iconName && "hidden md:inline")}>{children}</span>
+          {IconComponent && <IconComponent className={cn("h-5 w-5", children ? "mr-2" : "")} />} 
+          {/* Simplified icon rendering, span for label added for consistency */}
+          <span>{children}</span>
         </Link>
       </Button>
     );
@@ -141,23 +144,35 @@ export default function Header() {
 
   const renderNavItems = (items: typeof staticNavItems, isMobile = false) => {
     return items.map((item) => {
-      const IconComponent = getLucideIcon(item.iconName);
-      return (
-        <SheetClose asChild={isMobile} key={`${isMobile ? 'mobile' : 'desktop'}-${item.href}`}>
-          <NavLink 
-            href={item.href} 
-            onClick={isMobile ? () => setIsMobileMenuOpen(false) : undefined} 
-            className={isMobile ? "text-base" : ""}
-            iconName={item.iconName}
-          >
-            {isMobile && IconComponent && <IconComponent className="mr-3 h-5 w-5" />}
-            {item.label}
-          </NavLink>
-        </SheetClose>
+      const itemKey = `${isMobile ? 'mobile' : 'desktop'}-${item.href}`;
+      
+      // NavLink component itself. item.label is passed as children.
+      const navLinkElement = (
+        <NavLink 
+          href={item.href} 
+          onClick={isMobile ? () => setIsMobileMenuOpen(false) : undefined} 
+          className={isMobile ? "text-base" : ""} // Apply mobile-specific class if any
+          iconName={item.iconName}
+        >
+          {item.label}
+        </NavLink>
       );
+
+      if (isMobile) {
+        // For mobile, wrap NavLink with SheetClose
+        return (
+          <SheetClose asChild key={itemKey}>
+            {navLinkElement}
+          </SheetClose>
+        );
+      } else {
+        // For desktop, render NavLink directly.
+        // The key needs to be on the NavLink as it's the top-level mapped item.
+        // Cloning the element to add the key.
+        return React.cloneElement(navLinkElement, { key: itemKey });
+      }
     });
   };
-
 
   return (
     <>
@@ -168,7 +183,7 @@ export default function Header() {
           </Link>
 
           <nav className="hidden md:flex space-x-1 items-center flex-wrap">
-            {renderNavItems(staticNavItems)}
+            {renderNavItems(staticNavItems, false)} {/* isMobile is false for desktop */}
             
             {isLoadingAuth ? (
               <Button variant="ghost" disabled><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Yükleniyor...</Button>
@@ -209,7 +224,7 @@ export default function Header() {
                   </SheetClose>
                 </div>
                 <nav className="flex flex-col space-y-1 px-2">
-                  {renderNavItems(staticNavItems, true)}
+                  {renderNavItems(staticNavItems, true)} {/* isMobile is true for mobile sheet */}
                   
                   {isLoadingAuth ? (
                      <Button variant="ghost" disabled className="text-base justify-start"><Loader2 className="mr-3 h-5 w-5 animate-spin" /> Yükleniyor...</Button>
@@ -269,11 +284,10 @@ export default function Header() {
               )}
             </div>
             <DialogFooter>
-              <DialogPrimitive.Close asChild>
-                <Button type="button" variant="outline" disabled={isSubmittingLogin}>
-                  İptal
-                </Button>
-              </DialogPrimitive.Close>
+              {/* No explicit DialogClose needed here, handled by DialogContent's X or onOpenChange */}
+              <Button type="button" variant="outline" onClick={() => setIsLoginDialogOpen(false)} disabled={isSubmittingLogin}>
+                İptal
+              </Button>
               <Button type="submit" disabled={isSubmittingLogin}>
                 {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Giriş Yap
@@ -285,3 +299,5 @@ export default function Header() {
     </>
   );
 }
+
+    
