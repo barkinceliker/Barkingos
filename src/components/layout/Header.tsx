@@ -97,13 +97,19 @@ export default function Header() {
               {item.label}
             </NavLink>
           ))}
-          <NavLink key={adminNavItem.label} href={adminNavItem.href}>
-            {adminNavItem.label}
-          </NavLink>
-          {currentUser && (
+          { currentUser && ( // Show Admin Panel link only if logged in
+            <NavLink key={adminNavItem.label} href={adminNavItem.href}>
+             {adminNavItem.label}
+            </NavLink>
+          )}
+          {currentUser ? (
             <Button variant="ghost" onClick={handleLogout} className="text-foreground hover:bg-accent/10 hover:text-accent-foreground">
               <LogOut className="mr-2 h-5 w-5" /> Çıkış Yap
             </Button>
+          ) : (
+             <NavLink key="login-nav" href="/login"> {/* Show Login link if not logged in */}
+                Giriş Yap
+            </NavLink>
           )}
         </nav>
         
@@ -127,7 +133,7 @@ export default function Header() {
                 </SheetClose>
               </div>
               <nav className="flex flex-col space-y-1 px-2">
-                {allNavItems.map((item) => {
+                {mainNavItems.map((item) => {
                   const IconComponent = item.icon;
                   return (
                     <SheetClose asChild key={item.label}>
@@ -138,11 +144,26 @@ export default function Header() {
                     </SheetClose>
                   );
                 })}
-                {currentUser && (
+                { currentUser && ( // Show Admin Panel link only if logged in
+                  <SheetClose asChild key={adminNavItem.label}>
+                     <NavLink href={adminNavItem.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base">
+                        <adminNavItem.icon className="mr-3 h-5 w-5" />
+                        {adminNavItem.label}
+                      </NavLink>
+                  </SheetClose>
+                )}
+                {currentUser ? (
                   <SheetClose asChild>
                     <Button variant="ghost" onClick={handleLogout} className="text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start text-base">
                       <LogOut className="mr-3 h-5 w-5" /> Çıkış Yap
                     </Button>
+                  </SheetClose>
+                ) : (
+                   <SheetClose asChild key="login-mobile-nav">
+                     <NavLink href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-base">
+                        <LogIn className="mr-3 h-5 w-5" /> {/* Assuming LogIn icon for login */}
+                        Giriş Yap
+                      </NavLink>
                   </SheetClose>
                 )}
               </nav>
