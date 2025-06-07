@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Loader2, LogIn, LogOut, Shield, Home, User, Briefcase, Sparkles, Laptop, Lightbulb, MessageSquare, BookOpen, Award } from 'lucide-react';
+import { Menu, X, Loader2, LogIn, Shield, Home, User, Sparkles, Laptop, Lightbulb, MessageSquare, BookOpen, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth as firebaseClientAuth } from '@/lib/firebase'; 
-import { createSession, logout as serverLogout, checkAuthStatus } from '@/lib/actions/auth';
+import { createSession, checkAuthStatus } from '@/lib/actions/auth'; // serverLogout removed from here as it's in FloatingLogoutButton
 import type { LucideIcon } from 'lucide-react';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 
@@ -52,20 +52,22 @@ export default function Header() {
       } catch (e) {
         console.error("Header useEffect (mount): Error fetching auth status:", e);
         setIsAuthenticated(false); 
-        toast({ title: "Yetki Kontrol Hatası", description: "Yetki bilgileri yüklenirken bir sorun oluştu.", variant: "destructive"});
+        // toast({ title: "Yetki Kontrol Hatası", description: "Yetki bilgileri yüklenirken bir sorun oluştu.", variant: "destructive"});
       }
       setIsLoadingAuth(false);
     };
     fetchAuthStatus();
-  }, []); 
+  }, [pathname]); // Re-check on route change for login state
 
   const NavLink = ({ href, children, onClick, className, disabled, iconName }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string, disabled?: boolean, iconName?: string }) => {
     const IconComponent = getLucideIcon(iconName);
+    const isActive = pathname === href;
     return (
       <Button asChild variant="ghost" className={cn(
         "text-foreground hover:bg-accent/10 hover:text-accent-foreground",
-        "w-full justify-start", // Default for mobile-first approach (full width, justify start)
-        "md:w-auto md:justify-center", // Desktop overrides
+        "w-full justify-start", 
+        "md:w-auto md:justify-center", 
+        isActive && "bg-accent/10 text-accent-foreground font-semibold",
         className, 
         disabled && "opacity-50 cursor-not-allowed"
       )} disabled={disabled} >
@@ -117,42 +119,16 @@ export default function Header() {
     }
   };
 
-  const handleLogout = async () => {
-    setIsSubmittingLogin(true); 
-    try {
-      await firebaseClientAuth.signOut(); 
-      const result = await serverLogout(); 
-      if (result.success) {
-        setIsAuthenticated(false);
-        toast({ title: "Başarıyla çıkış yapıldı." });
-        if (pathname.startsWith('/admin')) {
-          router.push('/');
-        }
-        router.refresh();
-      } else {
-         toast({ title: "Çıkış Hatası", description: result.error || "Çıkış sırasında bir sorun oluştu.", variant: "destructive" });
-      }
-    } catch (error) {
-      console.error("Logout error:", error);
-      toast({ title: "Çıkış Hatası", description: "Bir hata oluştu.", variant: "destructive" });
-    } finally {
-       setIsSubmittingLogin(false);
-    }
-  };
-
   const renderNavItems = (items: typeof staticNavItems, isMobile = false) => {
     return items.map((item) => {
       const itemKey = `${isMobile ? 'mobile' : 'desktop'}-${item.href}`;
       
       const navLinkInstance = (
         <NavLink
-          // Key is now applied directly if it's the top-level element in map,
-          // or it can be on the wrapper (SheetClose) for mobile.
-          // For simplicity, we'll key the NavLink itself.
           key={itemKey}
           href={item.href}
           onClick={isMobile ? () => setIsMobileMenuOpen(false) : undefined}
-          className={isMobile ? "text-base" : ""} // Applied to NavLink's Button
+          className={isMobile ? "text-base" : ""}
           iconName={item.iconName}
         >
           {item.label}
@@ -160,25 +136,21 @@ export default function Header() {
       );
   
       if (isMobile) {
-        // SheetClose wraps NavLink. The key for the .map iteration should be on SheetClose.
         return (
           <SheetClose asChild key={itemKey}> 
             {navLinkInstance}
           </SheetClose>
         );
-      } else {
-        // For desktop, navLinkInstance is already keyed.
-        return navLinkInstance;
       }
+      return navLinkInstance;
     });
   };
-
 
   return (
     <>
       <header className="bg-card shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-headline font-bold text-primary">
+          <Link href="/" className="text-2xl font-headline font-bold text-primary" onClick={() => setIsMobileMenuOpen(false)}>
             BenimSitem
           </Link>
 
@@ -192,10 +164,7 @@ export default function Header() {
                 <NavLink href={adminNavItemData.href} iconName={adminNavItemData.iconName}>
                   {adminNavItemData.label}
                 </NavLink>
-                <Button variant="outline" onClick={handleLogout} disabled={isSubmittingLogin}>
-                  {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOut className="mr-2 h-5 w-5" />}
-                  Çıkış Yap
-                </Button>
+                {/* Logout button removed from here */}
               </>
             ) : (
               <Button variant="default" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin}>
@@ -235,12 +204,7 @@ export default function Header() {
                            {adminNavItemData.label}
                         </NavLink>
                       </SheetClose>
-                      <SheetClose asChild>
-                        <Button variant="outline" onClick={() => { handleLogout(); setIsMobileMenuOpen(false);}} className="text-base justify-start w-full mt-2" disabled={isSubmittingLogin}>
-                           {isSubmittingLogin ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <LogOut className="mr-3 h-5 w-5" />}
-                           Çıkış Yap
-                        </Button>
-                      </SheetClose>
+                      {/* Logout button removed from here */}
                     </>
                   ) : (
                      <SheetClose asChild>

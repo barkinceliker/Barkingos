@@ -1,8 +1,10 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
+import FloatingLogoutButton from '@/components/layout/FloatingLogoutButton'; // Import the new component
 
 export const metadata: Metadata = {
   title: 'BenimSitem',
@@ -30,6 +32,7 @@ export default function RootLayout({
         </main>
         <Footer />
         <Toaster />
+        <FloatingLogoutButton /> {/* Add the floating logout button here */}
       </body>
     </html>
   );
