@@ -2,7 +2,7 @@
 "use server";
 
 import { cookies } from 'next/headers';
-import { admin, verifyFirebaseIdToken } from '@/lib/firebaseAdmin'; // Ensure verifyFirebaseIdToken is exported if used separately
+import { admin } from '@/lib/firebaseAdmin'; 
 import { redirect } from 'next/navigation';
 
 const COOKIE_NAME = 'adminAuthToken';
@@ -11,17 +11,12 @@ const MAX_AGE = 60 * 60 * 24 * 7; // 1 week in seconds
 export async function createSession(idToken: string) {
   console.log("AuthActions: createSession called with ID token.");
   if (!admin.apps.length || !admin.app()) {
-    console.error("AuthActions: Firebase Admin SDK not initialized. Cannot create session.");
-    return { success: false, error: "Sunucu hatası: Firebase Admin SDK başlatılamadı." };
+    console.error("AuthActions: Firebase Admin SDK not initialized. Cannot create session. Ensure FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, and FIREBASE_CLIENT_EMAIL environment variables are correctly set.");
+    return { success: false, error: "Sunucu yapılandırma hatası: Firebase Admin SDK başlatılamadı. Lütfen Firebase Admin SDK için gerekli ortam değişkenlerinin (.env dosyasında) doğru ayarlandığından emin olun." };
   }
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     if (decodedToken && decodedToken.uid) {
-      // Here you could add a check against your Firestore DB if this UID is an admin
-      // For now, we assume any valid Firebase user token is sufficient for an "admin" session.
-      // Example: const isAdmin = await checkUserRoleInFirestore(decodedToken.uid, 'admin');
-      // if (!isAdmin) return { success: false, error: "Yetkisiz kullanıcı." };
-
       cookies().set(COOKIE_NAME, idToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -45,12 +40,9 @@ export async function logout() {
   try {
     cookies().delete(COOKIE_NAME);
     console.log(`AuthActions: Session cookie '${COOKIE_NAME}' deleted.`);
-    // Note: Firebase client-side signOut should also be called from the component.
   } catch (error) {
     console.error("AuthActions: Error deleting cookie during logout:", error);
-    // Even if cookie deletion fails, proceed with client logout
   }
-  // No redirect from here, client should handle redirect after Firebase signOut
 }
 
 export async function checkAuthStatus() {
@@ -64,14 +56,11 @@ export async function checkAuthStatus() {
   }
 
   if (!admin.apps.length || !admin.app()) {
-    console.warn("AuthActions: Firebase Admin SDK not initialized during checkAuthStatus. Assuming token is invalid.");
-    // To be safe, treat as not authenticated if admin sdk is not ready to verify
+    console.warn("AuthActions: Firebase Admin SDK not initialized during checkAuthStatus. Assuming token is invalid. Ensure Firebase Admin environment variables are set.");
     return { isAuthenticated: false };
   }
 
   try {
-    // Re-verify the token to ensure it's still valid (e.g., not revoked)
-    // This adds overhead but increases security. For lighter checks, just presence might be enough.
     const decodedToken = await admin.auth().verifyIdToken(token);
     if (decodedToken && decodedToken.uid) {
        console.log(`AuthActions: Auth token cookie is valid for UID: ${decodedToken.uid}.`);
@@ -80,11 +69,8 @@ export async function checkAuthStatus() {
     console.log("AuthActions: Auth token cookie found but verification failed or UID missing.");
     return { isAuthenticated: false };
   } catch (error) {
-    console.warn("AuthActions: Error verifying auth token cookie during checkAuthStatus. Invalidating session.", error);
-    // If token verification fails (e.g. expired, revoked), delete the cookie
+    console.warn("AuthActions: Error verifying auth token cookie during checkAuthStatus. Invalidating session.", (error as Error).message);
     cookies().delete(COOKIE_NAME);
     return { isAuthenticated: false };
   }
 }
-
-    
