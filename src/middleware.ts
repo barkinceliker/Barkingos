@@ -2,20 +2,38 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Minimal middleware that allows all requests to pass through.
-// Authentication logic has been removed.
 export function middleware(request: NextRequest) {
-  console.log(`Middleware: Allowing request to ${request.nextUrl.pathname} (login functionality removed)`);
+  const isLoggedInCookie = request.cookies.get('isLoggedIn');
+  const isLoggedIn = isLoggedInCookie?.value === 'true';
+  const { pathname } = request.nextUrl;
+
+  console.log(`Middleware: Path: ${pathname}, isLoggedIn Cookie: ${isLoggedInCookie?.value} (parsed as: ${isLoggedIn})`);
+  console.log(`Middleware: All cookies received by middleware for path ${pathname}:`, JSON.stringify(request.cookies.getAll()));
+
+
+  // Protect admin routes
+  if (pathname.startsWith('/admin')) {
+    if (!isLoggedIn) {
+      console.log('Middleware: Access to admin denied. Redirecting to /login.');
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirectedFrom', pathname); // Optional: pass where user was going
+      return NextResponse.redirect(loginUrl);
+    }
+    console.log('Middleware: Allowing request to proceed for admin path.');
+  }
+
+  // If logged in and trying to access /login, redirect to admin
+  if (pathname === '/login' && isLoggedIn) {
+    console.log('Middleware: Logged in user accessing /login. Redirecting to /admin.');
+    return NextResponse.redirect(new URL('/admin', request.url));
+  }
+
+  console.log('Middleware: No redirection, allowing request to proceed.');
   return NextResponse.next();
 }
 
 export const config = {
-  // Match all paths to ensure this minimal middleware is invoked,
-  // but it won't perform any restrictive actions.
-  // If you want middleware to do nothing, you can also make this matcher very specific
-  // or an empty array if allowed by your Next.js version to effectively disable it.
-  // For now, let it match all to acknowledge its existence.
-   matcher: [
+  matcher: [
     /*
      * Match all request paths except for the ones starting with:
      * - api (API routes)

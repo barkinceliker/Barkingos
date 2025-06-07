@@ -3,11 +3,13 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Menu, X, Briefcase, Home, User, BookOpen, Code, BarChart, MessageSquare, Settings, FileText, Shield } from 'lucide-react';
+import { Menu, X, Home, User, BookOpen, Code, BarChart, MessageSquare, Settings, FileText, Shield, LogOut, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
-// Firebase auth and related hooks/state are removed
+import { auth } from '@/lib/firebase';
+import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
 const mainNavItems = [
   { label: 'Anasayfa', href: '/', icon: Home },
@@ -22,27 +24,53 @@ const mainNavItems = [
   { label: 'CV / Özgeçmiş', href: '/resume', icon: FileText },
 ];
 
-// Admin nav item is now always shown, not conditional
 const adminNavItem = { label: 'Admin Panel', href: '/admin', icon: Shield };
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  // currentUser state and onAuthStateChanged effect removed
+  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
-    // Firebase onAuthStateChanged listener removed
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      if (user) {
+        // If Firebase says user is logged in, ensure our cookie reflects that
+        // This helps if the cookie was cleared but Firebase session is still active
+        if (document.cookie.indexOf('isLoggedIn=true') === -1) {
+          document.cookie = "isLoggedIn=true; path=/; max-age=3600; SameSite=Lax";
+        }
+      } else {
+        // If Firebase says user is logged out, ensure our cookie is cleared
+        if (document.cookie.indexOf('isLoggedIn=true') !== -1) {
+          document.cookie = "isLoggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
+        }
+      }
+    });
+    return () => unsubscribe();
   }, []);
 
-  // handleLogout function removed
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      // Clear the cookie
+      document.cookie = "isLoggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
+      setCurrentUser(null); // Explicitly set for immediate UI update
+      // Redirect to login page or home page after logout
+      window.location.href = '/login'; // Force reload to ensure cookie state is clear for middleware
+    } catch (error) {
+      console.error("Logout Error:", error);
+    }
+  };
 
   const NavLink = ({ href, children, onClick, className }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string }) => (
-    <Button asChild variant="ghost" className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto", className)} onClick={onClick}>
-      <Link href={href}>
-        {children}
-      </Link>
-    </Button>
+     <Button asChild variant="ghost" className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto", className)} onClick={onClick}>
+        <Link href={href}>
+          {children}
+        </Link>
+      </Button>
   );
   
   if (!isMounted) {
@@ -75,11 +103,14 @@ export default function Header() {
               {item.label}
             </NavLink>
           ))}
-          {/* Admin Panel link is now always visible */}
           <NavLink key={adminNavItem.label} href={adminNavItem.href}>
              <adminNavItem.icon className="mr-2 h-5 w-5" /> {adminNavItem.label}
           </NavLink>
-          {/* Login/Logout button logic removed */}
+          {currentUser && (
+            <Button variant="ghost" onClick={handleLogout} className="text-foreground hover:bg-destructive/10 hover:text-destructive">
+              <LogOut className="mr-2 h-5 w-5" /> Çıkış Yap
+            </Button>
+          )}
         </nav>
         
         <div className="md:hidden">
@@ -112,14 +143,19 @@ export default function Header() {
                     </SheetClose>
                   );
                 })}
-                {/* Admin Panel link is now always visible in mobile menu */}
-                <SheetClose asChild key="admin-panel-mobile-nav">
+                <SheetClose asChild key={`${adminNavItem.label}-mobile`}>
                     <NavLink href={adminNavItem.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base">
                       <adminNavItem.icon className="mr-3 h-5 w-5" />
                       {adminNavItem.label}
                     </NavLink>
                 </SheetClose>
-                {/* Login/Logout button logic removed from mobile menu */}
+                {currentUser && (
+                  <SheetClose asChild>
+                    <Button variant="ghost" onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="text-base w-full justify-start text-destructive hover:bg-destructive/10">
+                      <LogOut className="mr-3 h-5 w-5" /> Çıkış Yap
+                    </Button>
+                  </SheetClose>
+                )}
               </nav>
             </SheetContent>
           </Sheet>
@@ -128,3 +164,4 @@ export default function Header() {
     </header>
   );
 }
+
