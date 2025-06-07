@@ -1,7 +1,8 @@
+
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, BrainCircuit, Settings } from 'lucide-react';
+import { BookOpen, BrainCircuit, Settings, Newspaper } from 'lucide-react';
 
 export default function AdminPage() {
   return (
@@ -31,14 +32,31 @@ export default function AdminPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-xl opacity-50 cursor-not-allowed"> {/* Placeholder for future tools */}
+        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
+          <CardHeader>
+             <div className="flex justify-center mb-4">
+                <Newspaper className="h-12 w-12 text-accent" />
+            </div>
+            <CardTitle className="font-headline text-2xl text-center">Blog Yazısı Yönetimi</CardTitle>
+            <CardDescription className="text-center">
+              Mevcut blog yazılarınızı yönetin, yenilerini ekleyin veya düzenleyin.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <Link href="/admin/manage-blog" passHref>
+              <Button className="w-full">Blogları Yönet</Button>
+            </Link>
+          </CardContent>
+        </Card>
+        
+        <Card className="shadow-xl opacity-50 cursor-not-allowed"> 
           <CardHeader>
              <div className="flex justify-center mb-4">
                 <BookOpen className="h-12 w-12 text-muted-foreground" />
             </div>
-            <CardTitle className="font-headline text-2xl text-center">İçerik Yönetimi</CardTitle>
+            <CardTitle className="font-headline text-2xl text-center">Diğer İçerikler</CardTitle>
             <CardDescription className="text-center">
-              Blog yazılarınızı, portfolyo öğelerinizi ve diğer içerikleri yönetin. (Yakında)
+              Portfolyo, projeler, hizmetler vb. içerikleri yönetin. (Yakında)
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
@@ -46,7 +64,8 @@ export default function AdminPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-xl opacity-50 cursor-not-allowed"> {/* Placeholder for future tools */}
+
+        <Card className="shadow-xl opacity-50 cursor-not-allowed"> 
           <CardHeader>
             <div className="flex justify-center mb-4">
                 <Settings className="h-12 w-12 text-muted-foreground" />

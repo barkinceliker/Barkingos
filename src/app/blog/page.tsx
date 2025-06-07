@@ -1,50 +1,14 @@
+
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, CalendarDays } from 'lucide-react';
 import Image from 'next/image';
+import { getAllPosts, BlogPost } from '@/lib/blog-data';
 
-interface BlogPostPreview {
-  slug: string;
-  title: string;
-  date: string;
-  summary: string;
-  imageUrl: string;
-  category: string;
-  dataAiHint?: string;
-}
+export default async function BlogPage() {
+  const posts = await getAllPosts();
 
-const blogPosts: BlogPostPreview[] = [
-  {
-    slug: 'ilk-yazim',
-    title: 'Web Geliştirmede Son Trendler',
-    date: '15 Temmuz 2024',
-    summary: 'Modern web geliştirme dünyasındaki en son teknolojiler, araçlar ve yaklaşımlar üzerine kapsamlı bir inceleme.',
-    imageUrl: 'https://placehold.co/600x400.png',
-    category: 'Teknoloji',
-    dataAiHint: 'web development'
-  },
-  {
-    slug: 'ikinci-yazim',
-    title: 'Etkili UI/UX Tasarımı Nasıl Yapılır?',
-    date: '20 Temmuz 2024',
-    summary: 'Kullanıcı deneyimini en üst düzeye çıkaran, estetik ve işlevsel arayüz tasarımları oluşturmanın püf noktaları.',
-    imageUrl: 'https://placehold.co/600x400.png',
-    category: 'Tasarım',
-    dataAiHint: 'ui ux design'
-  },
-  {
-    slug: 'ucuncu-yazim',
-    title: 'Proje Yönetiminde Çevik Metodolojiler',
-    date: '25 Temmuz 2024',
-    summary: 'Scrum, Kanban gibi çevik (agile) metodolojilerin proje başarısına etkileri ve uygulama ipuçları.',
-    imageUrl: 'https://placehold.co/600x400.png',
-    category: 'Proje Yönetimi',
-    dataAiHint: 'agile project management'
-  },
-];
-
-export default function BlogPage() {
   return (
     <div className="space-y-12">
       <section className="text-center">
@@ -55,7 +19,7 @@ export default function BlogPage() {
       </section>
 
       <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {blogPosts.map((post) => (
+        {posts.map((post) => (
           <Card key={post.slug} className="flex flex-col overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
             <Link href={`/blog/${post.slug}`} passHref>
               <Image
@@ -78,7 +42,7 @@ export default function BlogPage() {
               </div>
             </CardHeader>
             <CardContent className="flex-grow">
-              <CardDescription>{post.summary}</CardDescription>
+              <CardDescription>{post.summary || post.content.substring(0, 100).replace(/<[^>]*>?/gm, '') + '...'}</CardDescription>
             </CardContent>
             <CardFooter className="p-4 bg-secondary/30">
               <Link href={`/blog/${post.slug}`} passHref>
