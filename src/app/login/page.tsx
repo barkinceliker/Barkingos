@@ -30,7 +30,7 @@ const formSchema = z.object({
 });
 
 export default function LoginPage() {
-  const router = useRouter(); // Keep for other potential uses, though not for this redirect
+  const router = useRouter(); 
   const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
 
@@ -52,7 +52,7 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       
-      const expires = new Date(Date.now() + 60 * 60 * 1000).toUTCString();
+      const expires = new Date(Date.now() + 60 * 60 * 1000).toUTCString(); // 1 hour expiry
       document.cookie = `isLoggedIn=true;path=/;expires=${expires};SameSite=Lax`;
       
       toast({
