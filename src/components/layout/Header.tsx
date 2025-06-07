@@ -47,7 +47,7 @@ export default function Header() {
     try {
       await signOut(auth);
       // Clear the cookie
-      document.cookie = "isLoggedIn=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie = "isLoggedIn=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT;SameSite=Lax";
       router.push('/login');
       setIsMobileMenuOpen(false); // Close mobile menu on logout
     } catch (error) {
