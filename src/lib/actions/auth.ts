@@ -46,9 +46,9 @@ export async function createSession(idToken: string) {
     console.error("[AuthActions createSession] Error during verifyIdToken or setting cookie:", error);
     let errorMessage = "Token doğrulama hatası.";
     if (error.code && error.message) { 
-        errorMessage = `Token doğrulama hatası: ${error.code} - ${error.message}`;
+        errorMessage = `Token doğrulama hatası (createSession): Code ${error.code} - ${error.message}`;
     } else if (error.message) {
-        errorMessage = `Token doğrulama hatası: ${error.message}`;
+        errorMessage = `Token doğrulama hatası (createSession): ${error.message}`;
     }
     console.error("[AuthActions createSession] Specific error for verifyIdToken:", errorMessage, "Full error object:", error);
     return { success: false, error: errorMessage };
@@ -100,7 +100,12 @@ export async function checkAuthStatus() {
     cookies().delete(COOKIE_NAME);
     return { isAuthenticated: false };
   } catch (error: any) {
-    console.warn("[AuthActions checkAuthStatus] Error during auth token check:", (error as Error).message, ". Invalidating session.");
+    let detailedErrorMessage = (error as Error).message;
+    if (error.code) {
+      detailedErrorMessage = `Code: ${error.code}, Message: ${detailedErrorMessage}`;
+    }
+    // Log the detailed error message and the full error object for more context
+    console.warn(`[AuthActions checkAuthStatus] Error during auth token check: ${detailedErrorMessage}. Invalidating session. Full error object:`, JSON.stringify(error, Object.getOwnPropertyNames(error)));
     cookies().delete(COOKIE_NAME);
     return { isAuthenticated: false };
   }
