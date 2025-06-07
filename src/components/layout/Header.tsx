@@ -3,14 +3,15 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Menu, X, Home, User, BookOpen, Code as CodeIcon, BarChart, MessageSquare, Settings, FileText, Shield, Briefcase, LogOutIcon } from 'lucide-react';
+import { Menu, X, Home, User, BookOpen, Code as CodeIcon, BarChart, MessageSquare, Settings, FileText, Shield, Briefcase } from 'lucide-react'; // LogOutIcon removed
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
-import { auth } from '@/lib/firebase';
-import { onAuthStateChanged, signOut, type User as FirebaseUser } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
-import { useToast } from "@/hooks/use-toast";
+// Firebase auth and related imports removed as login functionality is removed
+// import { auth } from '@/lib/firebase';
+// import { onAuthStateChanged, signOut, type User as FirebaseUser } from 'firebase/auth';
+// import { useRouter } from 'next/navigation';
+// import { useToast } from "@/hooks/use-toast";
 
 const mainNavItemsBase = [
   { label: 'Anasayfa', href: '/', icon: Home },
@@ -29,44 +30,13 @@ const adminNavItem = { label: 'Admin Panel', href: '/admin', icon: Shield };
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [isClientMounted, setIsClientMounted] = useState(false);
-  const router = useRouter();
-  const { toast } = useToast();
+  // currentUser, router, toast, and handleLogout removed as login functionality is removed
 
   useEffect(() => {
     setIsClientMounted(true);
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-      if (user) {
-        console.log("Header: User is logged in (onAuthStateChanged)", user.uid);
-      } else {
-        console.log("Header: User is logged out (onAuthStateChanged)");
-      }
-    });
-    return () => unsubscribe();
+    // onAuthStateChanged listener removed
   }, []);
-  
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      // No longer clearing a manual firebaseIdToken cookie here
-      setCurrentUser(null); 
-      toast({
-        title: "Çıkış Başarılı",
-        description: "Başarıyla çıkış yaptınız.",
-      });
-      router.push('/'); 
-      if (isMobileMenuOpen) setIsMobileMenuOpen(false);
-    } catch (error) {
-      console.error("Logout error:", error);
-      toast({
-        title: "Çıkış Hatası",
-        description: "Çıkış yapılırken bir sorun oluştu.",
-        variant: "destructive",
-      });
-    }
-  };
   
   const NavLink = ({ href, children, onClick, className }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string }) => (
     <Button asChild variant="ghost" className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto", className)} >
@@ -79,6 +49,7 @@ export default function Header() {
   const mobileNavItems = [...mainNavItemsBase, adminNavItem];
 
   if (!isClientMounted) {
+    // Fallback for initial server render or when JS is disabled
     return (
       <header className="bg-card shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex justify-between items-center">
@@ -91,6 +62,7 @@ export default function Header() {
             </Button>
           </div>
           <nav className="hidden md:flex space-x-1 items-center flex-wrap">
+            {/* Basic navigation can be rendered here if needed for no-JS */}
           </nav>
         </div>
       </header>
@@ -113,11 +85,7 @@ export default function Header() {
           <NavLink key={`desktop-${adminNavItem.label}`} href={adminNavItem.href}>
              <adminNavItem.icon className="mr-2 h-5 w-5" /> {adminNavItem.label}
           </NavLink>
-          {currentUser && (
-            <Button variant="ghost" onClick={handleLogout} className="text-foreground hover:bg-accent/10 hover:text-accent-foreground">
-              <LogOutIcon className="mr-2 h-5 w-5" /> Çıkış Yap
-            </Button>
-          )}
+          {/* Logout button removed */}
         </nav>
         
         <div className="md:hidden">
@@ -150,13 +118,7 @@ export default function Header() {
                     </SheetClose>
                   );
                 })}
-                {currentUser && (
-                  <SheetClose asChild>
-                    <Button variant="ghost" onClick={handleLogout} className="text-base w-full justify-start text-foreground hover:bg-accent/10 hover:text-accent-foreground">
-                      <LogOutIcon className="mr-3 h-5 w-5" /> Çıkış Yap
-                    </Button>
-                  </SheetClose>
-                )}
+                {/* Logout button for mobile removed */}
               </nav>
             </SheetContent>
           </Sheet>
