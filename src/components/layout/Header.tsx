@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth as firebaseClientAuth } from '@/lib/firebase'; 
-import { createSession, checkAuthStatus } from '@/lib/actions/auth'; // serverLogout removed from here as it's in FloatingLogoutButton
+import { createSession, checkAuthStatus } from '@/lib/actions/auth';
 import type { LucideIcon } from 'lucide-react';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 
@@ -52,12 +52,11 @@ export default function Header() {
       } catch (e) {
         console.error("Header useEffect (mount): Error fetching auth status:", e);
         setIsAuthenticated(false); 
-        // toast({ title: "Yetki Kontrol Hatası", description: "Yetki bilgileri yüklenirken bir sorun oluştu.", variant: "destructive"});
       }
       setIsLoadingAuth(false);
     };
     fetchAuthStatus();
-  }, [pathname]); // Re-check on route change for login state
+  }, [pathname]); 
 
   const NavLink = ({ href, children, onClick, className, disabled, iconName }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string, disabled?: boolean, iconName?: string }) => {
     const IconComponent = getLucideIcon(iconName);
@@ -93,15 +92,13 @@ export default function Header() {
       const sessionResult = await createSession(idToken);
 
       if (sessionResult.success) {
-        setIsAuthenticated(true);
         setIsLoginDialogOpen(false);
         toast({ title: "Giriş Başarılı!", description: "Admin paneline yönlendiriliyorsunuz..." });
         router.push('/admin'); 
-        router.refresh(); 
+        router.refresh(); // This should trigger the useEffect to update isAuthenticated
       } else {
         setLoginError(sessionResult.error || "Giriş yapılamadı. Lütfen tekrar deneyin.");
         toast({ title: "Giriş Başarısız", description: sessionResult.error || "Bir hata oluştu.", variant: "destructive" });
-        setIsAuthenticated(false);
       }
     } catch (error: any) {
       console.error("Login error:", error);
@@ -113,7 +110,6 @@ export default function Header() {
       }
       setLoginError(message);
       toast({ title: "Giriş Hatası", description: message, variant: "destructive" });
-      setIsAuthenticated(false);
     } finally {
       setIsSubmittingLogin(false);
     }
@@ -125,7 +121,7 @@ export default function Header() {
       
       const navLinkInstance = (
         <NavLink
-          key={itemKey}
+          key={itemKey} // Key'i doğrudan NavLink'e ver
           href={item.href}
           onClick={isMobile ? () => setIsMobileMenuOpen(false) : undefined}
           className={isMobile ? "text-base" : ""}
@@ -136,8 +132,9 @@ export default function Header() {
       );
   
       if (isMobile) {
+        // SheetClose asChild ile NavLink'i sarmalıyor, key SheetClose'da olmalı.
         return (
-          <SheetClose asChild key={itemKey}> 
+          <SheetClose asChild key={`sheetclose-${itemKey}`}> 
             {navLinkInstance}
           </SheetClose>
         );
@@ -145,6 +142,7 @@ export default function Header() {
       return navLinkInstance;
     });
   };
+
 
   return (
     <>
@@ -164,7 +162,6 @@ export default function Header() {
                 <NavLink href={adminNavItemData.href} iconName={adminNavItemData.iconName}>
                   {adminNavItemData.label}
                 </NavLink>
-                {/* Logout button removed from here */}
               </>
             ) : (
               <Button variant="default" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin}>
@@ -204,7 +201,6 @@ export default function Header() {
                            {adminNavItemData.label}
                         </NavLink>
                       </SheetClose>
-                      {/* Logout button removed from here */}
                     </>
                   ) : (
                      <SheetClose asChild>
