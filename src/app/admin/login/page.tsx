@@ -33,18 +33,20 @@ export default function AdminLoginPage() {
 
       if (userCredential.user) {
         const token = await userCredential.user.getIdToken();
-        console.log("LoginPage: Firebase ID Token retrieved:", token ? token.substring(0, 30) + "..." : "EMPTY TOKEN");
+        console.log("LoginPage: Firebase ID Token retrieved:", token ? token.substring(0, 30) + "..." : "EMPTY OR NULL TOKEN");
 
         if (!token) {
           console.error("CRITICAL: Firebase ID Token is null or empty. Cannot set cookie.");
-          setAuthError("Kullanıcı token alınamadı.");
-          toast({ title: "Giriş Hatası", description: "Kullanıcı token alınamadı.", variant: "destructive" });
+          setAuthError("Kullanıcı token alınamadı (token boş).");
+          toast({ title: "Giriş Hatası", description: "Kullanıcı token alınamadı (token boş).", variant: "destructive" });
           return;
         }
 
+        const cookieString = `firebaseIdToken=${token}; path=/; max-age=3600; SameSite=Lax`;
+        
         console.log("LoginPage: About to set firebaseIdToken cookie. Initial document.cookie:", document.cookie);
-        // Max-age is 1 hour (3600 seconds). Removed 'Secure' for local HTTP dev.
-        document.cookie = `firebaseIdToken=${token}; path=/; max-age=3600; SameSite=Lax`;
+        console.log("LoginPage: Cookie string to be set:", cookieString);
+        document.cookie = cookieString;
         console.log("LoginPage: firebaseIdToken cookie set command executed.");
         console.log("LoginPage: document.cookie state immediately after set:", document.cookie);
 
