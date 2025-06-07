@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth as firebaseClientAuth } from '@/lib/firebase';
-import { createSession } from '@/lib/actions/auth'; // Removed checkAuthStatus import from here
+import { createSession } from '@/lib/actions/auth';
 import type { LucideIcon } from 'lucide-react';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 
@@ -108,10 +108,11 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
       const sessionResult = await createSession(idToken);
 
       if (sessionResult.success) {
+        setIsAuthenticated(true); // Immediate local state update
         setIsLoginDialogOpen(false);
         toast({ title: "Giriş Başarılı!", description: "Admin paneline yönlendiriliyorsunuz..." });
         router.push('/admin'); 
-        router.refresh(); // Crucial: This will re-run AuthAwareHeader in layout.tsx
+        router.refresh(); 
       } else {
         setLoginError(sessionResult.error || "Giriş yapılamadı. Lütfen tekrar deneyin.");
         toast({ title: "Giriş Başarısız", description: sessionResult.error || "Bir hata oluştu.", variant: "destructive" });

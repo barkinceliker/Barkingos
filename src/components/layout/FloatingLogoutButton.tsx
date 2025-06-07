@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
 import { auth as firebaseClientAuth } from '@/lib/firebase';
-import { logout as serverLogout } from '@/lib/actions/auth'; // checkAuthStatus removed
+import { logout as serverLogout } from '@/lib/actions/auth';
 
 interface FloatingLogoutButtonProps {
   initialIsAuthenticated: boolean;
@@ -18,7 +18,7 @@ export default function FloatingLogoutButton({ initialIsAuthenticated }: Floatin
   const [isSubmittingLogout, setIsSubmittingLogout] = useState(false);
 
   const router = useRouter();
-  const pathname = usePathname(); // Keep for redirect logic in handleLogout
+  const pathname = usePathname(); 
   const { toast } = useToast();
 
   useEffect(() => {
@@ -31,12 +31,12 @@ export default function FloatingLogoutButton({ initialIsAuthenticated }: Floatin
       await firebaseClientAuth.signOut();
       const result = await serverLogout();
       if (result.success) {
-        // setIsAuthenticated(false); // No longer needed, prop will update after refresh
+        setIsAuthenticated(false); // Immediate local state update
         toast({ title: "Başarıyla çıkış yapıldı." });
         if (pathname.startsWith('/admin')) {
           router.push('/');
         }
-        router.refresh(); // Important to re-trigger AuthAwareUIComponents in layout.tsx
+        router.refresh(); 
       } else {
         toast({ title: "Çıkış Hatası", description: result.error || "Çıkış sırasında bir sorun oluştu.", variant: "destructive" });
       }
@@ -53,7 +53,7 @@ export default function FloatingLogoutButton({ initialIsAuthenticated }: Floatin
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-[100]"> {/* Ensure z-index is high enough */}
+    <div className="fixed bottom-6 right-6 z-[100]">
       <Button
         variant="destructive"
         size="lg"
