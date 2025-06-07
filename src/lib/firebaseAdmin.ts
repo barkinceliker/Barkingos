@@ -2,24 +2,32 @@
 // lib/firebaseAdmin.ts
 import * as admin from "firebase-admin";
 
-// Ensure that environment variables are set in your .env.local file or deployment environment
-const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+const projectId = process.env.FIREBASE_PROJECT_ID;
+const privateKeyRaw = process.env.FIREBASE_PRIVATE_KEY;
+const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
 
 if (!admin.apps.length) {
-  try {
-    admin.initializeApp({
-      credential: admin.credential.cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        privateKey: privateKey,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      }),
-    });
-    console.log("Firebase Admin SDK initialized successfully.");
-  } catch (error) {
-    console.error("Firebase Admin SDK initialization error: ", error);
-    // Potentially throw the error or handle it as per your application's needs
-    // For now, we'll log it. The app might still function for client-side auth
-    // but server-side verification will fail.
+  if (projectId && privateKeyRaw && clientEmail) {
+    try {
+      const privateKey = privateKeyRaw.replace(/\\n/g, "\n");
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: projectId,
+          privateKey: privateKey,
+          clientEmail: clientEmail,
+        }),
+      });
+      console.log("Firebase Admin SDK initialized successfully.");
+    } catch (error) {
+      console.error(
+        "Firebase Admin SDK initialization error: ",
+        (error as Error).message
+      );
+    }
+  } else {
+    console.warn(
+      "Firebase Admin SDK not initialized because one or more required environment variables (FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, FIREBASE_CLIENT_EMAIL) are missing. Server-side token verification will not work."
+    );
   }
 }
 
@@ -27,7 +35,9 @@ export { admin };
 
 export async function verifyFirebaseIdToken(token: string) {
   if (!admin.apps.length || !admin.app()) {
-    console.error("Firebase Admin SDK not initialized. Cannot verify token.");
+    console.error(
+      "Firebase Admin SDK not initialized. Cannot verify token."
+    );
     return null;
   }
   try {
