@@ -4,12 +4,19 @@ import './globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
-import FloatingLogoutButton from '@/components/layout/FloatingLogoutButton'; // Import the new component
+import FloatingLogoutButton from '@/components/layout/FloatingLogoutButton';
+import { checkAuthStatus } from '@/lib/actions/auth'; // Import checkAuthStatus
 
 export const metadata: Metadata = {
   title: 'BenimSitem',
   description: 'Kişisel portfolyo ve blog sitesi',
 };
+
+// New Server Component to read auth status and pass to Header
+async function AuthAwareHeader() {
+  const auth = await checkAuthStatus();
+  return <Header initialIsAuthenticated={auth.isAuthenticated} />;
+}
 
 export default function RootLayout({
   children,
@@ -26,13 +33,13 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased flex flex-col min-h-screen">
-        <Header />
+        <AuthAwareHeader /> {/* Use the new AuthAwareHeader */}
         <main className="flex-grow container mx-auto px-4 py-8">
           {children}
         </main>
         <Footer />
         <Toaster />
-        <FloatingLogoutButton /> {/* Add the floating logout button here */}
+        <FloatingLogoutButton />
       </body>
     </html>
   );
