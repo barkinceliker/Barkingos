@@ -3,11 +3,14 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Menu, X, Briefcase, Home, User, BookOpen, Code, BarChart, MessageSquare, Settings, FileText, Shield } from 'lucide-react';
+import { useRouter } from 'next/navigation'; // Added
+import { Menu, X, Briefcase, Home, User, BookOpen, Code, BarChart, MessageSquare, Settings, FileText, Shield, LogOut } from 'lucide-react'; // Added LogOut
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { auth } from '@/lib/firebase'; // Added
+import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth'; // Added
 
-const navItems = [
+const mainNavItems = [
   { label: 'Anasayfa', href: '/', icon: Home },
   { label: 'Hakkımda', href: '/hakkimda', icon: User },
   { label: 'Portföy', href: '/portfoy', icon: Briefcase },
@@ -18,27 +21,51 @@ const navItems = [
   { label: 'İletişim', href: '/iletisim', icon: MessageSquare },
   { label: 'Hizmetler', href: '/hizmetler', icon: Settings },
   { label: 'CV / Özgeçmiş', href: '/resume', icon: FileText },
-  { label: 'Admin Panel', href: '/admin', icon: Shield },
 ];
+
+const adminNavItem = { label: 'Admin Panel', href: '/admin', icon: Shield };
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null); // Added
+  const router = useRouter(); // Added
 
   useEffect(() => {
     setIsMounted(true);
+    if (auth) { // Ensure auth is initialized
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setCurrentUser(user);
+      });
+      return () => unsubscribe();
+    }
   }, []);
 
+  const handleLogout = async () => {
+    if (!auth) return;
+    try {
+      await signOut(auth);
+      // Clear the cookie
+      document.cookie = "isLoggedIn=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      router.push('/login');
+      setIsMobileMenuOpen(false); // Close mobile menu on logout
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Optionally show a toast message for logout error
+    }
+  };
 
-  const NavLink = ({ href, children, onClick }: { href: string; children: React.ReactNode; onClick?: () => void }) => (
+  const NavLink = ({ href, children, onClick, className }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string }) => (
     <Link href={href} passHref>
-      <Button variant="ghost" className="text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto" onClick={onClick}>
+      <Button variant="ghost" className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto", className)} onClick={onClick}>
         {children}
       </Button>
     </Link>
   );
+  
+  const allNavItems = [...mainNavItems, adminNavItem];
 
-  if (!isMounted) {
+  if (!isMounted) { // Prevents hydration errors for mobile menu state and auth state
     return (
       <header className="bg-card shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex justify-between items-center">
@@ -46,7 +73,7 @@ export default function Header() {
             BenimSitem
           </Link>
           <div className="md:hidden">
-             <Button variant="ghost" size="icon">
+             <Button variant="ghost" size="icon" aria-label="Open menu">
                 <Menu className="h-6 w-6" />
               </Button>
           </div>
@@ -64,18 +91,26 @@ export default function Header() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-1 items-center flex-wrap">
-          {navItems.map((item) => (
+          {mainNavItems.map((item) => (
             <NavLink key={item.label} href={item.href}>
               {item.label}
             </NavLink>
           ))}
+          <NavLink key={adminNavItem.label} href={adminNavItem.href}>
+            {adminNavItem.label}
+          </NavLink>
+          {currentUser && (
+            <Button variant="ghost" onClick={handleLogout} className="text-foreground hover:bg-accent/10 hover:text-accent-foreground">
+              <LogOut className="mr-2 h-5 w-5" /> Çıkış Yap
+            </Button>
+          )}
         </nav>
         
         {/* Mobile Navigation */}
         <div className="md:hidden">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(true)}>
+              <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(true)} aria-label="Open menu">
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
@@ -85,23 +120,30 @@ export default function Header() {
                     BenimSitem
                   </Link>
                 <SheetClose asChild>
-                   <Button variant="ghost" size="icon">
+                   <Button variant="ghost" size="icon" aria-label="Close menu">
                     <X className="h-6 w-6" />
                   </Button>
                 </SheetClose>
               </div>
-              <nav className="flex flex-col space-y-2 px-4">
-                {navItems.map((item) => {
+              <nav className="flex flex-col space-y-1 px-2">
+                {allNavItems.map((item) => {
                   const IconComponent = item.icon;
                   return (
                     <SheetClose asChild key={item.label}>
-                      <NavLink href={item.href} onClick={() => setIsMobileMenuOpen(false)}>
-                        <IconComponent className="mr-2 h-5 w-5" />
+                      <NavLink href={item.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base">
+                        <IconComponent className="mr-3 h-5 w-5" />
                         {item.label}
                       </NavLink>
                     </SheetClose>
                   );
                 })}
+                {currentUser && (
+                  <SheetClose asChild>
+                    <Button variant="ghost" onClick={handleLogout} className="text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start text-base">
+                      <LogOut className="mr-3 h-5 w-5" /> Çıkış Yap
+                    </Button>
+                  </SheetClose>
+                )}
               </nav>
             </SheetContent>
           </Sheet>
