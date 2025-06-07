@@ -3,11 +3,12 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Pencil, Trash2, PlusCircle } from 'lucide-react';
-import { getAllPosts } from '@/lib/blog-data';
+import { Pencil, PlusCircle } from 'lucide-react';
+import { getAllBlogPosts } from '@/lib/actions/blog-actions';
+import DeleteBlogPostButton from './_components/DeleteBlogPostButton'; // Yeni bileşen
 
 export default async function ManageBlogPage() {
-  const posts = await getAllPosts();
+  const posts = await getAllBlogPosts();
 
   return (
     <div className="space-y-8">
@@ -40,20 +41,17 @@ export default async function ManageBlogPage() {
             </TableHeader>
             <TableBody>
               {posts.map((post) => (
-                <TableRow key={post.slug}>
+                <TableRow key={post.id}> {/* post.id (Firestore doc ID) veya post.slug kullanılabilir */}
                   <TableCell className="font-medium">{post.title}</TableCell>
                   <TableCell>{post.category}</TableCell>
                   <TableCell>{post.date}</TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button variant="outline" size="sm" asChild>
-                      {/* Placeholder for edit functionality */}
                       <Link href={`/admin/manage-blog/edit/${post.slug}`}>
                         <Pencil className="mr-1 h-4 w-4" /> Düzenle
                       </Link>
                     </Button>
-                    <Button variant="destructive" size="sm" disabled> {/* Placeholder for delete functionality */}
-                      <Trash2 className="mr-1 h-4 w-4" /> Sil
-                    </Button>
+                    <DeleteBlogPostButton slug={post.slug} postTitle={post.title} />
                   </TableCell>
                 </TableRow>
               ))}

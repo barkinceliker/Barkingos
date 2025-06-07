@@ -4,14 +4,15 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getPostData, generateStaticParams as generateBlogStaticParams, BlogPost } from '@/lib/blog-data';
+import { getBlogPostBySlug, getAllPostSlugs } from '@/lib/actions/blog-actions'; // Firestore actions
 
 export async function generateStaticParams() {
-  return generateBlogStaticParams();
+  // Artık Firestore'dan slug'ları çekiyoruz
+  return getAllPostSlugs();
 }
 
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = await getPostData(params.slug);
+  const post = await getBlogPostBySlug(params.slug); // Firestore'dan çek
 
   if (!post) {
     notFound();
@@ -21,7 +22,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     <article className="max-w-4xl mx-auto space-y-8">
       <header className="space-y-4">
         <Image 
-          src={post.imageUrl} 
+          src={post.imageUrl || 'https://placehold.co/1200x600.png'}
           alt={post.title} 
           width={1200} 
           height={600} 
@@ -57,7 +58,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const post = await getPostData(params.slug);
+  const post = await getBlogPostBySlug(params.slug);
   if (!post) {
     return {
       title: 'Yazı Bulunamadı',
@@ -65,6 +66,6 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
   return {
     title: `${post.title} | BenimSitem Blog`,
-    description: post.content.substring(0, 160).replace(/<[^>]*>?/gm, ''),
+    description: post.summary || post.content.substring(0, 160).replace(/<[^>]*>?/gm, ''),
   };
 }

@@ -4,10 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button';
 import { ArrowRight, CalendarDays } from 'lucide-react';
 import Image from 'next/image';
-import { getAllPosts, BlogPost } from '@/lib/blog-data';
+import { getAllBlogPosts } from '@/lib/actions/blog-actions'; // Firestore'dan çeken action
 
 export default async function BlogPage() {
-  const posts = await getAllPosts();
+  const posts = await getAllBlogPosts(); // Artık Firestore'dan geliyor
 
   return (
     <div className="space-y-12">
@@ -23,7 +23,7 @@ export default async function BlogPage() {
           <Card key={post.slug} className="flex flex-col overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
             <Link href={`/blog/${post.slug}`} passHref>
               <Image
-                src={post.imageUrl}
+                src={post.imageUrl || 'https://placehold.co/600x400.png'}
                 alt={post.title}
                 width={600}
                 height={400}
@@ -53,6 +53,14 @@ export default async function BlogPage() {
             </CardFooter>
           </Card>
         ))}
+        {posts.length === 0 && (
+          <div className="col-span-full text-center py-10">
+            <p className="text-muted-foreground text-lg">Henüz yayınlanmış bir blog yazısı bulunmuyor.</p>
+            <Link href="/" passHref>
+              <Button variant="link" className="mt-4">Anasayfaya Dön</Button>
+            </Link>
+          </div>
+        )}
       </section>
     </div>
   );
