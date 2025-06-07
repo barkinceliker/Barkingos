@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, BrainCircuit, Settings, Newspaper } from 'lucide-react';
+import { BookOpen, BrainCircuit, Settings, Newspaper, FolderKanban } from 'lucide-react';
 
 export default function AdminPage() {
   return (
@@ -48,6 +48,23 @@ export default function AdminPage() {
             </Link>
           </CardContent>
         </Card>
+
+        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
+          <CardHeader>
+             <div className="flex justify-center mb-4">
+                <FolderKanban className="h-12 w-12 text-accent" />
+            </div>
+            <CardTitle className="font-headline text-2xl text-center">Proje Yönetimi</CardTitle>
+            <CardDescription className="text-center">
+              Mevcut projelerinizi yönetin, yenilerini ekleyin veya düzenleyin.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <Link href="/admin/manage-projects" passHref>
+              <Button className="w-full">Projeleri Yönet</Button>
+            </Link>
+          </CardContent>
+        </Card>
         
         <Card className="shadow-xl opacity-50 cursor-not-allowed"> 
           <CardHeader>
@@ -56,14 +73,13 @@ export default function AdminPage() {
             </div>
             <CardTitle className="font-headline text-2xl text-center">Diğer İçerikler</CardTitle>
             <CardDescription className="text-center">
-              Portfolyo, projeler, hizmetler vb. içerikleri yönetin. (Yakında)
+              Portfolyo, hizmetler, referanslar vb. içerikleri yönetin. (Yakında)
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
             <Button className="w-full" disabled>Eriş</Button>
           </CardContent>
         </Card>
-
 
         <Card className="shadow-xl opacity-50 cursor-not-allowed"> 
           <CardHeader>
