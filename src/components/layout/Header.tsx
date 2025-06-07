@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
-import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth as firebaseClientAuth } from '@/lib/firebase'; // Client-side auth
 import { createSession, logout as serverLogout, checkAuthStatus } from '@/lib/actions/auth';
 
@@ -44,19 +44,23 @@ export default function Header() {
   const { toast } = useToast();
 
   useEffect(() => {
+    // This effect now only runs once on component mount
     const checkStatus = async () => {
+      console.log("Header useEffect (mount): Checking auth status...");
       setIsLoadingAuth(true);
       try {
-        const { isAuthenticated: serverAuthStatus } = await checkAuthStatus();
+        const { isAuthenticated: serverAuthStatus, uid } = await checkAuthStatus();
+        console.log("Header useEffect (mount): checkAuthStatus returned:", { serverAuthStatus, uid });
         setIsAuthenticated(serverAuthStatus);
       } catch (e) {
-        console.error("Error checking auth status on mount:", e);
-        setIsAuthenticated(false);
+        console.error("Header useEffect (mount): Error checking auth status:", e);
+        setIsAuthenticated(false); // Default to false on error
       }
       setIsLoadingAuth(false);
+      console.log("Header useEffect (mount): Finished. isLoadingAuth is now false.");
     };
     checkStatus();
-  }, [pathname]); // Re-check on path change, e.g. after redirect from login
+  }, []); // Empty dependency array ensures this runs only on mount
 
   const NavLink = ({ href, children, onClick, className, disabled }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string, disabled?: boolean }) => (
     <Button asChild variant="ghost" className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto", className, disabled && "opacity-50 cursor-not-allowed")} disabled={disabled} >
@@ -82,14 +86,15 @@ export default function Header() {
       const sessionResult = await createSession(idToken);
 
       if (sessionResult.success) {
-        setIsAuthenticated(true);
+        setIsAuthenticated(true); // Explicitly set to true for immediate UI update
         setIsLoginDialogOpen(false);
         toast({ title: "Giriş Başarılı!", description: "Admin paneline yönlendiriliyorsunuz..." });
-        router.push('/admin'); // Or refresh to let middleware handle
+        router.push('/admin'); 
         router.refresh(); 
       } else {
         setLoginError(sessionResult.error || "Giriş yapılamadı. Lütfen tekrar deneyin.");
         toast({ title: "Giriş Başarısız", description: sessionResult.error || "Bir hata oluştu.", variant: "destructive" });
+        setIsAuthenticated(false); // Ensure state is false on failure
       }
     } catch (error: any) {
       console.error("Login error:", error);
@@ -101,18 +106,19 @@ export default function Header() {
       }
       setLoginError(message);
       toast({ title: "Giriş Hatası", description: message, variant: "destructive" });
+      setIsAuthenticated(false); // Ensure state is false on error
     } finally {
       setIsSubmittingLogin(false);
     }
   };
 
   const handleLogout = async () => {
-    setIsSubmittingLogin(true); // Use same state for loading indicator
+    setIsSubmittingLogin(true); 
     try {
-      await firebaseClientAuth.signOut(); // Sign out client-side
-      const result = await serverLogout(); // Sign out server-side (clear cookie)
+      await firebaseClientAuth.signOut(); 
+      const result = await serverLogout(); 
       if (result.success) {
-        setIsAuthenticated(false);
+        setIsAuthenticated(false); // Explicitly set to false for immediate UI update
         toast({ title: "Başarıyla çıkış yapıldı." });
         if (pathname.startsWith('/admin')) {
           router.push('/');
@@ -183,7 +189,7 @@ export default function Header() {
                   </SheetClose>
                 </div>
                 <nav className="flex flex-col space-y-1 px-2">
-                  {mainNavItemsBase.map((item) => { // Always show base items
+                  {mainNavItemsBase.map((item) => { 
                     const IconComponent = item.icon;
                     return (
                       <SheetClose asChild key={`mobile-${item.label}`}>
