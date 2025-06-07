@@ -9,7 +9,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/s
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { cn } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'; // Can be used for post-logout redirect if window.location.href is problematic
 
 const mainNavItems = [
   { label: 'Anasayfa', href: '/', icon: Home },
@@ -35,45 +35,56 @@ export default function Header() {
   useEffect(() => {
     setIsMounted(true);
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log("Header: onAuthStateChanged, user:", user ? user.uid : null);
       setCurrentUser(user);
       if (user) {
-        // If Firebase says user is logged in, ensure our cookie reflects that
-        // This helps if the cookie was cleared but Firebase session is still active
+        // Ensure cookie reflects Firebase state
         if (document.cookie.indexOf('isLoggedIn=true') === -1) {
+          console.log("Header: Firebase user detected, but cookie missing. Setting isLoggedIn=true cookie.");
           document.cookie = "isLoggedIn=true; path=/; max-age=3600; SameSite=Lax";
         }
       } else {
-        // If Firebase says user is logged out, ensure our cookie is cleared
+        // Ensure cookie is cleared if Firebase says no user
         if (document.cookie.indexOf('isLoggedIn=true') !== -1) {
+          console.log("Header: No Firebase user, but cookie present. Clearing isLoggedIn cookie.");
           document.cookie = "isLoggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
         }
       }
     });
-    return () => unsubscribe();
+    return () => {
+      console.log("Header: Unsubscribing from onAuthStateChanged.");
+      unsubscribe();
+    };
   }, []);
 
   const handleLogout = async () => {
+    console.log("Header: handleLogout initiated.");
     try {
       await signOut(auth);
-      // Clear the cookie
+      console.log("Header: Firebase signOut successful.");
+      // Clear the cookie explicitly
       document.cookie = "isLoggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
+      console.log("Header: isLoggedIn cookie cleared.");
       setCurrentUser(null); // Explicitly set for immediate UI update
-      // Redirect to login page or home page after logout
+      
+      console.log("Header: Redirecting to /login via window.location.href after logout.");
       window.location.href = '/login'; // Force reload to ensure cookie state is clear for middleware
     } catch (error) {
-      console.error("Logout Error:", error);
+      console.error("Header: Logout Error:", error);
     }
   };
 
+  // NavLink using Button asChild wrapping Link
   const NavLink = ({ href, children, onClick, className }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string }) => (
-     <Button asChild variant="ghost" className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto", className)} onClick={onClick}>
-        <Link href={href}>
-          {children}
-        </Link>
-      </Button>
+    <Button asChild variant="ghost" className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto", className)} onClick={onClick}>
+      <Link href={href}>
+        {children}
+      </Link>
+    </Button>
   );
   
   if (!isMounted) {
+    // Basic skeleton during server render / hydration phase
     return (
       <header className="bg-card shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex justify-between items-center">
@@ -97,6 +108,7 @@ export default function Header() {
           BenimSitem
         </Link>
 
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-1 items-center flex-wrap">
           {mainNavItems.map((item) => (
             <NavLink key={item.label} href={item.href}>
@@ -113,6 +125,7 @@ export default function Header() {
           )}
         </nav>
         
+        {/* Mobile Navigation Trigger */}
         <div className="md:hidden">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
@@ -135,7 +148,7 @@ export default function Header() {
                 {mainNavItems.map((item) => {
                   const IconComponent = item.icon;
                   return (
-                    <SheetClose asChild key={item.label}>
+                    <SheetClose asChild key={`${item.label}-mobile`}>
                       <NavLink href={item.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base">
                         <IconComponent className="mr-3 h-5 w-5" />
                         {item.label}
@@ -143,7 +156,7 @@ export default function Header() {
                     </SheetClose>
                   );
                 })}
-                <SheetClose asChild key={`${adminNavItem.label}-mobile`}>
+                <SheetClose asChild key={`${adminNavItem.label}-mobile-admin`}>
                     <NavLink href={adminNavItem.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base">
                       <adminNavItem.icon className="mr-3 h-5 w-5" />
                       {adminNavItem.label}
@@ -164,4 +177,3 @@ export default function Header() {
     </header>
   );
 }
-

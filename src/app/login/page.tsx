@@ -17,9 +17,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { auth } from "@/lib/firebase"; // Import auth from your firebase setup
+import { auth } from "@/lib/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useRouter } from 'next/navigation'; // Though we'll use window.location.href for reliability post-cookie set
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   email: z.string().email("Geçerli bir e-posta adresi giriniz."),
@@ -47,24 +47,32 @@ export default function LoginPage() {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       console.log("LoginPage: Firebase sign-in successful.");
 
-      // Set a cookie to indicate login status
+      console.log("LoginPage: About to set cookie. Initial document.cookie:", document.cookie);
       const cookieValue = "isLoggedIn=true; path=/; max-age=3600; SameSite=Lax"; // Expires in 1 hour
       document.cookie = cookieValue;
-      console.log("LoginPage: Cookie set:", cookieValue);
-      console.log("LoginPage: Current document.cookie state:", document.cookie);
-
+      console.log("LoginPage: Cookie set command executed. Attempted value:", cookieValue);
+      console.log("LoginPage: document.cookie state immediately after set:", document.cookie);
 
       toast({
         title: "Giriş Başarılı!",
         description: "Admin paneline yönlendiriliyorsunuz...",
       });
 
-      // Redirect to admin panel. Using window.location.href to ensure
-      // the cookie is sent with the new request.
-      console.log("LoginPage: Attempting redirect to /admin...");
-      window.location.href = '/admin';
-      // Fallback in case window.location.href is blocked or doesn't complete
-      // setTimeout(() => router.push('/admin'), 100); 
+      // Add a small delay to allow cookie to propagate and check if it's readable
+      setTimeout(() => {
+        console.log("LoginPage: document.cookie state after 100ms delay:", document.cookie);
+        const cookieIsSet = document.cookie.includes('isLoggedIn=true');
+        console.log("LoginPage: Does document.cookie include 'isLoggedIn=true' after delay?", cookieIsSet);
+
+        if (!cookieIsSet) {
+            alert("CRITICAL: Cookie 'isLoggedIn=true' was not found in document.cookie after setting it. Login will likely fail to persist for middleware. Check browser cookie settings/extensions.");
+        }
+
+        console.log("LoginPage: Attempting redirect to /admin via window.location.href...");
+        window.location.href = '/admin';
+        // Fallback/additional log in case redirect is blocked
+        setTimeout(() => console.log("LoginPage: window.location.href called. If you see this, redirect might be blocked or overridden."), 500);
+      }, 100);
 
     } catch (error: any) {
       console.error("LoginPage: Firebase sign-in error:", error);
@@ -77,10 +85,10 @@ export default function LoginPage() {
         description: errorMessage,
         variant: "destructive",
       });
-    } finally {
-      // setIsSubmitting(false); // Commented out because of redirect
-      console.log("LoginPage: onSubmit finished.");
+      setIsSubmitting(false); // Re-enable form on error
     }
+    // Do not set isSubmitting to false here if successful, due to redirect
+    console.log("LoginPage: onSubmit finished (may be waiting for redirect timeout).");
   }
 
   return (
@@ -100,7 +108,7 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>E-posta</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="ornek@mail.com" {...field} />
+                      <Input type="email" placeholder="ornek@mail.com" {...field} disabled={isSubmitting} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -113,7 +121,7 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>Şifre</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="Şifreniz" {...field} />
+                      <Input type="password" placeholder="Şifreniz" {...field} disabled={isSubmitting} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
