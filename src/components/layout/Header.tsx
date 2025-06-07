@@ -42,26 +42,27 @@ export default function Header() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      // Clear the isLoggedIn cookie
       document.cookie = "isLoggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
-      // Redirect to login page after logout
       window.location.href = '/login'; 
     } catch (error) {
       console.error("Logout error:", error);
-      // Potentially show a toast message for logout error
     }
-    setIsMobileMenuOpen(false); // Close mobile menu on logout
+    setIsMobileMenuOpen(false); 
   };
 
   const NavLink = ({ href, children, onClick, className }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string }) => (
-    <Link href={href} asChild>
-      <Button variant="ghost" className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto", className)} onClick={onClick}>
+    <Button
+      asChild
+      variant="ghost"
+      className={cn("text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start md:w-auto", className)}
+      onClick={onClick} 
+    >
+      <Link href={href}>
         {children}
-      </Button>
-    </Link>
+      </Link>
+    </Button>
   );
   
-  // Fallback for SSR/initial render before hydration to prevent hydration mismatch
   if (!isMounted) {
     return (
       <header className="bg-card shadow-md sticky top-0 z-50">
@@ -69,7 +70,6 @@ export default function Header() {
           <Link href="/" className="text-2xl font-headline font-bold text-primary">
             BenimSitem
           </Link>
-          {/* Basic mobile menu trigger for non-hydrated state */}
           <div className="md:hidden">
              <Button variant="ghost" size="icon" aria-label="Open menu">
                 <Menu className="h-6 w-6" />
@@ -87,7 +87,6 @@ export default function Header() {
           BenimSitem
         </Link>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-1 items-center flex-wrap">
           {mainNavItems.map((item) => (
             <NavLink key={item.label} href={item.href}>
@@ -110,7 +109,6 @@ export default function Header() {
           )}
         </nav>
         
-        {/* Mobile Navigation */}
         <div className="md:hidden">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
@@ -143,20 +141,20 @@ export default function Header() {
                 })}
                 {currentUser ? (
                   <>
-                    <SheetClose asChild key={adminNavItem.label}>
+                    <SheetClose asChild key="admin-panel-mobile-nav">
                         <NavLink href={adminNavItem.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base">
                           <adminNavItem.icon className="mr-3 h-5 w-5" />
                           {adminNavItem.label}
                         </NavLink>
                     </SheetClose>
-                     <SheetClose asChild key="logout-mobile">
+                     <SheetClose asChild key="logout-mobile-nav">
                         <Button variant="ghost" onClick={handleLogout} className="text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start text-base">
                             <LogOut className="mr-3 h-5 w-5" /> Çıkış Yap
                         </Button>
                     </SheetClose>
                   </>
                 ) : (
-                  <SheetClose asChild key={loginNavItem.label}> {/* Corrected this key to be unique */}
+                  <SheetClose asChild key="login-mobile-nav">
                      <NavLink href={loginNavItem.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base">
                         <loginNavItem.icon className="mr-3 h-5 w-5" />
                         {loginNavItem.label}
