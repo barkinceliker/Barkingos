@@ -17,7 +17,7 @@ const siteGeneralSettingsSchema = z.object({
 });
 
 const DEFAULT_SITE_GENERAL_SETTINGS: SiteGeneralSettings = {
-  siteTitle: 'BenimSitem',
+  siteTitle: 'Barkın', // Güncellendi
 };
 
 
@@ -110,9 +110,3 @@ export async function updateSiteGeneralSettings(data: Partial<Omit<SiteGeneralSe
     return { success: false, message: `Bir hata oluştu: ${error.message}` };
   }
 }
-
-// Removed ThemeSetting related code as per request to use fixed CSS theme.
-// getThemeSetting, updateThemeSetting, ThemeSetting interface, themeSettingSchema,
-// DEFAULT_THEME_SETTING, THEME_OPTIONS, THEME_PALETTES from theme-config import
-// and related constants like CUSTOM_THEMES_COLLECTION, ACTIVE_THEME_DOCUMENT_ID
-// have been removed or commented out.

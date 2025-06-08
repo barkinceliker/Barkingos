@@ -44,20 +44,20 @@ const resumePageContentSchema = z.object({
 });
 
 const DEFAULT_RESUME_CONTENT: Omit<ResumePageContent, 'id' | 'updatedAt'> = {
-  name: 'Adınız Soyadınız',
-  title: 'Unvanınız (örn: Kıdemli Yazılım Geliştirici)',
+  name: 'Barkın Çeliker', // Güncellendi
+  title: 'Kıdemli Yazılım Geliştirici', // Örnek unvan güncellendi
   profileImageUrl: 'https://placehold.co/150x150.png',
   profileImageAiHint: 'professional headshot',
-  email: 'mail@adresiniz.com',
-  phone: '555-123-4567',
-  linkedinUrl: 'https://linkedin.com/in/kullaniciadiniz',
-  githubUrl: 'https://github.com/kullaniciadiniz',
-  location: 'Şehir, Ülke',
-  summary: 'Kariyer hedeflerimi ve profesyonel yeteneklerimi özetleyen kısa bir giriş. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+  email: 'mail.barkinclkr@gmail.com', // Örnek e-posta güncellendi
+  phone: '05XX XXX XX XX', // Örnek telefon
+  linkedinUrl: 'https://linkedin.com/in/celikerbarkin', // Örnek LinkedIn
+  githubUrl: 'https://github.com/barkinceliker', // Örnek GitHub
+  location: 'İzmir, Türkiye', // Örnek konum
+  summary: 'Yazılım geliştirme alanında 5+ yıllık deneyime sahip, yenilikçi çözümler üretmeye odaklı bir profesyonelim. Özellikle web teknolojileri, bulut sistemleri ve yapay zeka konularında projeler geliştirmekteyim.',
   experiencesString: `Rol: Kıdemli Yazılım Geliştirici\nŞirket: Teknoloji Çözümleri A.Ş.\nDönem: Ocak 2021 - Günümüz\n- Ölçeklenebilir web uygulamaları geliştirdim.\n- Yeni özelliklerin tasarım ve dağıtım süreçlerinde rol aldım.\n---\nRol: Yazılım Geliştirici\nŞirket: Startup X\nDönem: Haziran 2018 - Aralık 2020\n- Çevik metodolojilerle ürün geliştirme süreçlerine katıldım.`,
   educationString: `Derece: Bilgisayar Mühendisliği Lisans Derecesi\nÜniversite: Örnek Üniversite\nDönem: Eylül 2014 - Haziran 2018`,
-  skillsString: 'React, Next.js, TypeScript, Node.js, Python, SQL, Problem Çözme',
-  resumePdfUrl: '/resume-placeholder.pdf',
+  skillsString: 'React, Next.js, TypeScript, Node.js, Python, SQL, Firebase, Google Cloud, Docker, Problem Çözme',
+  resumePdfUrl: '/barkin_celiker_cv.pdf', // Örnek PDF URL
 };
 
 async function getDb() {

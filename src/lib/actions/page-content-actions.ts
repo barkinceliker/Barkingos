@@ -44,10 +44,10 @@ const DEFAULT_HAKKIMDA_CONTENT: Omit<HakkimdaPageContent, 'id' | 'updatedAt'> = 
   pageSubtitle: 'Benim hikayem, tutkularım ve profesyonel yolculuğum hakkında daha fazla bilgi edinin.',
   profileImageUrl: 'https://placehold.co/400x400.png',
   profileImageAiHint: 'professional portrait',
-  whoAmI_p1: 'Merhaba! Ben [Adınız Soyadınız]. Teknolojiye ve tasarıma olan tutkumla, dijital dünyada fark yaratan projeler geliştirmek için buradayım. Yıllar içinde edindiğim bilgi ve deneyimle, kullanıcı odaklı ve estetik açıdan tatmin edici çözümler sunmayı hedefliyorum.',
+  whoAmI_p1: 'Merhaba! Ben Barkın Çeliker. Teknolojiye ve tasarıma olan tutkumla, dijital dünyada fark yaratan projeler geliştirmek için buradayım. Yıllar içinde edindiğim bilgi ve deneyimle, kullanıcı odaklı ve estetik açıdan tatmin edici çözümler sunmayı hedefliyorum.', // Güncellendi
   whoAmI_p2: 'Problem çözmeyi, yeni şeyler öğrenmeyi ve yaratıcı süreçlerin bir parçası olmayı seviyorum. Ekip çalışmasına inanıyor ve her projeye pozitif bir enerjiyle yaklaşıyorum.',
-  whoAmI_p3_hobbies: 'Boş zamanlarımda [Hobilerinizden birkaçı, örneğin: yeni teknolojileri araştırmak, fotoğraf çekmek, doğa yürüyüşleri yapmak] gibi aktivitelerle ilgileniyorum.',
-  stat_experience_value: '[X]+ Yıl Sektör Deneyimi',
+  whoAmI_p3_hobbies: 'Boş zamanlarımda yeni teknolojileri araştırmak, fotoğraf çekmek, doğa yürüyüşleri yapmak gibi aktivitelerle ilgileniyorum.',
+  stat_experience_value: '5+ Yıl Sektör Deneyimi',
   stat_expertise_value: 'Web Geliştirme, UI/UX Tasarımı, Mobil Uygulamalar',
   stat_teamwork_value: 'İşbirlikçi ve Çevik Metodolojilere Hakim',
   mission_title: 'Misyonum',
@@ -76,7 +76,7 @@ const homepageContentSchema = z.object({
 });
 
 const DEFAULT_HOMEPAGE_CONTENT: Omit<HomepageContent, 'id' | 'updatedAt'> = {
-  heroTitle: "Merhaba, Ben İsim Soyisim",
+  heroTitle: "Merhaba, Ben Barkın Çeliker", // Güncellendi
   heroSubtitle: "Tutkulu bir geliştirici ve tasarımcıyım. Web teknolojileriyle harika kullanıcı deneyimleri oluşturuyorum. Portfolyomu keşfedin ve projelerim hakkında daha fazla bilgi edinin.",
   aboutSnippetTitle: "Kısaca Ben",
   aboutSnippetDescription: "Yenilikçi çözümler üretmeye ve karmaşık problemleri çözmeye adanmış biriyim. Sürekli öğrenmeye ve kendimi geliştirmeye odaklanıyorum.",
