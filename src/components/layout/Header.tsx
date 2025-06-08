@@ -3,7 +3,8 @@
 
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { Menu as MenuIcon, Loader2, LogIn, Shield, X as XIcon } from 'lucide-react'; // XIcon olarak import edildi
+import { Menu as MenuIcon, Loader2, LogIn, Shield, MoreVertical } from 'lucide-react';
+import XIcon from 'lucide-react/dist/esm/icons/x';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -87,7 +88,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       if (pathname.startsWith('/admin')) {
         router.push('/');
       }
-      setIsMobileMenuOpen(false); // Mobil menüyü kapat
+      setIsMobileMenuOpen(false); 
       router.refresh();
     } catch (error) {
       toast({ title: "Çıkış Hatası", description: "Bir hata oluştu.", variant: "destructive" });
@@ -140,12 +141,12 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           }
         }
       }
-      setIsMobileMenuOpen(false); // Her link veya action tıklandığında mobil menüyü kapat
+      setIsMobileMenuOpen(false); 
     };
 
     const commonClasses = cn(
       "text-foreground hover:bg-accent/10 hover:text-accent-foreground",
-      "w-full justify-start text-sm py-2 px-3 rounded-md", // Genel stil
+      "justify-start text-sm py-2 px-3 rounded-md", 
       isActive && !isAction && "bg-accent/20 text-accent-foreground font-semibold",
       className,
       disabled && "opacity-50 cursor-not-allowed"
@@ -187,7 +188,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       <>
         {staticNavItems.map((item) => (
           <SheetClose asChild key={`sheet-nav-${item.id}`}>
-            <NavLink href={item.href} iconName={item.iconName} className="text-base py-2.5 px-4">
+            <NavLink href={item.href} iconName={item.iconName} className="text-base py-2.5 px-4 w-full">
               {item.label}
             </NavLink>
           </SheetClose>
@@ -196,17 +197,27 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           <>
             <div className="my-2 border-t border-border" />
             <SheetClose asChild>
-              <NavLink href={adminNavItemData.href} iconName={adminNavItemData.iconName} className="text-base py-2.5 px-4">
+              <NavLink href={adminNavItemData.href} iconName={adminNavItemData.iconName} className="text-base py-2.5 px-4 w-full">
                 {adminNavItemData.label}
               </NavLink>
             </SheetClose>
-            <SheetClose asChild>
-               <NavLink onClick={handleLogout} isAction iconName={logoutNavItemData.iconName} className="text-base py-2.5 px-4 text-destructive hover:bg-destructive/10 hover:text-destructive" disabled={isSubmittingLogout}>
-                 {isSubmittingLogout ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                 {logoutNavItemData.label}
-               </NavLink>
-            </SheetClose>
           </>
+        )}
+        <div className="my-2 border-t border-border" />
+        {isAuthenticated ? (
+           <SheetClose asChild>
+             <NavLink onClick={handleLogout} isAction iconName={logoutNavItemData.iconName} className="text-base py-2.5 px-4 text-destructive hover:bg-destructive/10 hover:text-destructive w-full" disabled={isSubmittingLogout}>
+               {isSubmittingLogout ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+               {logoutNavItemData.label}
+             </NavLink>
+           </SheetClose>
+        ) : (
+           <SheetClose asChild>
+              <Button variant="default" onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }} className="text-base py-2.5 px-4 justify-start w-full mt-2" disabled={isSubmittingLogin}>
+                {isSubmittingLogin ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <LogIn className="mr-3 h-5 w-5" />}
+                Giriş Yap
+              </Button>
+            </SheetClose>
         )}
       </>
     );
@@ -277,7 +288,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex space-x-1 items-center">
+          <nav className="hidden lg:flex space-x-1 items-center">
             {staticNavItems.map((item) => (
               <NavLink key={`desktop-nav-${item.id}`} href={item.href} iconName={item.iconName} className="px-3">
                 {item.label}
@@ -286,8 +297,8 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           </nav>
 
           <div className="flex items-center space-x-2">
-            {/* Admin/Login Button - visible on all sizes for now */}
-            <div className="hidden md:flex"> {/* Keep separate div for potential future layout adjustments if needed */}
+            {/* Admin/Login Button - visible on lg and up */}
+            <div className="hidden lg:flex"> 
               {isAuthenticated ? (
                 <NavLink
                   key={`admin-panel-link-desktop-${isAuthenticated.toString()}-${currentUser?.uid}`}
@@ -305,8 +316,8 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
               )}
             </div>
 
-            {/* Mobile Hamburger Menu - only on small screens */}
-            <div className="md:hidden">
+            {/* Mobile Hamburger Menu - only on screens smaller than lg */}
+            <div className="lg:hidden"> 
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(true)} aria-label="Menüyü Aç">
@@ -342,20 +353,12 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                         </Link>
                       </SheetTitle>
                        <SheetClose className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 data-[state=open]:bg-secondary">
-                          <XIcon className="h-5 w-5" /> {/* XIcon kullanıldı */}
+                          <XIcon className="h-5 w-5" />
                           <span className="sr-only">Kapat</span>
                       </SheetClose>
                   </SheetHeader>
                   <nav className="flex-grow flex flex-col space-y-1 p-3 overflow-y-auto">
                     {renderNavItemsForSheet()}
-                    {!isAuthenticated && ( // Giriş yapılmamışsa mobil menüde de Giriş Yap butonu olsun
-                       <SheetClose asChild>
-                          <Button variant="default" onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }} className="text-base py-2.5 px-4 justify-start w-full mt-2" disabled={isSubmittingLogin}>
-                            {isSubmittingLogin ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <LogIn className="mr-3 h-5 w-5" />}
-                            Giriş Yap
-                          </Button>
-                        </SheetClose>
-                    )}
                   </nav>
                 </SheetContent>
               </Sheet>
