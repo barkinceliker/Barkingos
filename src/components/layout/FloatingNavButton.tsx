@@ -1,8 +1,9 @@
+
 "use client";
 
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { List, X, Shield } from 'lucide-react';
+import { List, X } from 'lucide-react'; // X for close icon
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -19,7 +20,6 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth as firebaseClientAuth } from '@/lib/firebase';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 
-// Bu değerler Header.tsx'den kopyalandı. İdealde ortak bir yerden alınabilirler.
 const staticNavItems = [
   { id: 'home', label: 'Anasayfa', href: '/#anasayfa-section', iconName: 'Home' },
   { id: 'about', label: 'Hakkımda', href: '/#hakkimda-section', iconName: 'User' },
@@ -70,9 +70,9 @@ export default function FloatingNavButton({ initialIsAuthenticated, siteTitle }:
     }, [href, pathname]);
 
     const isActive =
-      (pathname === '/' && href === '/#anasayfa-section' && !window.location.hash) || // Anasayfa ve hash yok
-      (href.startsWith('/#') && pathname === '/' && isHashActive) || // Hash linkler ve aktif hash
-      (pathname === href && !href.startsWith('/#')); // Direkt sayfa linkleri
+      (pathname === '/' && href === '/#anasayfa-section' && (typeof window !== 'undefined' && !window.location.hash)) ||
+      (href.startsWith('/#') && pathname === '/' && isHashActive) ||
+      (pathname === href && !href.startsWith('/#'));
 
     const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
       setIsOpen(false); 
@@ -83,7 +83,6 @@ export default function FloatingNavButton({ initialIsAuthenticated, siteTitle }:
           e.preventDefault();
           targetElement.scrollIntoView({ behavior: 'smooth' });
           if (window.history.pushState) {
-            // Sadece hash'i güncelle, tam yolu değil, eğer ana sayfadaysak
             const newHash = href.substring(href.indexOf('#'));
             window.history.pushState(null, '', newHash);
           } else {
@@ -98,14 +97,14 @@ export default function FloatingNavButton({ initialIsAuthenticated, siteTitle }:
         <Button
           asChild
           variant="ghost"
-          size="sm"
+          size="sm" 
           className={cn(
-            "text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start text-base py-3 px-4",
+            "text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start text-base py-3 px-4", // Increased padding
             isActive && "bg-accent/10 text-accent-foreground font-semibold"
           )}
         >
           <Link href={href} onClick={handleLinkClick}>
-            {IconComponent && <IconComponent className="mr-2 h-5 w-5" />}
+            {IconComponent && <IconComponent className="mr-3 h-5 w-5" />} {/* Increased margin */}
             {children}
           </Link>
         </Button>
@@ -114,20 +113,21 @@ export default function FloatingNavButton({ initialIsAuthenticated, siteTitle }:
   };
 
   return (
-    <div className="fixed bottom-20 right-6 z-[90] md:block hidden"> {/* md ve üzeri ekranlarda göster, küçüklerde gizle */}
+    // Positioned on the right, vertically centered. Only shows on md screens and up.
+    <div className="fixed top-1/2 -translate-y-1/2 right-6 z-[90] md:block hidden">
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <Button
-            variant="outline"
-            size="lg"
-            className="shadow-xl rounded-full p-3 bg-card hover:bg-accent/20 border-primary/50 aspect-square"
+            variant="default" // Changed to default for more prominence
+            size="icon"
+            className="shadow-xl rounded-full h-14 w-14 bg-card hover:bg-card/90 border border-primary/30" // Larger button
             aria-label="Navigasyon Menüsünü Aç"
           >
-            <List className="h-6 w-6 text-primary" />
+            <List className="h-7 w-7 text-primary" /> {/* Larger icon */}
           </Button>
         </SheetTrigger>
         <SheetContent side="right" className="w-[300px] sm:w-[320px] bg-card p-0 flex flex-col">
-          <SheetHeader className="p-4 border-b">
+          <SheetHeader className="p-4 border-b flex flex-row justify-between items-center">
             <SheetTitle asChild>
               <Link
                 href="/#anasayfa-section"
@@ -136,7 +136,8 @@ export default function FloatingNavButton({ initialIsAuthenticated, siteTitle }:
                     setIsOpen(false);
                     if (typeof window !== 'undefined' && window.location.pathname === '/') {
                         e.preventDefault();
-                        document.getElementById('anasayfa-section')?.scrollIntoView({ behavior: 'smooth' });
+                        const targetId = 'anasayfa-section';
+                        document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
                         window.history.pushState(null, '', '/#anasayfa-section');
                     }
                 }}
@@ -144,9 +145,7 @@ export default function FloatingNavButton({ initialIsAuthenticated, siteTitle }:
                 {siteTitle || "Menü"}
               </Link>
             </SheetTitle>
-            {/* SheetClose bileşenini header'a eklemeye gerek yok, çünkü içerik tıklandığında kapanıyor. 
-                Ancak manuel kapatma için bir X butonu isterseniz eklenebilir. */}
-             <SheetClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 data-[state=open]:bg-secondary">
+             <SheetClose className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 data-[state=open]:bg-secondary">
                 <X className="h-5 w-5" />
                 <span className="sr-only">Kapat</span>
             </SheetClose>

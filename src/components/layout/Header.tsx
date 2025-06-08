@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { Menu, Loader2, LogIn, Shield, Home, User, Briefcase, Sparkles, BookOpenText, MessageSquare, FileText, Lightbulb, Award } from 'lucide-react';
+import { Menu, Loader2, LogIn, Shield } from 'lucide-react'; // Simplified imports, specific icons handled by NavLink
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -82,13 +82,12 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
 
   const NavLink = ({ href, children, onClick, className, disabled, iconName }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string, disabled?: boolean, iconName?: string }) => {
     const IconComponent = getLucideIcon(iconName);
-    const pathname = usePathname(); // Moved usePathname here to be a hook
+    const pathname = usePathname(); 
     const [isHashActive, setIsHashActive] = useState(false);
 
     useEffect(() => {
       const checkHash = () => {
         if (href.startsWith('/#') && pathname === '/') {
-          // href is like '/#section-id', window.location.hash is like '#section-id'
           setIsHashActive(window.location.hash === href.substring(1));
         } else {
           setIsHashActive(false);
@@ -96,7 +95,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       };
 
       if (typeof window !== 'undefined') {
-        checkHash(); // Initial check
+        checkHash(); 
         window.addEventListener('hashchange', checkHash);
         return () => window.removeEventListener('hashchange', checkHash);
       }
@@ -104,9 +103,9 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
 
 
     const isActive =
-      (pathname === '/' && href === '/#anasayfa-section') || // Specific case for homepage link on homepage
-      (href !== '/#anasayfa-section' && !href.startsWith('/#') && pathname === href) || // For non-hash links
-      (href.startsWith('/#') && pathname === '/' && isHashActive); // For hash links on homepage
+      (pathname === '/' && href === '/#anasayfa-section' && (typeof window !== 'undefined' && !window.location.hash)) || 
+      (href.startsWith('/#') && pathname === '/' && isHashActive) || 
+      (pathname === href && !href.startsWith('/#')); 
 
 
     const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -121,7 +120,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                     const newPath = pathname === '/' ? href : `/${href}`;
                     window.history.pushState(null, '', newPath);
                 } else {
-                    window.location.hash = href.substring(1); // Fallback, ensure hash doesn't start with //
+                    window.location.hash = href.substring(1); 
                 }
             }
         }
@@ -135,7 +134,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         className={cn(
           "text-foreground hover:bg-accent/10 hover:text-accent-foreground",
           "w-full justify-start",
-          "md:w-auto md:justify-center",
+          "md:w-auto md:justify-center", // This will be overridden by md:hidden on parent nav
           isActive && "bg-accent/10 text-accent-foreground font-semibold",
           className,
           disabled && "opacity-50 cursor-not-allowed"
@@ -160,7 +159,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         <NavLink
           href={item.href}
           onClick={isMobile ? () => setIsMobileMenuOpen(false) : undefined}
-          className={cn(isMobile ? "text-base py-2" : "", "whitespace-nowrap")}
+          className={cn(isMobile ? "text-base py-3 px-4" : "", "whitespace-nowrap")} // Increased padding for mobile
           iconName={item.iconName}
         >
           {item.label}
@@ -221,7 +220,6 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             className="text-2xl font-headline font-bold text-gradient"
             onClick={(e) => {
               setIsMobileMenuOpen(false);
-              // @ts-ignore
               const href = e.currentTarget.getAttribute('href');
               if (typeof window !== 'undefined' && window.location.pathname === '/' && href && href.startsWith('/#')) {
                  e.preventDefault();
@@ -242,7 +240,8 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             {siteTitle}
           </Link>
 
-          <nav className="hidden md:flex space-x-1 items-center flex-wrap">
+          {/* Main navigation links - hidden on medium screens and up, handled by FloatingNavButton */}
+          <nav className="hidden md:hidden space-x-1 items-center flex-wrap">
             {renderNavItems(staticNavItems, false)}
             {isAuthenticated ? (
               <NavLink
@@ -260,6 +259,26 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             )}
           </nav>
 
+          {/* Login/Admin button visible on medium screens and up if nav links are hidden */}
+          <div className="hidden md:flex items-center">
+             {isAuthenticated ? (
+              <NavLink
+                key={`admin-panel-link-desktop-standalone-${isAuthenticated.toString()}-${currentUser?.uid}`}
+                href={adminNavItemData.href}
+                iconName={adminNavItemData.iconName}
+              >
+                {adminNavItemData.label}
+              </NavLink>
+            ) : (
+              <Button variant="default" size="sm" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin}>
+                {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />}
+                Giriş Yap
+              </Button>
+            )}
+          </div>
+
+
+          {/* Mobile Hamburger Menu - only on small screens */}
           <div className="md:hidden">
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
@@ -267,7 +286,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-card">
+              <SheetContent side="right" className="w-[300px] sm:w-[320px] bg-card p-0 flex flex-col">
                 <SheetHeader className="p-4 border-b">
                    <SheetTitle asChild>
                       <Link
@@ -275,7 +294,6 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                         className="text-xl font-headline font-bold text-gradient"
                          onClick={(e) => {
                             setIsMobileMenuOpen(false);
-                            // @ts-ignore
                             const href = e.currentTarget.getAttribute('href');
                              if (typeof window !== 'undefined' && window.location.pathname === '/' && href && href.startsWith('/#')) {
                                 e.preventDefault();
@@ -296,8 +314,12 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                         {siteTitle}
                       </Link>
                     </SheetTitle>
+                     <SheetClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 data-[state=open]:bg-secondary">
+                        <Menu className="h-5 w-5 rotate-90" /> {/* Changed to X or similar */}
+                        <span className="sr-only">Kapat</span>
+                    </SheetClose>
                 </SheetHeader>
-                <nav className="flex flex-col space-y-1 px-2 py-4">
+                <nav className="flex-grow flex flex-col space-y-1 p-3 overflow-y-auto">
                   {renderNavItems(staticNavItems, true)}
                   {isAuthenticated ? (
                     <SheetClose asChild>
@@ -305,7 +327,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                         key={`admin-panel-link-mobile-${isAuthenticated.toString()}-${currentUser?.uid}`}
                         href={adminNavItemData.href}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-base py-2"
+                        className="text-base py-3 px-4" // Increased padding
                         iconName={adminNavItemData.iconName}
                        >
                         {adminNavItemData.label}
@@ -313,7 +335,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                     </SheetClose>
                   ) : (
                      <SheetClose asChild>
-                        <Button variant="default" onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }} className="text-base py-2 justify-start w-full mt-2" disabled={isSubmittingLogin}>
+                        <Button variant="default" onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }} className="text-base py-3 px-4 justify-start w-full mt-2" disabled={isSubmittingLogin}>
                           {isSubmittingLogin ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <LogIn className="mr-3 h-5 w-5" />}
                           Giriş Yap
                         </Button>
