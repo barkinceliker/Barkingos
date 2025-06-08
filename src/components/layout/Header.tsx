@@ -35,7 +35,7 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
-import { signInWithEmailAndPassword, User as FirebaseUserType, signOut as firebaseSignOut } from 'firebase/auth';
+import { signInWithEmailAndPassword, User as FirebaseUserType, signOut as firebaseSignOut, onAuthStateChanged } from 'firebase/auth';
 import { auth as firebaseClientAuth } from '@/lib/firebase';
 import { createSession, logout as serverLogout } from '@/lib/actions/auth';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
@@ -118,12 +118,13 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
 
   const NavLink: React.FC<NavLinkProps> = ({ href, children, onClick, className, disabled, iconName, isAction }) => {
     const IconComponent = getLucideIcon(iconName);
-    const currentPathnameFromHook = usePathname();
+    const currentPathnameFromHook = usePathname(); // Hook at the top level of NavLink
     const [isActiveClient, setIsActiveClient] = useState(false);
   
+    // Memoized function to calculate and set active state
     const handleActivityUpdate = useCallback(() => {
       if (typeof window === 'undefined' || !href) {
-        setIsActiveClient(prev => !prev ? prev : false); // Ensure it becomes false if no href
+        setIsActiveClient(prev => !prev ? prev : false);
         return;
       }
   
@@ -134,26 +135,30 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       if (href.startsWith('/#') && currentWindowPathname === '/') {
         const targetHash = href.substring(href.indexOf('#'));
         calculatedIsActive = currentHash === targetHash;
+        // Special case for anasayfa-section when hash might be empty or just '#' for root
         if (href === '/#anasayfa-section' && (currentHash === '' || currentHash === '#')) {
           calculatedIsActive = true;
         }
       } else if (!href.startsWith('/#')) {
+        // For non-hash links, compare with pathname from usePathname()
         calculatedIsActive = currentPathnameFromHook === href;
       }
       setIsActiveClient(prev => prev === calculatedIsActive ? prev : calculatedIsActive);
-    }, [href, currentPathnameFromHook]);
+    }, [href, currentPathnameFromHook]); // currentPathnameFromHook is now a stable dependency
   
+    // Effect for initial active state check and event listeners
     useEffect(() => {
       handleActivityUpdate(); // Initial check
   
+      // Event listeners
       window.addEventListener('hashchange', handleActivityUpdate);
-      window.addEventListener('popstate', handleActivityUpdate);
+      window.addEventListener('popstate', handleActivityUpdate); // Handles back/forward navigation
   
       return () => {
         window.removeEventListener('hashchange', handleActivityUpdate);
         window.removeEventListener('popstate', handleActivityUpdate);
       };
-    }, [href, currentPathnameFromHook, handleActivityUpdate]);
+    }, [handleActivityUpdate]); // Dependency is the memoized function
   
     const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement, MouseEvent>) => {
       const currentHref = href || '';
@@ -165,9 +170,11 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           e.preventDefault();
           targetElement.scrollIntoView({ behavior: 'smooth' });
           
+          // Update URL hash only if on the main page (/)
           if (window.location.pathname === '/') {
             window.history.pushState(null, '', currentHref);
           } else {
+            // If not on main page, navigate to main page with hash
             router.push(currentHref); 
           }
         }
@@ -176,6 +183,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       if (onClick) {
         onClick(e);
       }
+      // No need to manually call handleActivityUpdate here as hashchange/popstate or navigation will trigger it.
     }, [href, router, onClick]);
   
     const commonClasses = cn(
@@ -349,7 +357,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                       <ChevronDown className="ml-1 h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuContent align="end" className="w-56" sideOffset={2}>
                     <DropdownMenuItem asChild className="cursor-pointer">
                       <LinkFromNext href={adminNavItemData.href} className="w-full flex items-center">
                         <Shield className="h-4 w-4 mr-2" />
