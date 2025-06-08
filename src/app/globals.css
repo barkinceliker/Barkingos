@@ -5,16 +5,16 @@
 
 body {
   font-family: 'PT Sans', sans-serif;
-  /* Volcanic Ember & Obsidian gradient background */
-  background: hsl(var(--background)); /* Fallback solid dark obsidian */
-  background-image: linear-gradient(145deg, 
-    hsl(var(--gradient-body-start-hsl)) 0%, 
-    hsl(var(--gradient-body-mid-hsl)) 50%, 
+  /* Midnight Bloom gradient background - top-left to bottom-right */
+  background: hsl(var(--background)); /* Fallback solid dark teal */
+  background-image: linear-gradient(to bottom right,
+    hsl(var(--gradient-body-start-hsl)) 0%,
+    hsl(var(--gradient-body-mid-hsl)) 50%,
     hsl(var(--gradient-body-end-hsl)) 100%
   );
   background-attachment: fixed;
   background-size: cover;
-  color: hsl(var(--foreground)); /* Metin renginin uygulanmasını sağla */
+  color: hsl(var(--foreground));
 }
 
 html {
@@ -22,71 +22,71 @@ html {
 }
 
 @layer base {
-  :root { /* Dark Theme: Volcanic Ember & Obsidian */
-    /* Body Gradient Colors */
-    --gradient-body-start-hsl: 220 15% 8%;   /* Very Dark Desaturated Blue/Obsidian */
-    --gradient-body-mid-hsl: 15 60% 15%;    /* Deep Dark Fiery Brown/Red */
-    --gradient-body-end-hsl: 30 70% 20%;     /* Dark Ember Orange */
+  :root { /* Dark Theme: Midnight Bloom */
+    /* Body Gradient Colors (Top-left to Bottom-right) */
+    --gradient-body-start-hsl: 180 50% 10%; /* Dark, deep Cyan/Teal */
+    --gradient-body-mid-hsl: 270 40% 15%;   /* Dark, rich Purple */
+    --gradient-body-end-hsl: 300 60% 25%;   /* Dark, vibrant Magenta */
 
-    --background: 220 15% 5%;             /* Very Dark Obsidian (Fallback) */
-    --foreground: 30 15% 95%;           /* Warm Off-White (Text) */
-    
-    --card: 220 15% 9%;                 /* Slightly Lighter Dark Obsidian (Cards) */
+    --background: 180 50% 5%;             /* Very Dark Cyan (Fallback) */
+    --foreground: 240 10% 95%;           /* Clean Off-White (Text) */
+
+    --card: 180 45% 8%;                 /* Slightly Lighter Dark Cyan (Cards) */
     --card-foreground: hsl(var(--foreground));
 
-    --popover: 220 15% 11%;              /* Dark Popover Background */
+    --popover: 180 40% 10%;              /* Dark Popover Background */
     --popover-foreground: hsl(var(--foreground));
 
-    /* Primary and Accent colors will be Fiery Red/Orange and Ember/Gold */
-    --primary: 10 70% 50%;            /* Strong Fiery Red/Orange - Primary actions */
-    --primary-foreground: 10 15% 97%;   /* Light text on Fiery buttons */
-    
-    --accent: 35 90% 60%;            /* Bright Ember Orange/Gold - Accents */
-    --accent-foreground: 35 70% 10%;    /* Dark text on Ember/Gold accents */
+    /* Primary and Accent colors will be vibrant Magenta and luminous Teal */
+    --primary: 300 70% 60%;            /* Vibrant, luminous Magenta - Primary actions */
+    --primary-foreground: 300 15% 97%;   /* Light text on Magenta buttons */
 
-    --secondary: 220 10% 18%;            /* Darker Desaturated Blue for secondary elements */
-    --secondary-foreground: 220 10% 80%; /* Lighter Grey text on secondary elements */
+    --accent: 170 75% 55%;            /* Bright, luminous Teal/Mint - Accents */
+    --accent-foreground: 170 70% 10%;    /* Dark text on Teal/Mint accents */
 
-    --muted: 220 10% 15%;                /* Muted Obsidian */
-    --muted-foreground: 220 10% 65%;     /* Muted Grey text */
-    
+    --secondary: 210 30% 18%;            /* Darker Desaturated Blue for secondary elements */
+    --secondary-foreground: 210 15% 80%; /* Lighter Grey text on secondary elements */
+
+    --muted: 210 25% 15%;                /* Muted Dark Blue */
+    --muted-foreground: 210 15% 65%;     /* Muted Grey text */
+
     --destructive: 0 75% 55%;         /* Classic strong red for destructive actions */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 15% 25%;               /* Desaturated Blue Border */
-    --input: 220 15% 12%;                /* Dark Input Background */
-    --ring: 35 95% 65%;               /* Ember/Gold Ring for focus */
+    --border: 200 30% 25%;               /* Desaturated Blue Border */
+    --input: 190 35% 12%;                /* Dark Input Background (Tealish) */
+    --ring: 170 80% 60%;               /* Luminous Teal Ring for focus */
     --radius: 0.5rem;
 
-    /* Text Gradient - Fiery Red/Orange to Bright Ember/Gold */
-    --gradient-start-hsl: 10 75% 55%; /* Slightly brighter Primary Red/Orange */
-    --gradient-end-hsl: 35 95% 65%;   /* Slightly brighter Accent Ember/Gold */
+    /* Text Gradient - Luminous Magenta to Luminous Teal */
+    --gradient-start-hsl: 300 75% 65%; /* Brighter Primary Magenta */
+    --gradient-end-hsl: 170 80% 60%;   /* Brighter Accent Teal */
 
     /* Hero Section Background Gradient */
-    --hero-gradient-start-hsl: 220 20% 10%;    /* Dark Obsidian */
-    --hero-gradient-mid-hsl: 15 70% 30%;     /* More vibrant Fiery Red */
-    --hero-gradient-end-hsl: 35 80% 40%;     /* Brighter Ember Orange */
+    --hero-gradient-start-hsl: 180 55% 12%;    /* Dark Cyan */
+    --hero-gradient-mid-hsl: 285 50% 20%;     /* Mid-tone Purple/Magenta */
+    --hero-gradient-end-hsl: 310 65% 30%;     /* Vibrant Dark Magenta */
 
-    /* Chart Colors (Ember/Gold & Reds for Dark Theme) */
-    --chart-1: hsl(var(--primary));    /* Fiery Red/Orange */
-    --chart-2: hsl(var(--accent));     /* Ember Orange/Gold */
-    --chart-3: 10 60% 40%;            /* Darker Fiery Red */
-    --chart-4: 30 80% 50%;            /* Brighter Orange */
-    --chart-5: 30 10% 70%;            /* Contrast Light Warm Grey */
+    /* Chart Colors (Teals & Magentas for Dark Theme) */
+    --chart-1: hsl(var(--primary));    /* Luminous Magenta */
+    --chart-2: hsl(var(--accent));     /* Luminous Teal */
+    --chart-3: 300 60% 50%;            /* Darker Magenta */
+    --chart-4: 170 65% 45%;            /* Darker Teal */
+    --chart-5: 240 10% 70%;            /* Contrast Light Cool Grey */
 
     /* Sidebar Colors (Dark Theme) */
-    --sidebar-background: 220 15% 7%;      /* Similar to main background, slightly darker card */
+    --sidebar-background: 180 50% 7%;      /* Similar to main background, slightly darker card */
     --sidebar-foreground: hsl(var(--foreground));
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 220 15% 15%;         /* Active item background - a bit lighter obsidian */
+    --sidebar-accent: 190 40% 15%;         /* Active item background - a bit lighter dark teal */
     --sidebar-accent-foreground: hsl(var(--accent)); /* Accent color for icons/text */
     --sidebar-border: hsl(var(--border));
     --sidebar-ring: hsl(var(--ring));
 
-    /* Fine-tune and Custom Element Colors (Fiery & Obsidian Theme) */
+    /* Fine-tune and Custom Element Colors (Midnight Bloom Theme) */
     --link-text: hsl(var(--accent));
-    --link-hover-text: hsl(var(--accent) / 0.8); 
+    --link-hover-text: hsl(var(--accent) / 0.8);
     --button-primary-bg: hsl(var(--primary));
     --button-primary-text: hsl(var(--primary-foreground));
     --button-primary-hover-bg: hsl(var(--primary) / 0.9);
@@ -97,7 +97,7 @@ html {
     --input-border: hsl(var(--border));
     --input-text: hsl(var(--foreground));
     --input-focus-ring: hsl(var(--ring));
-    --card-title-text: hsl(var(--foreground)); 
+    --card-title-text: hsl(var(--foreground));
     --card-description-text: hsl(var(--muted-foreground));
 
     --blockquote-bg: hsl(var(--secondary));
