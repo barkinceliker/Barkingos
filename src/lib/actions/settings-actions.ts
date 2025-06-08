@@ -41,11 +41,11 @@ const DEFAULT_SITE_GENERAL_SETTINGS: SiteGeneralSettings = {
 async function getDb() {
   const adminInitError = getAdminInitializationError();
   if (adminInitError) {
-    console.error(`[settings-actions getDb] Admin SDK initialization check failed: ${adminInitError}`);
+    console.error(`[settings-actions getDb] Admin SDK başlatma hatası: ${adminInitError}`);
     throw new Error(`Sunucu yapılandırma hatası (Admin SDK): ${adminInitError}`);
   }
   if (!admin || !admin.firestore) {
-    console.error("[settings-actions getDb] Firebase Admin SDK (admin.firestore) not properly initialized after passing pre-check.");
+    console.error("[settings-actions getDb] Firebase Admin SDK (admin.firestore) düzgün başlatılamadı.");
     throw new Error("Firebase Admin SDK (admin.firestore) düzgün başlatılamadı.");
   }
   return admin.firestore();
@@ -58,7 +58,7 @@ const GENERAL_SETTINGS_DOCUMENT_ID = 'general';
 
 // --- Theme Setting Actions ---
 export const getThemeSetting = cache(async (): Promise<ThemeSetting> => {
-  console.log("[settings-actions] getThemeSetting CACHEABLE SERVER ACTION called");
+  console.log("[settings-actions getThemeSetting] SUNUCU EYLEMİ: Veritabanından/cache'den tema ayarı çekiliyor...");
   try {
     const db = await getDb();
     const docRef = db.collection(SITE_SETTINGS_COLLECTION).doc(THEME_DOCUMENT_ID);
@@ -67,13 +67,13 @@ export const getThemeSetting = cache(async (): Promise<ThemeSetting> => {
     if (docSnap.exists) {
       const data = docSnap.data();
       const parsedTheme = THEME_OPTIONS.includes(data?.activeTheme as ThemeName) ? data?.activeTheme as ThemeName : 'default';
-      console.log("[settings-actions] getThemeSetting: Found theme in DB -", parsedTheme);
+      console.log(`[settings-actions getThemeSetting] VERİTABANINDA BULUNAN TEMA: '${parsedTheme}'. Doküman verisi:`, JSON.stringify(data));
       return {
         activeTheme: parsedTheme,
         updatedAt: data?.updatedAt?.toDate()?.toISOString() || new Date().toISOString(),
       };
     } else {
-      console.log("[settings-actions] getThemeSetting: No theme doc in DB, creating default.");
+      console.log(`[settings-actions getThemeSetting] VERİTABANINDA '${SITE_SETTINGS_COLLECTION}/${THEME_DOCUMENT_ID}' dokümanı bulunamadı. Varsayılan tema oluşturuluyor: '${DEFAULT_THEME_SETTING.activeTheme}'`);
       await docRef.set({
         ...DEFAULT_THEME_SETTING,
         updatedAt: admin.firestore.FieldValue.serverTimestamp()
@@ -81,34 +81,34 @@ export const getThemeSetting = cache(async (): Promise<ThemeSetting> => {
       return { ...DEFAULT_THEME_SETTING, updatedAt: new Date().toISOString() };
     }
   } catch (error: any) {
-    console.error("[settings-actions] Error in getThemeSetting:", error.message, error.stack);
+    console.error("[settings-actions getThemeSetting] TEMA ÇEKİLİRKEN HATA:", error.message, error.stack);
     return { ...DEFAULT_THEME_SETTING, updatedAt: new Date().toISOString() };
   }
 });
 
 export async function updateThemeSetting(themeName: ThemeName) {
-  console.log(`[settings-actions] updateThemeSetting SERVER ACTION called with themeName: ${themeName}`);
+  console.log(`[settings-actions updateThemeSetting] SUNUCU EYLEMİ: Tema '${themeName}' olarak güncelleniyor...`);
 
   const adminInitError = getAdminInitializationError();
   if (adminInitError) {
-    const errorMessage = `Firebase Admin SDK not initialized properly: ${adminInitError}`;
-    console.error(`[settings-actions] updateThemeSetting PRE-CHECK FAILED: ${errorMessage}`);
-    return { success: false, message: `Tema güncellenemedi: Sunucu yapılandırma sorunu. Lütfen sistem yöneticisi ile iletişime geçin. Detay: ${adminInitError}` };
+    const errorMessage = `Firebase Admin SDK düzgün başlatılamadı: ${adminInitError}`;
+    console.error(`[settings-actions updateThemeSetting] ÖN KONTROL BAŞARISIZ: ${errorMessage}`);
+    return { success: false, message: `Tema güncellenemedi: Sunucu yapılandırma sorunu. Detay: ${adminInitError}` };
   }
-  console.log("[settings-actions] updateThemeSetting: Admin SDK pre-check passed.");
+  console.log("[settings-actions updateThemeSetting] Admin SDK ön kontrolü başarılı.");
 
   const validation = themeSettingSchema.safeParse({ activeTheme: themeName });
   if (!validation.success) {
     const validationErrors = validation.error.flatten().fieldErrors;
     const errorMessages = Object.values(validationErrors).flat().join(', ');
-    console.error("[settings-actions] updateThemeSetting validation failed:", JSON.stringify(validationErrors));
+    console.error("[settings-actions updateThemeSetting] Tema adı doğrulaması başarısız:", JSON.stringify(validationErrors));
     return { success: false, message: `Geçersiz tema adı: ${errorMessages}`, errors: validationErrors };
   }
-  console.log("[settings-actions] updateThemeSetting: Theme name validation successful.");
+  console.log("[settings-actions updateThemeSetting] Tema adı doğrulaması başarılı.");
 
   try {
     const db = await getDb(); 
-    console.log("[settings-actions] updateThemeSetting: Firestore DB instance obtained.");
+    console.log("[settings-actions updateThemeSetting] Firestore DB bağlantısı alındı.");
 
     const docRef = db.collection(SITE_SETTINGS_COLLECTION).doc(THEME_DOCUMENT_ID);
     const dataToSave = {
@@ -116,17 +116,17 @@ export async function updateThemeSetting(themeName: ThemeName) {
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     };
     
-    console.log(`[settings-actions] updateThemeSetting: Firestore'a yazılacak veri:`, JSON.stringify(dataToSave));
-    await docRef.set(dataToSave, { merge: true });
-    console.log(`[settings-actions] updateThemeSetting: Tema Firestore'da başarıyla güncellendi: ${validation.data.activeTheme}.`);
+    console.log(`[settings-actions updateThemeSetting] Firestore'a YAZILACAK VERİ ('${SITE_SETTINGS_COLLECTION}/${THEME_DOCUMENT_ID}'):`, JSON.stringify(dataToSave));
+    await docRef.set(dataToSave, { merge: true }); 
+    console.log(`[settings-actions updateThemeSetting] VERİTABANI GÜNCELLEME BAŞARILI: Tema '${validation.data.activeTheme}' olarak ayarlandı.`);
 
     try {
-      console.log("[settings-actions] updateThemeSetting: Yollar yeniden doğrulanmaya çalışılıyor ('/', '/admin', 'layout')...");
+      console.log("[settings-actions updateThemeSetting] Yollar yeniden doğrulanmaya çalışılıyor ('/', 'layout') ve '/admin'...");
       revalidatePath('/', 'layout'); 
       revalidatePath('/admin');      
-      console.log("[settings-actions] updateThemeSetting: Yollar başarıyla yeniden doğrulandı.");
+      console.log("[settings-actions updateThemeSetting] Yollar başarıyla yeniden doğrulandı.");
     } catch (revalidateError: any) {
-      console.warn(`[settings-actions] updateThemeSetting: Yol yeniden doğrulama başarısız oldu ancak veritabanı güncellemesi başarılıydı. Hata: ${revalidateError.message}`, revalidateError.stack);
+      console.warn(`[settings-actions updateThemeSetting] UYARI: Yol yeniden doğrulama başarısız oldu ancak veritabanı güncellemesi başarılıydı. Hata: ${revalidateError.message}`, revalidateError.stack);
     }
 
     return { success: true, message: 'Tema başarıyla güncellendi.' };
@@ -137,7 +137,7 @@ export async function updateThemeSetting(themeName: ThemeName) {
     } else if (error.message) {
         detailedErrorMessage = error.message; 
     }
-    console.error(`[settings-actions] Error in updateThemeSetting Firestore operation: ${detailedErrorMessage}`, error.stack, JSON.stringify(error, Object.getOwnPropertyNames(error).concat(['cause'])));
+    console.error(`[settings-actions updateThemeSetting] Firestore İŞLEM HATASI: ${detailedErrorMessage}`, error.stack, JSON.stringify(error, Object.getOwnPropertyNames(error).concat(['cause'])));
     return { success: false, message: `Tema güncellenemedi: ${detailedErrorMessage}` };
   }
 }
@@ -192,5 +192,8 @@ export async function updateSiteGeneralSettings(data: Partial<Omit<SiteGeneralSe
     return { success: false, message: `Bir hata oluştu: ${error.message}` };
   }
 }
+
+    
+
 
     

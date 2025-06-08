@@ -65,22 +65,21 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  console.log(`[RootLayout SUNUCU] =================== BAŞLANGIÇ ===================`);
   const themeSetting = await getThemeSetting();
   const activeTheme = themeSetting?.activeTheme || 'default';
   
-  console.log(`[RootLayout SERVER RENDER] ==========================================`);
-  console.log(`[RootLayout SERVER RENDER] getThemeSetting() sonucu:`, JSON.stringify(themeSetting));
-  console.log(`[RootLayout SERVER RENDER] Alınan aktif tema: '${activeTheme}'`);
+  console.log(`[RootLayout SUNUCU] getThemeSetting() çağrıldı. Sonuç:`, JSON.stringify(themeSetting));
+  console.log(`[RootLayout SUNUCU] Kullanılacak aktif tema: '${activeTheme}'`);
   
   const themeClass = activeTheme === 'default' ? '' : `theme-${activeTheme}`;
-  console.log(`[RootLayout SERVER RENDER] Oluşturulan tema sınıfı: '${themeClass}'`);
+  console.log(`[RootLayout SUNUCU] HTML için hesaplanan tema sınıfı: '${themeClass}'`);
 
   const fontVariableClasses = cn(ptSans.variable, playfairDisplay.variable, sourceCodePro.variable);
-  console.log(`[RootLayout SERVER RENDER] Font değişken sınıfları: '${fontVariableClasses}'`);
   
-  const finalHtmlClasses = cn(themeClass, fontVariableClasses);
-  console.log(`[RootLayout SERVER RENDER] <html>'e uygulanacak nihai sınıflar: '${finalHtmlClasses}'`);
-  console.log(`[RootLayout SERVER RENDER] ==========================================`);
+  const finalHtmlClasses = cn(themeClass, fontVariableClasses).trim();
+  console.log(`[RootLayout SUNUCU] <html> etiketine uygulanacak nihai sınıflar (className ve key için): '${finalHtmlClasses}'`);
+  console.log(`[RootLayout SUNUCU] ===================== BİTİŞ =====================`);
 
   return (
     <html lang="tr" className={finalHtmlClasses} key={finalHtmlClasses}>
@@ -97,5 +96,7 @@ export default async function RootLayout({
     </html>
   );
 }
+
+    
 
     
