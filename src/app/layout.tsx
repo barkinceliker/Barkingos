@@ -66,12 +66,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const themeSetting = await getThemeSetting();
+  const activeTheme = themeSetting?.activeTheme || 'default';
   
   console.log(`[RootLayout SERVER RENDER] ==========================================`);
   console.log(`[RootLayout SERVER RENDER] getThemeSetting() sonucu:`, JSON.stringify(themeSetting));
-  console.log(`[RootLayout SERVER RENDER] Alınan aktif tema: '${themeSetting.activeTheme}'`);
+  console.log(`[RootLayout SERVER RENDER] Alınan aktif tema: '${activeTheme}'`);
   
-  const themeClass = themeSetting.activeTheme === 'default' ? '' : `theme-${themeSetting.activeTheme}`;
+  const themeClass = activeTheme === 'default' ? '' : `theme-${activeTheme}`;
   console.log(`[RootLayout SERVER RENDER] Oluşturulan tema sınıfı: '${themeClass}'`);
 
   const fontVariableClasses = cn(ptSans.variable, playfairDisplay.variable, sourceCodePro.variable);
@@ -96,3 +97,5 @@ export default async function RootLayout({
     </html>
   );
 }
+
+    

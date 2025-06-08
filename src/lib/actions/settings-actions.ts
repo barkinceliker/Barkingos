@@ -80,8 +80,8 @@ export const getThemeSetting = cache(async (): Promise<ThemeSetting> => {
       });
       return { ...DEFAULT_THEME_SETTING, updatedAt: new Date().toISOString() };
     }
-  } catch (error) {
-    console.error("[settings-actions] Error in getThemeSetting:", error);
+  } catch (error: any) {
+    console.error("[settings-actions] Error in getThemeSetting:", error.message, error.stack);
     return { ...DEFAULT_THEME_SETTING, updatedAt: new Date().toISOString() };
   }
 });
@@ -93,15 +93,16 @@ export async function updateThemeSetting(themeName: ThemeName) {
   if (adminInitError) {
     const errorMessage = `Firebase Admin SDK not initialized properly: ${adminInitError}`;
     console.error(`[settings-actions] updateThemeSetting PRE-CHECK FAILED: ${errorMessage}`);
-    return { success: false, message: `Tema güncellenemedi: Sunucu yapılandırma sorunu (${adminInitError}). Lütfen sistem yöneticisi ile iletişime geçin.` };
+    return { success: false, message: `Tema güncellenemedi: Sunucu yapılandırma sorunu. Lütfen sistem yöneticisi ile iletişime geçin. Detay: ${adminInitError}` };
   }
   console.log("[settings-actions] updateThemeSetting: Admin SDK pre-check passed.");
 
   const validation = themeSettingSchema.safeParse({ activeTheme: themeName });
   if (!validation.success) {
     const validationErrors = validation.error.flatten().fieldErrors;
+    const errorMessages = Object.values(validationErrors).flat().join(', ');
     console.error("[settings-actions] updateThemeSetting validation failed:", JSON.stringify(validationErrors));
-    return { success: false, message: "Geçersiz tema adı.", errors: validationErrors };
+    return { success: false, message: `Geçersiz tema adı: ${errorMessages}`, errors: validationErrors };
   }
   console.log("[settings-actions] updateThemeSetting: Theme name validation successful.");
 
@@ -120,12 +121,13 @@ export async function updateThemeSetting(themeName: ThemeName) {
     console.log(`[settings-actions] updateThemeSetting: Theme successfully updated in DB to: ${validation.data.activeTheme}.`);
 
     try {
-      console.log("[settings-actions] updateThemeSetting: Attempting to revalidate paths ('/', '/admin')...");
-      revalidatePath('/', 'layout'); // Revalidate the entire layout
-      revalidatePath('/admin');       // Revalidate admin page if theme affects it
+      console.log("[settings-actions] updateThemeSetting: Attempting to revalidate paths ('/', '/admin', 'layout')...");
+      revalidatePath('/', 'layout'); 
+      revalidatePath('/admin');      
       console.log("[settings-actions] updateThemeSetting: Paths revalidated successfully.");
     } catch (revalidateError: any) {
-      console.warn(`[settings-actions] updateThemeSetting: Path revalidation failed but db update was successful. Error: ${revalidateError.message}`, revalidateError);
+      console.warn(`[settings-actions] updateThemeSetting: Path revalidation failed but db update was successful. Error: ${revalidateError.message}`, revalidateError.stack);
+      // Revalidation hatası kritik değilse devam et, ama logla.
     }
 
     return { success: true, message: 'Tema başarıyla güncellendi.' };
@@ -136,7 +138,7 @@ export async function updateThemeSetting(themeName: ThemeName) {
     } else if (error.message) {
         detailedErrorMessage = error.message; 
     }
-    console.error(`[settings-actions] Error in updateThemeSetting Firestore operation: ${detailedErrorMessage}`, JSON.stringify(error, Object.getOwnPropertyNames(error).concat(['cause'])));
+    console.error(`[settings-actions] Error in updateThemeSetting Firestore operation: ${detailedErrorMessage}`, error.stack, JSON.stringify(error, Object.getOwnPropertyNames(error).concat(['cause'])));
     return { success: false, message: `Tema güncellenemedi: ${detailedErrorMessage}` };
   }
 }
@@ -191,3 +193,5 @@ export async function updateSiteGeneralSettings(data: Partial<Omit<SiteGeneralSe
     return { success: false, message: `Bir hata oluştu: ${error.message}` };
   }
 }
+
+    

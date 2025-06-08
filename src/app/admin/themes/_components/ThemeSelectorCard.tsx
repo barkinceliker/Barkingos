@@ -38,11 +38,12 @@ const getThemePreviewColors = (themeKey: ThemeName): { primary: string; accent: 
 function applyThemeToHtml(themeName: ThemeName) {
   if (typeof window !== "undefined") {
     const htmlEl = document.documentElement;
-    // Mevcut tüm tema sınıflarını kaldır (theme-* ile başlayanlar)
+    
+    // Sadece 'theme-' ile başlayan sınıfları kaldır
     const classesToRemove = Array.from(htmlEl.classList).filter(cls => cls.startsWith('theme-'));
     classesToRemove.forEach(cls => htmlEl.classList.remove(cls));
 
-    // Gerekirse yeni tema sınıfını ekle
+    // Yeni tema sınıfını ekle (eğer 'default' değilse)
     if (themeName !== 'default') {
       htmlEl.classList.add(`theme-${themeName}`);
     }
@@ -61,11 +62,13 @@ export default function ThemeSelectorCard() {
   useEffect(() => {
     async function fetchCurrentTheme() {
       setIsLoading(true);
+      console.log("[ThemeSelectorCard useEffect] Başlangıç teması çekiliyor...");
       try {
         const setting = await getThemeSetting(); 
-        setCurrentTheme(setting.activeTheme);
-        console.log("[ThemeSelectorCard useEffect] Sunucudan gelen başlangıç teması:", setting.activeTheme);
-        applyThemeToHtml(setting.activeTheme); 
+        const themeToApply = setting.activeTheme || 'default';
+        setCurrentTheme(themeToApply);
+        console.log("[ThemeSelectorCard useEffect] Sunucudan gelen başlangıç teması:", themeToApply);
+        applyThemeToHtml(themeToApply); 
       } catch (error) {
         console.error("[ThemeSelectorCard useEffect] Mevcut tema yüklenirken hata:", error);
         toast({
@@ -73,6 +76,7 @@ export default function ThemeSelectorCard() {
           description: "Mevcut tema ayarı yüklenemedi.",
           variant: "destructive",
         });
+        applyThemeToHtml('default'); // Hata durumunda varsayılan temayı uygula
       } finally {
         setIsLoading(false);
       }
@@ -90,18 +94,19 @@ export default function ThemeSelectorCard() {
 
       if (result.success) {
         setCurrentTheme(themeName); 
-        applyThemeToHtml(themeName); 
+        applyThemeToHtml(themeName); // Anında istemci tarafı güncelleme
         
         toast({
           title: "Başarılı!",
-          description: `${getThemeDisplayName(themeName)} teması başarıyla uygulandı. Sayfa yenileniyor...`,
+          description: `${getThemeDisplayName(themeName)} teması başarıyla uygulandı. Değişikliklerin tam olarak yansıması için sayfa yenileniyor...`,
         });
         
+        console.log("[ThemeSelectorCard handleThemeSelect] router.refresh() çağrılıyor...");
         router.refresh(); 
-        console.log("[ThemeSelectorCard handleThemeSelect] router.refresh() çağrıldı. Sunucu RootLayout'u yeniden render edecek.");
+        console.log("[ThemeSelectorCard handleThemeSelect] router.refresh() çağrıldı. Sunucu RootLayout'u yeniden render etmeli.");
       } else {
         toast({
-          title: "Hata!",
+          title: "Tema Güncellenemedi!",
           description: result.message || "Tema güncellenirken bir hata oluştu.",
           variant: "destructive",
         });
@@ -196,3 +201,5 @@ export default function ThemeSelectorCard() {
     </Card>
   );
 }
+
+    
