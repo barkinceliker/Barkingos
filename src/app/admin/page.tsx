@@ -102,29 +102,36 @@ export default async function AdminUnifiedPage() {
   ];
 
   return (
-    <div className="space-y-8">
-      <section className="text-center py-8 bg-card shadow-md rounded-lg">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-3">Site Yönetim Paneli</h1>
+    <div className="space-y-8 p-4 md:p-8">
+      <section className="text-center py-10 md:py-12 bg-card shadow-xl rounded-xl border border-border">
+        <Settings className="h-16 w-16 text-primary mx-auto mb-6" />
+        <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-4">Site Yönetim Paneli</h1>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto px-4">
           Web sitenizin tüm içeriğini ve ayarlarını tek bir yerden yönetin. Aşağıdaki bölümlerden düzenlemek istediğinizi seçin.
         </p>
       </section>
 
-      <Accordion type="multiple" className="w-full space-y-4">
+      <Accordion type="multiple" className="w-full space-y-6">
         {accordionSections.map((section) => {
           const Icon = section.icon;
           return (
-            <AccordionItem value={section.value} key={section.value} className="border bg-card rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-              <AccordionTrigger className="p-6 hover:no-underline">
-                <div className="flex items-center text-left">
-                  <Icon className="h-7 w-7 mr-4 text-accent flex-shrink-0" />
-                  <div>
-                    <h2 className="text-xl font-headline font-semibold text-primary">{section.title}</h2>
-                    <p className="text-sm text-muted-foreground mt-1 pr-4">{section.description}</p>
+            <AccordionItem 
+              value={section.value} 
+              key={section.value} 
+              className="border border-border bg-card rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-1"
+            >
+              <AccordionTrigger className="p-6 hover:no-underline group">
+                <div className="flex items-center text-left w-full">
+                  <div className="p-3 bg-accent/10 rounded-lg mr-5 group-hover:bg-accent/20 transition-colors">
+                    <Icon className="h-8 w-8 text-accent group-hover:scale-110 transition-transform" />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-xl md:text-2xl font-headline font-semibold text-primary group-hover:text-primary/90 transition-colors">{section.title}</h2>
+                    <p className="text-sm text-muted-foreground mt-1 pr-4 group-hover:text-foreground/80 transition-colors">{section.description}</p>
                   </div>
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="p-6 border-t">
+              <AccordionContent className="p-6 border-t border-border/50 bg-background/30 rounded-b-xl">
                 {section.content}
               </AccordionContent>
             </AccordionItem>
