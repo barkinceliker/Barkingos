@@ -2,28 +2,30 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Construction } from 'lucide-react';
+import { ListCollapse } from 'lucide-react'; // Assuming ListCollapse is appropriate
 
-export default function ManageNavigationPage() {
+export default function ManageNavigationPageStandalone() {
   return (
     <div className="space-y-8">
       <section>
-        <h1 className="text-3xl font-headline font-bold text-primary">Navigasyon Yönetimi</h1>
-        <p className="text-muted-foreground">Sitenizin ana navigasyon menüsündeki öğeleri buradan yönetebilirsiniz.</p>
+        <h1 className="text-3xl font-headline font-bold text-primary flex items-center">
+          <ListCollapse className="mr-3 h-8 w-8" /> Navigasyon Yönetimi (Eski Sayfa)
+        </h1>
+        <p className="text-muted-foreground">
+          Bu bölümdeki navigasyon yönetimi artık ana yönetim panelindeki "Navigasyon Yönetimi" akordeon bölümünden yönetilmektedir.
+          Yeni öğe ekleme ve düzenleme sayfalarına oradan erişebilirsiniz.
+        </p>
       </section>
-
       <Card className="shadow-xl">
         <CardHeader>
-          <CardTitle className="text-2xl font-headline text-primary">Navigasyon Öğeleri</CardTitle>
+          <CardTitle className="text-2xl font-headline text-primary">Erişim Yönlendirmesi</CardTitle>
           <CardDescription>
-            Bu özellik şu anda geliştirme aşamasındadır. Yakında navigasyon öğelerini ekleyebilecek, düzenleyebilecek ve sıralayabileceksiniz.
+            Lütfen navigasyon öğelerini yönetmek için ana admin panelini kullanın.
           </CardDescription>
         </CardHeader>
         <CardContent className="text-center py-12">
-          <Construction className="h-24 w-24 text-muted-foreground mx-auto mb-6" />
-          <p className="text-xl text-muted-foreground mb-4">Bu sayfa yapım aşamasındadır.</p>
           <Link href="/admin" passHref>
-            <Button variant="outline">Admin Paneline Dön</Button>
+            <Button variant="default" size="lg">Ana Yönetim Paneline Dön</Button>
           </Link>
         </CardContent>
       </Card>

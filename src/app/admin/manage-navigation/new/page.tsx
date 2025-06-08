@@ -1,2 +1,20 @@
-// This file has been removed as per user request to revert to static navigation.
-// If you need to restore dynamic navigation management, please ask or check your version control history.
+
+import NavItemForm from '@/components/admin/forms/NavItemForm';
+import { createNavItem, type NavItemInput } from '@/lib/actions/navigation-actions';
+
+export default function NewNavItemPage() {
+  
+  async function handleCreateNavItem(data: Omit<NavItemInput, 'id'>) {
+    "use server"; 
+    return createNavItem(data); 
+  }
+
+  return (
+    <div className="space-y-6 p-4 md:p-8">
+      <NavItemForm 
+        onSubmitAction={handleCreateNavItem} 
+        isEditing={false} 
+      />
+    </div>
+  );
+}
