@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { Menu, Loader2, LogIn, Shield, Home, User, Briefcase, Sparkles, BookOpenText, MessageSquare, FileText } from 'lucide-react'; // FileText eklendi
+import { Menu, Loader2, LogIn, Shield, Home, User, Briefcase, Sparkles, BookOpenText, MessageSquare, FileText, Lightbulb, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -37,6 +37,8 @@ const staticNavItems = [
   { id: 'about', label: 'Hakkımda', href: '/#hakkimda-section', iconName: 'User' },
   { id: 'services', label: 'Hizmetler', href: '/#hizmetler-section', iconName: 'Sparkles' },
   { id: 'projects', label: 'Projeler', href: '/#projeler-section', iconName: 'Briefcase' },
+  { id: 'skills', label: 'Yetenekler', href: '/#yetenekler-section', iconName: 'Lightbulb' },
+  { id: 'experience', label: 'Deneyimler', href: '/#deneyim-section', iconName: 'Award' },
   { id: 'resume', label: 'Özgeçmiş', href: '/#ozgecmis-section', iconName: 'FileText' },
   { id: 'blog', label: 'Blog', href: '/#blog-section', iconName: 'BookOpenText' },
   { id: 'contact', label: 'İletişim', href: '/#iletisim-section', iconName: 'MessageSquare' },
@@ -216,24 +218,24 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         <div className="container mx-auto px-4 h-16 flex justify-between items-center">
           <Link
             href="/#anasayfa-section"
-            className="text-2xl font-headline font-bold text-primary"
+            className="text-2xl font-headline font-bold text-gradient"
             onClick={(e) => {
               setIsMobileMenuOpen(false);
-              if (typeof window !== 'undefined' && window.location.pathname === '/' && href.startsWith('/#')) {
+              // @ts-ignore
+              const href = e.currentTarget.getAttribute('href');
+              if (typeof window !== 'undefined' && window.location.pathname === '/' && href && href.startsWith('/#')) {
                  e.preventDefault();
                  const targetId = href.substring(href.indexOf('#') + 1);
                  document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth'});
                  window.history.pushState(null, '', href);
               } else if (typeof window !== 'undefined' && window.location.pathname === '/') {
-                 // Already on homepage, just scroll to top if #anasayfa-section is clicked or root path
                  const targetElement = document.getElementById('anasayfa-section');
                   if (targetElement) {
                       e.preventDefault();
                       targetElement.scrollIntoView({ behavior: 'smooth' });
-                      window.history.pushState(null, '', '/#anasayfa-section');
+                       window.history.pushState(null, '', '/#anasayfa-section');
                   }
               }
-              // If not on homepage, standard Link behavior will navigate to / and then JS will scroll if needed
             }}
             key={`site-title-${siteTitle}`}
           >
@@ -270,10 +272,12 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                    <SheetTitle asChild>
                       <Link
                         href="/#anasayfa-section"
-                        className="text-xl font-headline font-bold text-primary"
+                        className="text-xl font-headline font-bold text-gradient"
                          onClick={(e) => {
                             setIsMobileMenuOpen(false);
-                             if (typeof window !== 'undefined' && window.location.pathname === '/' && href.startsWith('/#')) {
+                            // @ts-ignore
+                            const href = e.currentTarget.getAttribute('href');
+                             if (typeof window !== 'undefined' && window.location.pathname === '/' && href && href.startsWith('/#')) {
                                 e.preventDefault();
                                 const targetId = href.substring(href.indexOf('#') + 1);
                                 document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth'});
@@ -325,7 +329,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       <Dialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle className="font-headline text-primary">Admin Girişi</DialogTitle>
+            <DialogTitle className="font-headline text-primary text-gradient">Admin Girişi</DialogTitle>
             <DialogDescription>
               Lütfen admin paneline erişmek için e-posta ve şifrenizi girin.
             </DialogDescription>
@@ -360,5 +364,3 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     </>
   );
 }
-
-    
