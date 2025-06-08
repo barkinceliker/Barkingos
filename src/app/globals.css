@@ -5,6 +5,7 @@
 
 body {
   font-family: 'PT Sans', sans-serif;
+  /* Apply the gradient directly to the body */
   background-image: linear-gradient(to bottom right, hsl(var(--gradient-body-start-hsl)), hsl(var(--gradient-body-end-hsl)));
   background-attachment: fixed;
   background-size: cover;
@@ -15,54 +16,54 @@ html {
 }
 
 @layer base {
-  :root { /* Royal Indigo & Gold Dark Theme */
-    --background: 240 30% 10%; /* Very Dark Indigo */
-    --foreground: 40 20% 95%; /* Warm Off-White */
-    --card: 240 30% 15%; /* Dark Indigo */
+  :root { /* Deep Space & Nebula Dark Theme */
+    --background: 240 10% 4%; /* Very Dark, almost black blue */
+    --foreground: 240 10% 95%; /* Very Light Off-White */
+    --card: 240 10% 8%; /* Slightly lighter than background, still very dark blue */
     --card-foreground: hsl(var(--foreground));
-    --popover: 240 30% 13%; /* Slightly darker than card */
+    --popover: 240 10% 6%; /* Darker than card for popovers */
     --popover-foreground: hsl(var(--foreground));
-    --primary: 250 65% 60%; /* Rich Indigo/Purple */
-    --primary-foreground: 240 20% 98%; /* Almost White */
-    --secondary: 240 25% 25%; /* Muted Dark Indigo */
-    --secondary-foreground: 240 20% 85%; /* Light Indigo Gray */
-    --muted: 240 20% 20%; /* Very Muted Dark Indigo */
-    --muted-foreground: 240 15% 65%; /* Muted Indigo Gray */
-    --accent: 40 80% 55%; /* Warm Gold/Amber */
-    --accent-foreground: 240 30% 10%; /* Dark, for text on gold buttons */
-    --destructive: 0 70% 55%; /* Vivid Red */
+    --primary: 190 80% 60%; /* Luminous Teal/Cyan */
+    --primary-foreground: 240 10% 98%; /* Almost White, for text on primary buttons */
+    --secondary: 240 10% 15%; /* Darker Muted Blue */
+    --secondary-foreground: 240 10% 80%; /* Lighter Muted Blue/Gray */
+    --muted: 240 10% 12%; /* Very Muted Dark Blue */
+    --muted-foreground: 240 10% 60%; /* Muted Blue/Gray for less important text */
+    --accent: 280 70% 65%; /* Vibrant Nebula Purple/Magenta */
+    --accent-foreground: 280 10% 98%; /* Almost White, for text on accent buttons */
+    --destructive: 0 70% 50%; /* Vivid Red for destructive actions */
     --destructive-foreground: 0 0% 98%;
-    --border: 240 20% 28%; /* Indigo Border */
-    --input: 240 20% 18%; /* Dark Indigo Input */
-    --ring: 40 80% 60%; /* Gold/Amber Ring, slightly brighter */
+    --border: 240 10% 20%; /* Dark Blue Border */
+    --input: 240 10% 10%; /* Dark Blue Input Background */
+    --ring: 190 80% 65%; /* Luminous Teal/Cyan Ring, slightly brighter for focus */
     --radius: 0.5rem;
 
-    /* Gövde Arka Plan Gradienti */
-    --gradient-body-start-hsl: 250 40% 8%; /* Very dark indigo */
-    --gradient-body-end-hsl: 270 40% 10%;   /* Very dark purple */
+    /* Body Background Gradient (Deep Space) */
+    --gradient-body-start-hsl: 230 40% 8%; /* Deep Dark Blue */
+    --gradient-body-end-hsl: 270 45% 10%;   /* Deep Dark Purple/Violet */
 
-    /* Metin Gradienti */
-    --gradient-start-hsl: 250 65% 65%; /* Adjusted Primary for Text Gradient */
-    --gradient-end-hsl: 40 85% 60%;   /* Adjusted Accent for Text Gradient */
+    /* Text Gradient (Nebula Colors) */
+    --gradient-start-hsl: 190 85% 65%; /* Brighter Luminous Teal/Cyan */
+    --gradient-end-hsl: 280 75% 70%;   /* Brighter Nebula Purple */
 
-    /* Grafik Renkleri */
-    --chart-1: hsl(var(--primary));
-    --chart-2: hsl(var(--accent));
-    --chart-3: 250 50% 70%; /* Lighter Indigo */
-    --chart-4: 40 70% 65%;  /* Lighter Gold */
-    --chart-5: 260 55% 65%; /* Slightly different purple */
+    /* Chart Colors (Cosmic Palette) */
+    --chart-1: hsl(var(--primary)); /* Luminous Teal */
+    --chart-2: hsl(var(--accent));  /* Nebula Purple */
+    --chart-3: 210 70% 55%; /* Star Blue */
+    --chart-4: 310 65% 60%;  /* Cosmic Pink */
+    --chart-5: 170 60% 50%; /* Distant Galaxy Green/Teal */
 
-    /* Kenar Çubuğu Renkleri */
-    --sidebar-background: 240 30% 9%;
-    --sidebar-foreground: 240 20% 88%;
+    /* Sidebar Colors (Deep Space Console) */
+    --sidebar-background: 240 10% 3%; /* Even darker than main background */
+    --sidebar-foreground: 240 10% 85%; /* Slightly dimmer white for sidebar text */
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 240 25% 22%; /* Muted Indigo for sidebar active items */
-    --sidebar-accent-foreground: hsl(var(--accent)); /* Gold for icons/text on active sidebar items */
-    --sidebar-border: 240 20% 25%;
+    --sidebar-accent: 240 10% 10%; /* Dark blue for sidebar active items background */
+    --sidebar-accent-foreground: hsl(var(--accent)); /* Nebula Purple for icons/text on active sidebar items */
+    --sidebar-border: 240 10% 15%;
     --sidebar-ring: hsl(var(--ring));
 
-    /* İnce Ayar ve Özel Eleman Renkleri */
+    /* Fine-tuning and Specific Element Colors */
     --link-text: hsl(var(--accent));
     --link-hover-text: hsl(var(--accent) / 0.8);
     --button-primary-bg: hsl(var(--primary));
