@@ -33,8 +33,8 @@ const sourceCodePro = Source_Code_Pro({
 });
 
 export const metadata: Metadata = {
-  title: 'BenimSitem',
-  description: 'Kişisel portfolyo ve blog sitesi',
+  title: 'BenimSitem | Tek Sayfa Portfolyo ve Blog',
+  description: 'Kişisel portfolyo, blog, hizmetler, projeler ve daha fazlası tek bir sayfada.',
   icons: {
     icon: '/favicon.ico',
   },
@@ -42,7 +42,6 @@ export const metadata: Metadata = {
 
 async function AuthAwareUIComponents() {
   const auth = await checkAuthStatus();
-  console.log("[AuthAwareUIComponents] Auth status from checkAuthStatus:", auth);
   return (
     <>
       <Header key={`header-${auth.isAuthenticated.toString()}`} initialIsAuthenticated={auth.isAuthenticated} />
@@ -56,9 +55,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // console.time("getThemeSettingLayout"); // Removed to prevent warning
   const themeSetting = await getThemeSetting();
-  // console.timeEnd("getThemeSettingLayout"); // Removed to prevent warning
   const themeClass = themeSetting.activeTheme === 'default' ? '' : `theme-${themeSetting.activeTheme}`;
 
   return (
@@ -66,9 +63,10 @@ export default async function RootLayout({
       <head>
         {/* next/font kullandığımız için Google Fonts linkleri kaldırıldı */}
       </head>
-      <body className="font-body antialiased flex flex-col min-h-screen">
+      <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
         <AuthAwareUIComponents />
-        <main className="flex-grow container mx-auto px-4 py-8">
+        {/* Ana layout'ta container ve padding'i kaldırıyoruz, çünkü page.tsx kendi container'ını yönetecek */}
+        <main className="flex-grow">
           {children}
         </main>
         <Footer />
@@ -78,3 +76,4 @@ export default async function RootLayout({
   );
 }
 
+    

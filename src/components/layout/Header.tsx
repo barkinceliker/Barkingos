@@ -3,21 +3,21 @@
 
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Loader2, LogIn, Shield } from 'lucide-react'; // LogOutIcon kaldırıldı
+import { Menu, Loader2, LogIn, Shield, Home, User, Sparkles, Laptop, Lightbulb, Award, BookOpen, MessageSquare, Download as DownloadIcon, FileText as FileTextIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
   SheetClose,
-  SheetHeader, // SheetHeader importu kalmalı
+  SheetHeader,
   SheetTitle
 } from '@/components/ui/sheet';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle, // RadixDialogTitle yerine DialogTitle kullanılacak
+  DialogTitle,
   DialogDescription,
   DialogFooter
 } from '@/components/ui/dialog';
@@ -26,21 +26,23 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
-import { signInWithEmailAndPassword, onAuthStateChanged, User } from 'firebase/auth';
+import { signInWithEmailAndPassword, onAuthStateChanged, User as FirebaseUserType } from 'firebase/auth';
 import { auth as firebaseClientAuth } from '@/lib/firebase';
-import { createSession } from '@/lib/actions/auth'; // serverLogout importu kaldırıldı
+import { createSession } from '@/lib/actions/auth';
 import type { LucideIcon } from 'lucide-react';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 
+// Update nav items to point to sections on the main page
 const staticNavItems = [
-  { label: 'Anasayfa', href: '/', iconName: 'Home' },
-  { label: 'Hakkımda', href: '/hakkimda', iconName: 'User' },
-  { label: 'Hizmetler', href: '/hizmetler', iconName: 'Sparkles' },
-  { label: 'Projeler', href: '/projeler', iconName: 'Laptop' },
-  { label: 'Yetenekler', href: '/yetenekler', iconName: 'Lightbulb' },
-  { label: 'Deneyim', href: '/deneyim', iconName: 'Award' },
-  { label: 'Blog', href: '/blog', iconName: 'BookOpen' },
-  { label: 'İletişim', href: '/iletisim', iconName: 'MessageSquare' },
+  { label: 'Anasayfa', href: '/#anasayfa-section', iconName: 'Home' },
+  { label: 'Hakkımda', href: '/#hakkimda-section', iconName: 'User' },
+  { label: 'Hizmetler', href: '/#hizmetler-section', iconName: 'Sparkles' },
+  { label: 'Projeler', href: '/#projeler-section', iconName: 'Laptop' },
+  { label: 'Yetenekler', href: '/#yetenekler-section', iconName: 'Lightbulb' },
+  { label: 'Deneyim', href: '/#deneyim-section', iconName: 'Award' },
+  { label: 'Özgeçmiş', href: '/#ozgecmis-section', iconName: 'FileText' }, // Changed from 'DownloadIcon' to 'FileTextIcon' as there is no DownloadIcon
+  { label: 'Blog', href: '/#blog-section', iconName: 'BookOpen' },
+  { label: 'İletişim', href: '/#iletisim-section', iconName: 'MessageSquare' },
 ];
 
 const adminNavItemData = { label: 'Admin Panel', href: '/admin', iconName: 'Shield' };
@@ -50,36 +52,54 @@ interface HeaderProps {
 }
 
 export default function Header({ initialIsAuthenticated }: HeaderProps) {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<FirebaseUserType | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
-  // isSubmittingLogout state'i kaldırıldı
 
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
 
   useEffect(() => {
-    console.log("[Header] Initial prop for isAuthenticated:", initialIsAuthenticated);
-    // Firebase auth state listener
     const unsubscribe = onAuthStateChanged(firebaseClientAuth, (user) => {
-      console.log("[Header onAuthStateChanged] Firebase user:", user ? user.uid : null);
       setCurrentUser(user);
     });
     return () => unsubscribe();
   }, []);
 
-  // currentUser null ise initialIsAuthenticated'ı kontrol et.
-  // Bu, sayfa ilk yüklendiğinde ve onAuthStateChanged henüz çalışmadığında sunucu tarafı bilgisini kullanır.
   const isAuthenticated = currentUser !== null;
-  console.log("[Header] Rendering. currentUser:", currentUser ? currentUser.uid : null, "Calculated isAuthenticated:", isAuthenticated, "Prop initialIsAuthenticated:", initialIsAuthenticated);
-
 
   const NavLink = ({ href, children, onClick, className, disabled, iconName }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string, disabled?: boolean, iconName?: string }) => {
     const IconComponent = getLucideIcon(iconName);
-    const isActive = pathname === href;
+    const isActive = pathname === href || (pathname === '/' && href === '/#anasayfa-section'); // Highlight anasayfa when on root
+
+    // For same-page anchor links, we don't want full page reload behavior of NextLink sometimes
+    // but for SPA-like scrolling, standard <a> or NextLink with just hash works.
+    // NextLink is generally preferred for its prefetching etc.
+    const isSamePageAnchor = href.startsWith('/#') && pathname === '/';
+    
+    const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        if (onClick) onClick();
+        if (href.includes('#')) {
+            const targetId = href.substring(href.indexOf('#') + 1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                e.preventDefault(); // Prevent default if we are handling scroll
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+                // Update URL hash without page reload for better UX if needed
+                if (window.history.pushState) {
+                    window.history.pushState(null, '', href);
+                } else {
+                    window.location.hash = href;
+                }
+            }
+        }
+        // For non-hash links or if target not found, let NextLink handle it
+    };
+
+
     return (
       <Button asChild variant="ghost" className={cn(
         "text-foreground hover:bg-accent/10 hover:text-accent-foreground",
@@ -89,7 +109,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
         className,
         disabled && "opacity-50 cursor-not-allowed"
       )} disabled={disabled} >
-        <Link href={href} onClick={onClick}>
+        <Link href={href} onClick={handleLinkClick}>
           {IconComponent && <IconComponent className={cn("h-5 w-5", children ? "mr-2" : "")} />}
           <span>{children}</span>
         </Link>
@@ -130,26 +150,21 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
     const password = formData.get('password') as string;
 
     try {
-      console.log("[Header handleLoginSubmit] Attempting client-side login...");
       const userCredential = await signInWithEmailAndPassword(firebaseClientAuth, email, password);
-      console.log("[Header handleLoginSubmit] Client-side login successful for UID:", userCredential.user.uid);
-
       const idToken = await userCredential.user.getIdToken();
       const sessionResult = await createSession(idToken);
 
       if (sessionResult.success) {
         setIsLoginDialogOpen(false);
         toast({ title: "Giriş Başarılı!", description: "Admin paneline yönlendiriliyorsunuz..." });
-        // onAuthStateChanged currentUser'ı güncelleyeceği için isAuthenticated dolaylı olarak güncellenecek
         router.push('/admin');
         router.refresh(); 
       } else {
         setLoginError(sessionResult.error || "Giriş yapılamadı. Lütfen tekrar deneyin.");
         toast({ title: "Giriş Başarısız", description: sessionResult.error || "Bir hata oluştu.", variant: "destructive" });
-        await firebaseClientAuth.signOut(); // Client-side signOut if server session fails
+        await firebaseClientAuth.signOut();
       }
     } catch (error: any) {
-      console.error("[Header handleLoginSubmit] Login error:", error);
       let message = "Giriş sırasında bir hata oluştu.";
       if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
         message = "E-posta veya şifre hatalı.";
@@ -161,25 +176,20 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
     }
   };
 
-  // handleHeaderLogout fonksiyonu kaldırıldı
-
   return (
     <>
       <header className="bg-card shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-headline font-bold text-primary" onClick={() => setIsMobileMenuOpen(false)}>
+          <Link href="/#anasayfa-section" className="text-2xl font-headline font-bold text-primary" onClick={() => setIsMobileMenuOpen(false)}>
             BenimSitem
           </Link>
 
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-1 items-center flex-wrap">
             {renderNavItems(staticNavItems, false)}
-
             {isAuthenticated ? (
               <NavLink key={`admin-panel-link-desktop-${isAuthenticated.toString()}`} href={adminNavItemData.href} iconName={adminNavItemData.iconName}>
                 {adminNavItemData.label}
               </NavLink>
-              // Çıkış Yap butonu buradan kaldırıldı
             ) : (
               <Button variant="default" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin}>
                 {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-5 w-5" />}
@@ -188,7 +198,6 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
             )}
           </nav>
 
-          {/* Mobile Navigation Trigger */}
           <div className="md:hidden">
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
@@ -199,21 +208,19 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
               <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-card">
                 <SheetHeader className="p-4 border-b">
                    <SheetTitle asChild>
-                      <Link href="/" className="text-xl font-headline font-bold text-primary" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Link href="/#anasayfa-section" className="text-xl font-headline font-bold text-primary" onClick={() => setIsMobileMenuOpen(false)}>
                         BenimSitem
                       </Link>
                     </SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col space-y-1 px-2 py-4">
                   {renderNavItems(staticNavItems, true)}
-
                   {isAuthenticated ? (
                     <SheetClose asChild>
                       <NavLink key={`admin-panel-link-mobile-${isAuthenticated.toString()}`} href={adminNavItemData.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base" iconName={adminNavItemData.iconName}>
                         {adminNavItemData.label}
                       </NavLink>
                     </SheetClose>
-                    // Çıkış Yap butonu buradan kaldırıldı
                   ) : (
                      <SheetClose asChild>
                         <Button variant="default" onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }} className="text-base justify-start w-full mt-2" disabled={isSubmittingLogin}>
@@ -267,3 +274,5 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
     </>
   );
 }
+
+    

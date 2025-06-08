@@ -7,6 +7,10 @@ body {
   font-family: 'PT Sans', sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 @layer base {
   :root { /* Default (Light) Theme */
     --background: 220 17% 95%; /* Light Gray #F0F2F5 */
@@ -63,15 +67,15 @@ body {
     --card-title-text: hsl(var(--card-foreground));
     --card-description-text: hsl(var(--muted-foreground));
 
-    --blockquote-bg: hsl(var(--secondary) / 0.5);
-    --blockquote-border: hsl(var(--accent));
-    --blockquote-text: hsl(var(--foreground) / 0.85);
-    --code-bg: hsl(var(--muted));
-    --code-text: hsl(var(--muted-foreground));
-    --separator-color: hsl(var(--border));
-    --toast-bg: hsl(var(--card));
-    --toast-text: hsl(var(--card-foreground));
-    --toast-border: hsl(var(--border));
+    --blockquote-bg: hsl(var(--secondary) / 0.5); /* Example: 220 10% 90% / 0.5 */
+    --blockquote-border: hsl(var(--accent)); /* Example: 174 100% 29% */
+    --blockquote-text: hsl(var(--foreground) / 0.85); /* Example: 220 10% 20% / 0.85 */
+    --code-bg: hsl(var(--muted)); /* Example: 220 10% 85% */
+    --code-text: hsl(var(--muted-foreground)); /* Example: 220 10% 45% */
+    --separator-color: hsl(var(--border)); /* Example: 220 10% 80% */
+    --toast-bg: hsl(var(--card)); /* Example: 0 0% 100% */
+    --toast-text: hsl(var(--card-foreground)); /* Example: 220 10% 20% */
+    --toast-border: hsl(var(--border)); /* Example: 220 10% 80% */
   }
 
   .dark {
@@ -111,7 +115,7 @@ body {
     --sidebar-ring: 217.2 91.2% 59.8%;
 
     /* Fine-tuning & Specific Element Colors for Dark Base */
-    --link-text: hsl(var(--primary)); /* Brighter link for dark */
+    --link-text: hsl(var(--primary)); 
     --link-hover-text: hsl(var(--primary) / 0.8);
     --button-primary-bg: hsl(var(--primary));
     --button-primary-text: hsl(var(--primary-foreground));
@@ -126,15 +130,15 @@ body {
     --card-title-text: hsl(var(--card-foreground));
     --card-description-text: hsl(var(--muted-foreground));
 
-    --blockquote-bg: hsl(var(--secondary) / 0.5);
-    --blockquote-border: hsl(var(--accent));
-    --blockquote-text: hsl(var(--foreground) / 0.9);
-    --code-bg: hsl(var(--muted));
-    --code-text: hsl(var(--muted-foreground));
-    --separator-color: hsl(var(--border));
-    --toast-bg: hsl(var(--card));
-    --toast-text: hsl(var(--card-foreground));
-    --toast-border: hsl(var(--border));
+    --blockquote-bg: hsl(var(--secondary) / 0.5); /* Example: 0 0% 14.9% / 0.5 */
+    --blockquote-border: hsl(var(--accent)); /* Example: 0 0% 14.9% */
+    --blockquote-text: hsl(var(--foreground) / 0.9); /* Example: 0 0% 98% / 0.9 */
+    --code-bg: hsl(var(--muted)); /* Example: 0 0% 14.9% */
+    --code-text: hsl(var(--muted-foreground)); /* Example: 0 0% 63.9% */
+    --separator-color: hsl(var(--border)); /* Example: 0 0% 14.9% */
+    --toast-bg: hsl(var(--card)); /* Example: 0 0% 3.9% */
+    --toast-text: hsl(var(--card-foreground)); /* Example: 0 0% 98% */
+    --toast-border: hsl(var(--border)); /* Example: 0 0% 14.9% */
   }
 
   .theme-ocean-depth {
@@ -157,6 +161,7 @@ body {
     --border: 205 40% 30%; 
     --input: 205 40% 20%; 
     --ring: 180 70% 65%; 
+    --radius: 0.75rem; /* Ocean Depth specific radius */
     /* Chart Colors */
     --chart-1: 30 85% 60%; 
     --chart-2: 180 65% 55%; 
@@ -175,7 +180,7 @@ body {
 
     /* Fine-tuning & Specific Element Colors for Ocean Depth */
     --link-text: hsl(var(--primary));
-    --link-hover-text: hsl(180 70% 65%); /* Brighter hover for primary */
+    --link-hover-text: hsl(180 70% 65%);
     --button-primary-bg: hsl(var(--primary));
     --button-primary-text: hsl(var(--primary-foreground));
     --button-primary-hover-bg: hsl(180 65% 50%);
@@ -186,18 +191,18 @@ body {
     --input-border: hsl(var(--border));
     --input-text: hsl(var(--foreground));
     --input-focus-ring: hsl(var(--ring));
-    --card-title-text: hsl(var(--primary)); /* Card titles with primary color */
+    --card-title-text: hsl(var(--primary)); 
     --card-description-text: hsl(var(--muted-foreground));
 
-    --blockquote-bg: hsl(var(--secondary) / 0.7);
-    --blockquote-border: hsl(var(--accent));
-    --blockquote-text: hsl(var(--foreground) / 0.9);
-    --code-bg: hsl(205 40% 15%); /* Darker code blocks */
+    --blockquote-bg: hsl(var(--secondary) / 0.7); /* 210 40% 25% / 0.7 */
+    --blockquote-border: hsl(var(--accent)); /* 30 85% 60% */
+    --blockquote-text: hsl(var(--foreground) / 0.9); /* 200 20% 88% / 0.9 */
+    --code-bg: hsl(205 40% 15%); 
     --code-text: hsl(200 20% 80%);
-    --separator-color: hsl(var(--border) / 0.5);
-    --toast-bg: hsl(var(--card) / 0.9);
-    --toast-text: hsl(var(--card-foreground));
-    --toast-border: hsl(var(--border));
+    --separator-color: hsl(var(--border) / 0.5); /* 205 40% 30% / 0.5 */
+    --toast-bg: hsl(var(--card) / 0.9); /* 205 45% 18% / 0.9 */
+    --toast-text: hsl(var(--card-foreground)); /* 200 20% 88% */
+    --toast-border: hsl(var(--border)); /* 205 40% 30% */
   }
 
   .theme-cyber-punk {
@@ -220,6 +225,7 @@ body {
     --border: 270 50% 25%; 
     --input: 270 50% 15%; 
     --ring: 300 100% 75%; 
+    --radius: 0.25rem; /* Cyberpunk specific sharp radius */
     /* Chart Colors */
     --chart-1: 300 100% 70%; 
     --chart-2: 180 100% 50%; 
@@ -237,30 +243,30 @@ body {
     --sidebar-ring: 300 100% 75%; 
 
     /* Fine-tuning & Specific Element Colors for Cyber Punk */
-    --link-text: hsl(var(--accent)); /* Neon Yellow link */
-    --link-hover-text: hsl(60 100% 65%); /* Brighter Neon Yellow */
-    --button-primary-bg: hsl(var(--primary)); /* Neon Cyan */
+    --link-text: hsl(var(--accent)); 
+    --link-hover-text: hsl(60 100% 65%); 
+    --button-primary-bg: hsl(var(--primary)); 
     --button-primary-text: hsl(var(--primary-foreground));
     --button-primary-hover-bg: hsl(180 100% 45%);
-    --button-secondary-bg: hsl(var(--secondary)); /* Deep Electric Blue */
+    --button-secondary-bg: hsl(var(--secondary)); 
     --button-secondary-text: hsl(var(--secondary-foreground));
     --button-secondary-hover-bg: hsl(250 80% 15%);
     --input-bg: hsl(var(--input));
-    --input-border: hsl(var(--ring)); /* Border with ring color */
+    --input-border: hsl(var(--ring)); 
     --input-text: hsl(var(--foreground));
-    --input-focus-ring: hsl(var(--accent)); /* Focus ring with accent */
-    --card-title-text: hsl(var(--accent)); /* Card titles with accent color */
+    --input-focus-ring: hsl(var(--accent)); 
+    --card-title-text: hsl(var(--accent)); 
     --card-description-text: hsl(var(--muted-foreground));
 
-    --blockquote-bg: hsl(270 60% 12%);
+    --blockquote-bg: hsl(270 60% 12%); /* Darker purple */
     --blockquote-border: hsl(var(--primary)); /* Neon Cyan border */
-    --blockquote-text: hsl(300 100% 80%);
-    --code-bg: hsl(270 50% 8%); /* Even darker code blocks */
-    --code-text: hsl(180 100% 70%); /* Cyan code text */
-    --separator-color: hsl(var(--border) / 0.7);
-    --toast-bg: hsl(var(--card) / 0.95);
-    --toast-text: hsl(var(--accent));
-    --toast-border: hsl(var(--primary));
+    --blockquote-text: hsl(300 100% 80%); /* Bright pinkish text */
+    --code-bg: hsl(270 50% 8%); 
+    --code-text: hsl(180 100% 70%); 
+    --separator-color: hsl(var(--border) / 0.7); /* 270 50% 25% / 0.7 */
+    --toast-bg: hsl(var(--card) / 0.95); /* 270 60% 10% / 0.95 */
+    --toast-text: hsl(var(--accent)); /* Neon Yellow text */
+    --toast-border: hsl(var(--primary)); /* Neon Cyan border */
   }
 }
 
@@ -272,3 +278,5 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+    
