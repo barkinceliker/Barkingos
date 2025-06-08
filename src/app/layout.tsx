@@ -58,7 +58,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  console.time("getThemeSettingLayout");
   const themeSetting = await getThemeSetting();
+  console.timeEnd("getThemeSettingLayout");
   const themeClass = themeSetting.activeTheme === 'default' ? '' : `theme-${themeSetting.activeTheme}`;
 
   return (
@@ -77,3 +79,4 @@ export default async function RootLayout({
     </html>
   );
 }
+

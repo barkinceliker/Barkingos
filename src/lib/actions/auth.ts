@@ -91,7 +91,10 @@ export async function checkAuthStatus() {
   }
 
   try {
+    console.time("verifyIdToken"); // Zamanlayıcıyı başlat
     const decodedToken = await admin.auth().verifyIdToken(token);
+    console.timeEnd("verifyIdToken"); // Zamanlayıcıyı bitir ve süreyi logla
+
     if (decodedToken && decodedToken.uid) {
        console.log(`[AuthActions checkAuthStatus] Auth token cookie is valid for UID: ${decodedToken.uid}.`);
       return { isAuthenticated: true, uid: decodedToken.uid };
@@ -100,6 +103,7 @@ export async function checkAuthStatus() {
     cookies().delete(COOKIE_NAME);
     return { isAuthenticated: false };
   } catch (error: any) {
+    console.timeEnd("verifyIdToken"); // Hata durumunda da zamanlayıcıyı bitir
     let detailedErrorMessage = (error as Error).message;
     if (error.code) {
       detailedErrorMessage = `Code: ${error.code}, Message: ${detailedErrorMessage}`;
@@ -110,3 +114,4 @@ export async function checkAuthStatus() {
     return { isAuthenticated: false };
   }
 }
+
