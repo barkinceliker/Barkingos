@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ResumePageContent, updateResumeContent } from "@/lib/actions/resume-actions";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Save, Loader2, ClipboardUser } from "lucide-react";
+import { Save, Loader2, ClipboardList } from "lucide-react"; // Corrected import
 import { useRouter } from "next/navigation";
 
 const resumePageContentSchema = z.object({
@@ -117,7 +117,7 @@ export default function EditResumeForm({ initialData }: EditResumeFormProps) {
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="font-headline text-xl text-gradient flex items-center">
-              <ClipboardUser className="mr-3 h-6 w-6" /> Kişisel Bilgiler
+              <ClipboardList className="mr-3 h-6 w-6" /> Kişisel Bilgiler {/* Corrected icon usage */}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -275,5 +275,4 @@ export default function EditResumeForm({ initialData }: EditResumeFormProps) {
     </Form>
   );
 }
-
     
