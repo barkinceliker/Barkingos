@@ -121,7 +121,7 @@ export default async function SinglePageApp() {
       </section>
 
       {/* Hakkımda Section */}
-      <section id="hakkimda-section" className="py-16 md:py-20 lg:py-24">
+      <section id="hakkimda-section" className="py-16 md:py-20 lg:py-24 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))]">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">{hakkimdaContent.pageTitle}</h2>
@@ -187,7 +187,7 @@ export default async function SinglePageApp() {
       </section>
 
       {/* Hizmetler Section */}
-      <section id="hizmetler-section" className="py-16 md:py-20 lg:py-24 bg-secondary/30">
+      <section id="hizmetler-section" className="py-16 md:py-20 lg:py-24 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))]">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Hizmetlerim</h2>
@@ -227,7 +227,7 @@ export default async function SinglePageApp() {
       </section>
 
       {/* Projeler Section */}
-      <section id="projeler-section" className="py-16 md:py-20 lg:py-24">
+      <section id="projeler-section" className="py-16 md:py-20 lg:py-24 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))]">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Projelerim</h2>
@@ -307,7 +307,7 @@ export default async function SinglePageApp() {
       </section>
 
       {/* Yetenekler Section */}
-      <section id="yetenekler-section" className="py-16 md:py-20 lg:py-24 bg-background">
+      <section id="yetenekler-section" className="py-16 md:py-20 lg:py-24 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))]">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Yeteneklerim</h2>
@@ -360,7 +360,7 @@ export default async function SinglePageApp() {
       </section>
 
       {/* Deneyim Section */}
-      <section id="deneyim-section" className="py-16 md:py-20 lg:py-24 bg-secondary/30">
+      <section id="deneyim-section" className="py-16 md:py-20 lg:py-24 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))]">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Deneyimlerim</h2>
@@ -418,7 +418,7 @@ export default async function SinglePageApp() {
       </section>
 
       {/* Özgeçmiş Section */}
-      <section id="ozgecmis-section" className="py-16 md:py-20 lg:py-24">
+      <section id="ozgecmis-section" className="py-16 md:py-20 lg:py-24 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))]">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Özgeçmişim</h2>
@@ -496,7 +496,7 @@ export default async function SinglePageApp() {
       </section>
 
       {/* Blog Section */}
-      <section id="blog-section" className="py-16 md:py-20 lg:py-24 bg-secondary/30">
+      <section id="blog-section" className="py-16 md:py-20 lg:py-24 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))]">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Blog Yazılarım</h2>
@@ -550,7 +550,7 @@ export default async function SinglePageApp() {
       </section>
 
       {/* İletişim Section */}
-      <section id="iletisim-section" className="py-16 md:py-20 lg:py-24">
+      <section id="iletisim-section" className="py-16 md:py-20 lg:py-24 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))]">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">İletişim</h2>

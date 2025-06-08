@@ -64,7 +64,7 @@ export default async function ResumePage() {
   const skillsArray = resumeData.skillsString ? resumeData.skillsString.split(',').map(s => s.trim()).filter(s => s) : [];
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-12 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))] p-4 md:p-8">
       <section className="text-center">
         <h1 className="text-4xl md:text-5xl font-headline font-bold text-gradient mb-4">Özgeçmişim</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">

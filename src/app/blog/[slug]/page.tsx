@@ -38,7 +38,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
 
   return (
-    <article className="max-w-4xl mx-auto space-y-8">
+    <article className="max-w-4xl mx-auto space-y-8 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))] p-4 md:p-8">
       <header className="space-y-4">
         <Image
           src={post.imageUrl || 'https://placehold.co/1200x600.png'}
@@ -99,3 +99,4 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
     description: post.summary || post.content.substring(0, 160).replace(/<[^>]*>?/gm, ''),
   };
 }
+
