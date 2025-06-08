@@ -11,41 +11,48 @@ const projectIdEnv = process.env.FIREBASE_PROJECT_ID;
 const clientEmailEnv = process.env.FIREBASE_CLIENT_EMAIL;
 const privateKeyEnv = process.env.FIREBASE_PRIVATE_KEY;
 
-console.log("FirebaseAdmin: Modül yükleniyor. Firebase Admin SDK başlatılmaya çalışılıyor.");
+console.log("FirebaseAdmin: Module loading. Attempting to initialize Firebase Admin SDK.");
 
 if (!admin.apps.length) {
-  console.log("FirebaseAdmin: Mevcut Firebase Admin uygulaması yok. Yeni bir tane başlatılıyor.");
+  console.log("FirebaseAdmin: No existing Firebase Admin app found. Initializing a new one.");
   let serviceAccount: ServiceAccount | undefined = undefined;
 
   if (serviceAccountKeyString) {
-    console.log(`FirebaseAdmin: FIREBASE_SERVICE_ACCOUNT_KEY_JSON AYARLI. Uzunluk: ${serviceAccountKeyString.length}. İçeriğin ilk 20 karakteri: "${serviceAccountKeyString.substring(0, 20)}..."`);
+    console.log(`FirebaseAdmin: FIREBASE_SERVICE_ACCOUNT_KEY_JSON IS SET. Length: ${serviceAccountKeyString.length}. First 20 chars of content: "${serviceAccountKeyString.substring(0, 20)}..."`);
     try {
       serviceAccount = JSON.parse(serviceAccountKeyString);
     } catch (e: any) {
-      const parseErrorMsg = `FIREBASE_SERVICE_ACCOUNT_KEY_JSON parse edilemedi: ${e.message}`;
-      console.error("FirebaseAdmin: KRİTİK_JSON_PARSE_HATASI -", parseErrorMsg);
+      const parseErrorMsg = `Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY_JSON: ${e.message}`;
+      console.error("FirebaseAdmin: CRITICAL_JSON_PARSE_ERROR -", parseErrorMsg);
       initializationError = parseErrorMsg;
     }
   } else if (projectIdEnv && clientEmailEnv && privateKeyEnv) {
-    console.log("FirebaseAdmin: FIREBASE_SERVICE_ACCOUNT_KEY_JSON tanımsız. Ayrı Firebase ortam değişkenleri (FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY) kullanılmaya çalışılıyor.");
+    console.log("FirebaseAdmin: FIREBASE_SERVICE_ACCOUNT_KEY_JSON is undefined. Attempting to use individual Firebase environment variables (FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY).");
     serviceAccount = {
       projectId: projectIdEnv,
       clientEmail: clientEmailEnv,
-      // Ortam değişkeninden gelen private key'deki \n literallerini gerçek yeni satır karakterlerine dönüştür
+      // Replace \n literals in private key from environment variable
       privateKey: privateKeyEnv.replace(/\\n/g, '\n'),
     };
-    console.log("FirebaseAdmin: Servis hesabı nesnesi ayrı ortam değişkenlerinden oluşturuldu. Proje ID:", serviceAccount.projectId);
+    console.log("FirebaseAdmin: Service account object created from individual environment variables. Project ID:", serviceAccount.projectId);
   } else {
-    initializationError = "Firebase Admin SDK başlatılamadı: Ne FIREBASE_SERVICE_ACCOUNT_KEY_JSON ne de ayrı (FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY) ortam değişkenleri tam olarak ayarlanmamış.";
-    console.error("FirebaseAdmin: KRİTİK_ENV_DEĞİŞKENİ_EKSİK -", initializationError);
+    let baseMessage = "Firebase Admin SDK could not be initialized: Critical Firebase environment variables are missing. ";
+    if (process.env.NETLIFY === 'true') {
+      baseMessage += "Please ensure FIREBASE_SERVICE_ACCOUNT_KEY_JSON (or individual FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY) is correctly set in your Netlify site's 'Build & deploy' > 'Environment' settings. ";
+    } else {
+      baseMessage += "Ensure FIREBASE_SERVICE_ACCOUNT_KEY_JSON (or individual FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY) is set in your environment. ";
+    }
+    baseMessage += "The SDK needs either the full JSON key or all three individual project_id, client_email, and private_key variables.";
+    initializationError = baseMessage;
+    console.error("FirebaseAdmin: CRITICAL_ENV_VARIABLES_MISSING -", initializationError);
   }
 
   if (serviceAccount && !initializationError) {
     try {
-      console.log("FirebaseAdmin: BAŞLATMA_ÖNCESİ - Servis Hesabı Kullanılıyor. SA'dan Proje ID:", serviceAccount.projectId);
+      console.log("FirebaseAdmin: PRE_INITIALIZATION - Using Service Account. Project ID from SA:", serviceAccount.projectId);
       if (!serviceAccount.projectId || !serviceAccount.clientEmail || !serviceAccount.privateKey) {
-        const missingFieldsMsg = "Servis hesabı bilgileri gerekli alanlardan bir veya daha fazlasını (project_id, client_email, private_key) içermiyor.";
-        console.error("FirebaseAdmin: KRİTİK_SA_DOĞRULAMA_HATASI -", missingFieldsMsg);
+        const missingFieldsMsg = "Service account credentials object is missing one or more required fields (project_id, client_email, private_key).";
+        console.error("FirebaseAdmin: CRITICAL_SA_VALIDATION_ERROR -", missingFieldsMsg);
         initializationError = missingFieldsMsg;
         throw new Error(missingFieldsMsg); // Throw to prevent initialization attempt
       }
@@ -54,32 +61,34 @@ if (!admin.apps.length) {
         credential: admin.credential.cert(serviceAccount),
       });
 
-      console.log("FirebaseAdmin: BAŞLATMA_SONRASI - Firebase Admin SDK başarıyla başlatıldı. Uygulama adı:", firebaseAdminApp.name);
+      console.log("FirebaseAdmin: POST_INITIALIZATION - Firebase Admin SDK initialized successfully. App name:", firebaseAdminApp.name);
 
+      // A simple check to see if the app object seems valid
       if (firebaseAdminApp && typeof firebaseAdminApp.INTERNAL === 'object' && firebaseAdminApp.INTERNAL !== null) {
-        console.log("FirebaseAdmin: BAŞLATMA_SONRASI_KONTROL - firebaseAdminApp.INTERNAL tanımlı. SDK muhtemelen doğru başlatıldı.");
+        console.log("FirebaseAdmin: POST_INITIALIZATION_CHECK - firebaseAdminApp.INTERNAL is defined. SDK likely initialized correctly.");
       } else {
-        const internalErrorMsg = "Başlatma sonrası Firebase Admin App INTERNAL nesnesi tanımsız. Bu genellikle kimlik bilgileriyle veya SDK'nın temel kurulumuyla ilgili bir sorunu gösterir.";
-        console.error("FirebaseAdmin: KRİTİK BAŞLATMA_SONRASI_KONTROL -", internalErrorMsg);
-        initializationError = initializationError || internalErrorMsg;
+        const internalErrorMsg = "Post-initialization Firebase Admin App INTERNAL object is undefined. This usually indicates an issue with credentials or the core setup of the SDK.";
+        console.error("FirebaseAdmin: CRITICAL POST_INITIALIZATION_CHECK -", internalErrorMsg);
+        initializationError = initializationError || internalErrorMsg; // Preserve earlier error if any
       }
     } catch (error: any) {
-      if (!initializationError) {
-        initializationError = `Firebase Admin SDK Başlatma Hatası: ${error.message}`;
+      if (!initializationError) { // Only set if not already set by a more specific check
+        initializationError = `Firebase Admin SDK Initialization Error: ${error.message}`;
       }
-      console.error("FirebaseAdmin: KRİTİK BAŞLATMA HATASI - ", initializationError, "Hata detayı:", error);
+      console.error("FirebaseAdmin: CRITICAL INITIALIZATION_FAILURE - ", initializationError, "Error details:", error);
     }
   } else if (!initializationError) { // serviceAccount is undefined but no specific error was set
-     initializationError = "Firebase Admin SDK için servis hesabı bilgileri oluşturulamadı.";
-     console.error("FirebaseAdmin: KRİTİK -", initializationError);
+     initializationError = "Could not form service account credentials for Firebase Admin SDK.";
+     console.error("FirebaseAdmin: CRITICAL -", initializationError);
   }
 
 } else {
-  console.log("FirebaseAdmin: Firebase Admin uygulaması zaten başlatılmış. Mevcut uygulama kullanılıyor.");
+  console.log("FirebaseAdmin: Firebase Admin app already initialized. Using existing app.");
   firebaseAdminApp = admin.app();
   if (firebaseAdminApp && !(typeof firebaseAdminApp.INTERNAL === 'object' && firebaseAdminApp.INTERNAL !== null) && !initializationError) {
-    initializationError = "Mevcut Firebase Admin App'in INTERNAL nesnesi tanımsız. SDK tam olarak işlevsel olmayabilir.";
-    console.warn("FirebaseAdmin: UYARI -", initializationError);
+    // This case is less likely if admin.apps.length > 0, but good to have a check
+    initializationError = "Existing Firebase Admin App's INTERNAL object is undefined. SDK might not be fully functional.";
+    console.warn("FirebaseAdmin: WARNING -", initializationError);
   }
 }
 
@@ -89,11 +98,13 @@ export function getAdminInitializationError(): string | null {
   if (initializationError) {
     return initializationError;
   }
+  // If no specific error was caught during init, check app validity
   if (!firebaseAdminApp) {
-    return "Firebase Admin App (firebaseAdminApp) tanımsız. Başlatma muhtemelen sessizce başarısız oldu veya denenmedi.";
+    return "Firebase Admin App (firebaseAdminApp) is undefined. Initialization likely failed silently or was not attempted.";
   }
+  // This check for `INTERNAL` is a heuristic. A more robust check might involve trying a simple Firebase Admin operation.
   if (!(typeof firebaseAdminApp.INTERNAL === 'object' && firebaseAdminApp.INTERNAL !== null)) {
-    return "Firebase Admin App'in INTERNAL nesnesi tanımsız. SDK tam olarak işlevsel olmayabilir (kimlik bilgileri veya kurulum sorunu).";
+    return "Firebase Admin App's INTERNAL object is undefined. SDK might not be fully functional (credentials or setup issue).";
   }
-  return null;
+  return null; // No error
 }
