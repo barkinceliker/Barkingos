@@ -111,23 +111,22 @@ export async function updateThemeSetting(themeName: ThemeName) {
     console.log("[settings-actions] updateThemeSetting: Firestore DB instance obtained.");
 
     const docRef = db.collection(SITE_SETTINGS_COLLECTION).doc(THEME_DOCUMENT_ID);
-    console.log(`[settings-actions] updateThemeSetting: Attempting to set theme '${validation.data.activeTheme}' in Firestore document '${SITE_SETTINGS_COLLECTION}/${THEME_DOCUMENT_ID}'.`);
-
-    await docRef.set({
+    const dataToSave = {
       activeTheme: validation.data.activeTheme,
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
-
-    console.log(`[settings-actions] updateThemeSetting: Theme successfully updated in DB to: ${validation.data.activeTheme}.`);
+    };
+    
+    console.log(`[settings-actions] updateThemeSetting: Firestore'a yazılacak veri:`, JSON.stringify(dataToSave));
+    await docRef.set(dataToSave, { merge: true });
+    console.log(`[settings-actions] updateThemeSetting: Tema Firestore'da başarıyla güncellendi: ${validation.data.activeTheme}.`);
 
     try {
-      console.log("[settings-actions] updateThemeSetting: Attempting to revalidate paths ('/', '/admin', 'layout')...");
+      console.log("[settings-actions] updateThemeSetting: Yollar yeniden doğrulanmaya çalışılıyor ('/', '/admin', 'layout')...");
       revalidatePath('/', 'layout'); 
       revalidatePath('/admin');      
-      console.log("[settings-actions] updateThemeSetting: Paths revalidated successfully.");
+      console.log("[settings-actions] updateThemeSetting: Yollar başarıyla yeniden doğrulandı.");
     } catch (revalidateError: any) {
-      console.warn(`[settings-actions] updateThemeSetting: Path revalidation failed but db update was successful. Error: ${revalidateError.message}`, revalidateError.stack);
-      // Revalidation hatası kritik değilse devam et, ama logla.
+      console.warn(`[settings-actions] updateThemeSetting: Yol yeniden doğrulama başarısız oldu ancak veritabanı güncellemesi başarılıydı. Hata: ${revalidateError.message}`, revalidateError.stack);
     }
 
     return { success: true, message: 'Tema başarıyla güncellendi.' };
