@@ -35,7 +35,7 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
-import { signInWithEmailAndPassword, User as FirebaseUserType, signOut as firebaseSignOut, onAuthStateChanged } from 'firebase/auth';
+import { signInWithEmailAndPassword, User as FirebaseUserType, signOut as firebaseSignOut, onAuthStateChanged } from 'firebase/auth'; // Corrected import
 import { auth as firebaseClientAuth } from '@/lib/firebase';
 import { createSession, logout as serverLogout } from '@/lib/actions/auth';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
@@ -118,74 +118,67 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
 
   const NavLink: React.FC<NavLinkProps> = ({ href, children, onClick, className, disabled, iconName, isAction }) => {
     const IconComponent = getLucideIcon(iconName);
-    const currentPathnameFromHook = usePathname(); // Hook at the top level of NavLink
+    const currentPathnameFromHook = usePathname();
     const [isActiveClient, setIsActiveClient] = useState(false);
-  
-    // Memoized function to calculate and set active state
-    const handleActivityUpdate = useCallback(() => {
-      if (typeof window === 'undefined' || !href) {
-        setIsActiveClient(prev => !prev ? prev : false);
-        return;
-      }
-  
-      let calculatedIsActive = false;
-      const currentHash = window.location.hash;
-      const currentWindowPathname = window.location.pathname;
-  
-      if (href.startsWith('/#') && currentWindowPathname === '/') {
-        const targetHash = href.substring(href.indexOf('#'));
-        calculatedIsActive = currentHash === targetHash;
-        // Special case for anasayfa-section when hash might be empty or just '#' for root
-        if (href === '/#anasayfa-section' && (currentHash === '' || currentHash === '#')) {
-          calculatedIsActive = true;
-        }
-      } else if (!href.startsWith('/#')) {
-        // For non-hash links, compare with pathname from usePathname()
-        calculatedIsActive = currentPathnameFromHook === href;
-      }
-      setIsActiveClient(prev => prev === calculatedIsActive ? prev : calculatedIsActive);
-    }, [href, currentPathnameFromHook]); // currentPathnameFromHook is now a stable dependency
-  
-    // Effect for initial active state check and event listeners
+
     useEffect(() => {
-      handleActivityUpdate(); // Initial check
-  
-      // Event listeners
+      const handleActivityUpdate = () => {
+        if (typeof window === 'undefined' || !href) {
+          setIsActiveClient(prev => !prev ? prev : false); // Avoid unnecessary updates if no href
+          return;
+        }
+
+        let calculatedIsActive = false;
+        const currentHash = window.location.hash;
+        const currentWindowPathname = window.location.pathname;
+
+        if (href.startsWith('/#') && currentWindowPathname === '/') {
+          const targetHash = href.substring(href.indexOf('#'));
+          calculatedIsActive = currentHash === targetHash;
+          if (href === '/#anasayfa-section' && (currentHash === '' || currentHash === '#')) {
+            calculatedIsActive = true;
+          }
+        } else if (!href.startsWith('/#')) {
+          calculatedIsActive = currentPathnameFromHook === href;
+        }
+        setIsActiveClient(prev => prev === calculatedIsActive ? prev : calculatedIsActive);
+      };
+
+      handleActivityUpdate();
+
       window.addEventListener('hashchange', handleActivityUpdate);
-      window.addEventListener('popstate', handleActivityUpdate); // Handles back/forward navigation
-  
+      window.addEventListener('popstate', handleActivityUpdate);
+
       return () => {
         window.removeEventListener('hashchange', handleActivityUpdate);
         window.removeEventListener('popstate', handleActivityUpdate);
       };
-    }, [handleActivityUpdate]); // Dependency is the memoized function
-  
+    }, [href, currentPathnameFromHook]);
+
+
     const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement, MouseEvent>) => {
       const currentHref = href || '';
-  
+
       if (currentHref.startsWith('/#')) {
         const targetId = currentHref.substring(currentHref.indexOf('#') + 1);
         const targetElement = document.getElementById(targetId);
         if (targetElement) {
           e.preventDefault();
           targetElement.scrollIntoView({ behavior: 'smooth' });
-          
-          // Update URL hash only if on the main page (/)
+
           if (window.location.pathname === '/') {
             window.history.pushState(null, '', currentHref);
           } else {
-            // If not on main page, navigate to main page with hash
-            router.push(currentHref); 
+            router.push(currentHref);
           }
         }
       }
-  
+
       if (onClick) {
         onClick(e);
       }
-      // No need to manually call handleActivityUpdate here as hashchange/popstate or navigation will trigger it.
     }, [href, router, onClick]);
-  
+
     const commonClasses = cn(
       "text-foreground hover:bg-accent/10 hover:text-accent-foreground",
       "justify-start py-2 rounded-md",
@@ -193,7 +186,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       className,
       disabled && "opacity-50 cursor-not-allowed"
     );
-  
+
     if (isAction) {
       return (
         <Button
@@ -208,7 +201,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         </Button>
       );
     }
-  
+
     return (
       <Button
         asChild
@@ -224,7 +217,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       </Button>
     );
   };
-  
+
 
   const renderNavItemsForSheet = () => {
     return (
@@ -259,9 +252,9 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
               <Button
                 variant="default"
                 onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }}
-                className="w-full mt-2 py-2.5 px-4 text-base" 
+                className="w-full mt-2 py-2.5 px-4 text-base"
                 disabled={isSubmittingLogin}
-                aria-label="Giriş Yap" 
+                aria-label="Giriş Yap"
               >
                 {isSubmittingLogin ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <LogIn className="h-5 w-5 mr-2" />}
                 Giriş Yap
@@ -322,7 +315,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                   const targetId = hrefAttr.substring(hrefAttr.indexOf('#') + 1);
                   document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth'});
                   window.history.pushState(null, '', hrefAttr);
-              } else if (typeof window !== 'undefined' && window.location.pathname === '/') { 
+              } else if (typeof window !== 'undefined' && window.location.pathname === '/') {
                   const targetElement = document.getElementById('anasayfa-section');
                   if (targetElement) {
                       e.preventDefault();
@@ -330,7 +323,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                        window.history.pushState(null, '', '/#anasayfa-section');
                   }
               } else {
-                router.push('/#anasayfa-section'); 
+                router.push('/#anasayfa-section');
               }
             }}
             key={`site-title-${siteTitle}`}
@@ -382,7 +375,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                   onClick={() => setIsLoginDialogOpen(true)}
                   disabled={isSubmittingLogin}
                   className="p-2"
-                  aria-label="Giriş Yap" 
+                  aria-label="Giriş Yap"
                 >
                   {isSubmittingLogin ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="h-5 w-5" />}
                 </Button>
@@ -410,7 +403,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                                   const targetId = hrefAttr.substring(hrefAttr.indexOf('#') + 1);
                                   document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth'});
                                   window.history.pushState(null, '', hrefAttr);
-                              } else if (typeof window !== 'undefined' && window.location.pathname === '/') { 
+                              } else if (typeof window !== 'undefined' && window.location.pathname === '/') {
                                   const targetElement = document.getElementById('anasayfa-section');
                                   if (targetElement) {
                                       e.preventDefault();
@@ -418,7 +411,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                                        window.history.pushState(null, '', '/#anasayfa-section');
                                   }
                               } else {
-                                router.push('/#anasayfa-section'); 
+                                router.push('/#anasayfa-section');
                               }
                           }}
                           key={`site-title-mobile-${siteTitle}`}
@@ -480,3 +473,5 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     </>
   );
 }
+
+    
