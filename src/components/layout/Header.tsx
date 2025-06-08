@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { Menu, Loader2, LogIn, Shield, Home, User, Sparkles, Laptop, Lightbulb, Award, BookOpen, MessageSquare, Download as DownloadIcon, FileText as FileTextIcon } from 'lucide-react';
+import { Menu, Loader2, LogIn, Shield } from 'lucide-react'; // İkonları buradan alıyoruz
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -28,56 +28,73 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
 import { signInWithEmailAndPassword, onAuthStateChanged, User as FirebaseUserType } from 'firebase/auth';
 import { auth as firebaseClientAuth } from '@/lib/firebase';
-import { createSession } from '@/lib/actions/auth';
-import type { LucideIcon } from 'lucide-react';
+import { createSession, checkAuthStatus } from '@/lib/actions/auth'; // checkAuthStatus eklendi
+import { getAllNavItems, type NavItemInput } from '@/lib/actions/navigation-actions';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
-
-// Update nav items to point to sections on the main page
-const staticNavItems = [
-  { label: 'Anasayfa', href: '/#anasayfa-section', iconName: 'Home' },
-  { label: 'Hakkımda', href: '/#hakkimda-section', iconName: 'User' },
-  { label: 'Hizmetler', href: '/#hizmetler-section', iconName: 'Sparkles' },
-  { label: 'Projeler', href: '/#projeler-section', iconName: 'Laptop' },
-  { label: 'Yetenekler', href: '/#yetenekler-section', iconName: 'Lightbulb' },
-  { label: 'Deneyim', href: '/#deneyim-section', iconName: 'Award' },
-  { label: 'Özgeçmiş', href: '/#ozgecmis-section', iconName: 'FileText' }, // Changed from 'DownloadIcon' to 'FileTextIcon' as there is no DownloadIcon
-  { label: 'Blog', href: '/#blog-section', iconName: 'BookOpen' },
-  { label: 'İletişim', href: '/#iletisim-section', iconName: 'MessageSquare' },
-];
+import type { LucideIcon } from 'lucide-react';
 
 const adminNavItemData = { label: 'Admin Panel', href: '/admin', iconName: 'Shield' };
 
 interface HeaderProps {
   initialIsAuthenticated: boolean;
+  initialSiteTitle: string; // Dinamik site başlığı için prop
 }
 
-export default function Header({ initialIsAuthenticated }: HeaderProps) {
+export default function Header({ initialIsAuthenticated, initialSiteTitle }: HeaderProps) {
+  const [navItems, setNavItems] = useState<Array<NavItemInput & { id: string }>>([]);
   const [currentUser, setCurrentUser] = useState<FirebaseUserType | null>(null);
+  const [isLoadingNav, setIsLoadingNav] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
+  const [siteTitle, setSiteTitle] = useState(initialSiteTitle); // State for site title
 
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(firebaseClientAuth, (user) => {
+    // Initial auth state from server component prop
+    // This will be quickly updated by onAuthStateChanged from client SDK
+    // No need to explicitly set currentUser based on initialIsAuthenticated
+    // as onAuthStateChanged will handle it and is the source of truth on client.
+  
+    const unsubscribeAuth = onAuthStateChanged(firebaseClientAuth, (user) => {
       setCurrentUser(user);
     });
-    return () => unsubscribe();
-  }, []);
+  
+    async function fetchNavItems() {
+      setIsLoadingNav(true);
+      try {
+        const items = await getAllNavItems();
+        setNavItems(items);
+      } catch (error) {
+        console.error("Navigasyon öğeleri çekilirken hata:", error);
+        setNavItems([]); // Hata durumunda boş dizi ata
+      } finally {
+        setIsLoadingNav(false);
+      }
+    }
+  
+    fetchNavItems();
+    // Site title is set from prop and can be updated if settings change elsewhere and re-fetched
+    setSiteTitle(initialSiteTitle);
+  
+    return () => {
+      unsubscribeAuth();
+    };
+  }, [initialIsAuthenticated, initialSiteTitle]); // initialSiteTitle bağımlılıklara eklendi
 
   const isAuthenticated = currentUser !== null;
 
   const NavLink = ({ href, children, onClick, className, disabled, iconName }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string, disabled?: boolean, iconName?: string }) => {
     const IconComponent = getLucideIcon(iconName);
-    const isActive = pathname === href || (pathname === '/' && href === '/#anasayfa-section'); // Highlight anasayfa when on root
+    const isActive = pathname === href || (pathname === '/' && href === '/#anasayfa-section');
 
     const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
         if (onClick) onClick();
-        if (href.includes('#')) {
+        if (href.includes('#') && typeof window !== 'undefined') {
             const targetId = href.substring(href.indexOf('#') + 1);
             const targetElement = document.getElementById(targetId);
             if (targetElement) {
@@ -92,36 +109,42 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
         }
     };
 
-
     return (
       <Button 
         asChild 
         variant="ghost" 
-        size="sm" // Applied sm size for desktop nav links
+        size="sm"
         className={cn(
           "text-foreground hover:bg-accent/10 hover:text-accent-foreground",
-          "w-full justify-start", // For mobile menu
-          "md:w-auto md:justify-center", // For desktop
+          "w-full justify-start", 
+          "md:w-auto md:justify-center", 
           isActive && "bg-accent/10 text-accent-foreground font-semibold",
           className,
           disabled && "opacity-50 cursor-not-allowed"
       )} disabled={disabled} >
         <Link href={href} onClick={handleLinkClick}>
-          {IconComponent && <IconComponent className={cn("h-4 w-4", children ? "mr-1.5" : "")} />} {/* Adjusted icon size and margin for sm button */}
+          {IconComponent && <IconComponent className={cn("h-4 w-4", children ? "mr-1.5" : "")} />}
           <span>{children}</span>
         </Link>
       </Button>
     );
   };
 
-  const renderNavItems = (items: typeof staticNavItems, isMobile = false) => {
+  const renderNavItems = (items: typeof navItems, isMobile = false) => {
+    if (isLoadingNav && !isMobile) { // Sadece masaüstünde yükleniyor göstergesi
+      return Array(5).fill(0).map((_, index) => (
+        <Button key={`skeleton-${index}`} variant="ghost" size="sm" disabled className="opacity-50">
+          <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> Yükleniyor...
+        </Button>
+      ));
+    }
     return items.map((item) => {
-      const itemKey = `${isMobile ? 'mobile' : 'desktop'}-${item.href}`;
+      const itemKey = `${isMobile ? 'mobile' : 'desktop'}-${item.id}`;
       const navLinkInstance = (
         <NavLink
           href={item.href}
           onClick={isMobile ? () => setIsMobileMenuOpen(false) : undefined}
-          className={cn(isMobile ? "text-base py-2" : "", "whitespace-nowrap")} // Added whitespace-nowrap
+          className={cn(isMobile ? "text-base py-2" : "", "whitespace-nowrap")}
           iconName={item.iconName}
         >
           {item.label}
@@ -178,18 +201,18 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
       <header className="bg-card shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex justify-between items-center">
           <Link href="/#anasayfa-section" className="text-2xl font-headline font-bold text-primary" onClick={() => setIsMobileMenuOpen(false)}>
-            BenimSitem
+            {siteTitle} {/* Dinamik site başlığı */}
           </Link>
 
-          <nav className="hidden md:flex space-x-1 items-center flex-wrap"> {/* Kept space-x-1, can be adjusted */}
-            {renderNavItems(staticNavItems, false)}
+          <nav className="hidden md:flex space-x-1 items-center flex-wrap">
+            {renderNavItems(navItems, false)}
             {isAuthenticated ? (
               <NavLink key={`admin-panel-link-desktop-${isAuthenticated.toString()}`} href={adminNavItemData.href} iconName={adminNavItemData.iconName}>
                 {adminNavItemData.label}
               </NavLink>
             ) : (
-              <Button variant="default" size="sm" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin}> {/* Set size to sm */}
-                {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />} {/* Adjusted icon size */}
+              <Button variant="default" size="sm" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin}>
+                {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />}
                 Giriş Yap
               </Button>
             )}
@@ -206,12 +229,18 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
                 <SheetHeader className="p-4 border-b">
                    <SheetTitle asChild>
                       <Link href="/#anasayfa-section" className="text-xl font-headline font-bold text-primary" onClick={() => setIsMobileMenuOpen(false)}>
-                        BenimSitem
+                        {siteTitle} {/* Dinamik site başlığı */}
                       </Link>
                     </SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col space-y-1 px-2 py-4">
-                  {renderNavItems(staticNavItems, true)}
+                  {isLoadingNav ? (
+                     Array(5).fill(0).map((_, index) => (
+                        <Button key={`mobile-skeleton-${index}`} variant="ghost" className="text-base py-2 justify-start w-full opacity-50" disabled>
+                          <Loader2 className="mr-3 h-5 w-5 animate-spin" /> Yükleniyor...
+                        </Button>
+                      ))
+                  ) : renderNavItems(navItems, true)}
                   {isAuthenticated ? (
                     <SheetClose asChild>
                       <NavLink key={`admin-panel-link-mobile-${isAuthenticated.toString()}`} href={adminNavItemData.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base py-2" iconName={adminNavItemData.iconName}>

@@ -15,7 +15,7 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+// Textarea kaldırıldı çünkü siteDescription yok
 import { useToast } from "@/hooks/use-toast";
 import { updateSiteGeneralSettings, type SiteGeneralSettings } from "@/lib/actions/settings-actions";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -24,14 +24,13 @@ import { useRouter } from "next/navigation";
 
 const siteGeneralSettingsSchema = z.object({
   siteTitle: z.string().min(1, "Site başlığı gereklidir."),
-  siteDescription: z.string().optional(),
-  // Add other general settings here if needed in the future
+  // siteDescription kaldırıldı
 });
 
 type SiteGeneralSettingsFormValues = z.infer<typeof siteGeneralSettingsSchema>;
 
 interface SiteGeneralSettingsFormProps {
-  initialData: SiteGeneralSettings;
+  initialData: SiteGeneralSettings; // Artık SiteGeneralSettings 'siteDescription' içermiyor
 }
 
 export default function SiteGeneralSettingsForm({ initialData }: SiteGeneralSettingsFormProps) {
@@ -42,7 +41,7 @@ export default function SiteGeneralSettingsForm({ initialData }: SiteGeneralSett
     resolver: zodResolver(siteGeneralSettingsSchema),
     defaultValues: {
       siteTitle: initialData?.siteTitle || "BenimSitem",
-      siteDescription: initialData?.siteDescription || "Kişisel portfolyo ve blog sitem.",
+      // siteDescription kaldırıldı
     },
   });
 
@@ -50,6 +49,7 @@ export default function SiteGeneralSettingsForm({ initialData }: SiteGeneralSett
 
   async function onSubmit(values: SiteGeneralSettingsFormValues) {
     try {
+      // updateSiteGeneralSettings artık sadece siteTitle bekliyor (veya SiteGeneralSettings tipine uygun)
       const result = await updateSiteGeneralSettings(values);
       if (result.success) {
         toast({
@@ -89,7 +89,7 @@ export default function SiteGeneralSettingsForm({ initialData }: SiteGeneralSett
                 <Settings className="mr-3 h-6 w-6" /> Genel Site Ayarları
             </CardTitle>
             <CardDescription>
-              Sitenizin genel başlığını ve meta açıklamasını buradan yönetebilirsiniz.
+              Sitenizin genel başlığını buradan yönetebilirsiniz.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -101,14 +101,7 @@ export default function SiteGeneralSettingsForm({ initialData }: SiteGeneralSett
                 <FormMessage />
               </FormItem>
             )} />
-            <FormField control={form.control} name="siteDescription" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Site Açıklaması (Meta Description)</FormLabel>
-                <FormControl><Textarea {...field} rows={3} /></FormControl>
-                <FormDescription>Arama motorları için sitenizin kısa bir özeti (genellikle 150-160 karakter).</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )} />
+            {/* Site Açıklaması FormField kaldırıldı */}
           </CardContent>
         </Card>
 

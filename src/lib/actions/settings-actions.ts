@@ -26,18 +26,18 @@ const DEFAULT_THEME_SETTING: ThemeSetting = {
 // --- Site General Settings ---
 export interface SiteGeneralSettings {
   siteTitle: string;
-  siteDescription?: string;
+  // siteDescription kaldırıldı
   updatedAt?: string;
 }
 
 const siteGeneralSettingsSchema = z.object({
   siteTitle: z.string().min(1, "Site başlığı gereklidir."),
-  siteDescription: z.string().optional(),
+  // siteDescription kaldırıldı
 });
 
 const DEFAULT_SITE_GENERAL_SETTINGS: SiteGeneralSettings = {
   siteTitle: 'BenimSitem',
-  siteDescription: 'Kişisel portfolyo ve blog sitem.',
+  // siteDescription kaldırıldı
 };
 
 
@@ -118,10 +118,9 @@ export const getSiteGeneralSettings = cache(async (): Promise<SiteGeneralSetting
     const docSnap = await docRef.get();
 
     if (docSnap.exists) {
-      const data = docSnap.data() as SiteGeneralSettings; // Type assertion
+      const data = docSnap.data() as Partial<SiteGeneralSettings>; // Type assertion, description olabilir
       return {
         siteTitle: data?.siteTitle || DEFAULT_SITE_GENERAL_SETTINGS.siteTitle,
-        siteDescription: data?.siteDescription || DEFAULT_SITE_GENERAL_SETTINGS.siteDescription,
         updatedAt: (docSnap.data()?.updatedAt as admin.firestore.Timestamp)?.toDate()?.toISOString() || new Date().toISOString(),
       };
     } else {
@@ -140,7 +139,9 @@ export const getSiteGeneralSettings = cache(async (): Promise<SiteGeneralSetting
 });
 
 export async function updateSiteGeneralSettings(data: Partial<Omit<SiteGeneralSettings, 'updatedAt'>>) {
-  const validation = siteGeneralSettingsSchema.partial().safeParse(data);
+  // siteDescription alanını validasyondan ve data objesinden çıkar
+  const { ...restData } = data; 
+  const validation = siteGeneralSettingsSchema.partial().safeParse(restData);
   if (!validation.success) {
     return { success: false, message: "Doğrulama hatası.", errors: validation.error.flatten().fieldErrors };
   }
@@ -149,7 +150,7 @@ export async function updateSiteGeneralSettings(data: Partial<Omit<SiteGeneralSe
     const db = await getDb();
     const docRef = db.collection(SITE_SETTINGS_COLLECTION).doc(GENERAL_SETTINGS_DOCUMENT_ID);
     await docRef.set({
-      ...validation.data,
+      ...validation.data, // Sadece siteTitle'ı içerir
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     }, { merge: true });
 

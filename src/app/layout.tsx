@@ -6,7 +6,7 @@ import Footer from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
 import FloatingLogoutButton from '@/components/layout/FloatingLogoutButton';
 import { checkAuthStatus } from '@/lib/actions/auth';
-import { getThemeSetting, type ThemeName } from '@/lib/actions/settings-actions';
+import { getThemeSetting, type ThemeName, getSiteGeneralSettings } from '@/lib/actions/settings-actions'; // getSiteGeneralSettings eklendi
 import { cn } from '@/lib/utils';
 import { PT_Sans, Playfair_Display, Source_Code_Pro } from 'next/font/google';
 
@@ -32,19 +32,30 @@ const sourceCodePro = Source_Code_Pro({
   display: 'swap',
 });
 
-export const metadata: Metadata = {
-  title: 'BenimSitem | Tek Sayfa Portfolyo ve Blog',
-  description: 'Kişisel portfolyo, blog, hizmetler, projeler ve daha fazlası tek bir sayfada.',
-  icons: {
-    icon: '/favicon.ico',
-  },
-};
+// Statik metadata, generateMetadata tarafından üzerine yazılacak değerler için bir temel sağlar
+const staticMetadataDescription = 'Kişisel portfolyo, blog, hizmetler, projeler ve daha fazlası tek bir sayfada.';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const siteSettings = await getSiteGeneralSettings();
+  return {
+    title: siteSettings.siteTitle || 'BenimSitem | Portfolyo ve Blog', // Varsayılan bir başlık eklendi
+    description: staticMetadataDescription, // Açıklama artık statik veya settings'den gelmiyor
+    icons: {
+      icon: '/favicon.ico',
+    },
+  };
+}
 
 async function AuthAwareUIComponents() {
   const auth = await checkAuthStatus();
+  const siteSettings = await getSiteGeneralSettings(); // Header için site başlığını al
   return (
     <>
-      <Header key={`header-${auth.isAuthenticated.toString()}`} initialIsAuthenticated={auth.isAuthenticated} />
+      <Header 
+        key={`header-${auth.isAuthenticated.toString()}-${siteSettings.siteTitle}`} 
+        initialIsAuthenticated={auth.isAuthenticated}
+        initialSiteTitle={siteSettings.siteTitle} 
+      />
       <FloatingLogoutButton key={`logout-btn-${auth.isAuthenticated.toString()}`} initialIsAuthenticated={auth.isAuthenticated} />
     </>
   );
@@ -65,7 +76,6 @@ export default async function RootLayout({
       </head>
       <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
         <AuthAwareUIComponents />
-        {/* Ana layout'ta container ve padding'i kaldırıyoruz, çünkü page.tsx kendi container'ını yönetecek */}
         <main className="flex-grow">
           {children}
         </main>
@@ -75,5 +85,3 @@ export default async function RootLayout({
     </html>
   );
 }
-
-    
