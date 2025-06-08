@@ -40,8 +40,6 @@ export const metadata: Metadata = {
   },
 };
 
-// export const dynamic = 'force-dynamic'; // Kaldırıldı
-
 async function AuthAwareUIComponents() {
   const auth = await checkAuthStatus();
   console.log("[AuthAwareUIComponents] Auth status from checkAuthStatus:", auth);
@@ -58,9 +56,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  console.time("getThemeSettingLayout");
+  // console.time("getThemeSettingLayout"); // Removed to prevent warning
   const themeSetting = await getThemeSetting();
-  console.timeEnd("getThemeSettingLayout");
+  // console.timeEnd("getThemeSettingLayout"); // Removed to prevent warning
   const themeClass = themeSetting.activeTheme === 'default' ? '' : `theme-${themeSetting.activeTheme}`;
 
   return (
