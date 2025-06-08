@@ -5,8 +5,22 @@ import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Loader2, LogIn, Shield, LogOut as LogOutIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetTitle } from '@/components/ui/sheet';
-import { Dialog, DialogContent, DialogHeader, DialogTitle as RadixDialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetClose,
+  SheetTitle,
+  SheetHeader
+} from '@/components/ui/sheet';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle, // Changed from DialogTitle as RadixDialogTitle
+  DialogDescription,
+  DialogFooter
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
@@ -36,10 +50,8 @@ interface HeaderProps {
 }
 
 export default function Header({ initialIsAuthenticated }: HeaderProps) {
-  console.log("[Header] Rendering with initialIsAuthenticated prop:", initialIsAuthenticated);
-
   const [isAuthenticated, setIsAuthenticated] = useState(initialIsAuthenticated);
-  const [currentUser, setCurrentUser] = useState<User | null>(null); // Firebase user object
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -51,26 +63,22 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
   const { toast } = useToast();
 
   useEffect(() => {
+    console.log("[Header initial prop] initialIsAuthenticated:", initialIsAuthenticated);
+    // Set initial state from prop, but allow onAuthStateChanged to override
+    setIsAuthenticated(initialIsAuthenticated);
+    if (initialIsAuthenticated && firebaseClientAuth.currentUser) {
+        setCurrentUser(firebaseClientAuth.currentUser);
+    } else if (!initialIsAuthenticated) {
+        setCurrentUser(null);
+    }
+
     const unsubscribe = onAuthStateChanged(firebaseClientAuth, (user) => {
       console.log("[Header onAuthStateChanged] Firebase user:", user ? user.uid : null);
       setCurrentUser(user);
       setIsAuthenticated(!!user);
     });
     return () => unsubscribe();
-  }, []);
-  
-  // Sync with server-provided initial state, but let onAuthStateChanged take precedence once it fires.
-  useEffect(() => {
-    console.log("[Header initialIsAuthenticated useEffect] initialIsAuthenticated prop:", initialIsAuthenticated, "currentUser:", currentUser);
-    // This effect primarily ensures that if onAuthStateChanged hasn't fired yet,
-    // the UI reflects the server's idea of auth state.
-    // Once onAuthStateChanged fires, its determination is the source of truth for `isAuthenticated`.
-    // This logic handles the case where the component might render with `initialIsAuthenticated`
-    // before `onAuthStateChanged` has had a chance to update `currentUser` and `isAuthenticated`.
-    if (currentUser === null) { // Only if onAuthStateChanged hasn't determined the user yet
-        setIsAuthenticated(initialIsAuthenticated);
-    }
-  }, [initialIsAuthenticated, currentUser]);
+  }, [initialIsAuthenticated]);
 
 
   const NavLink = ({ href, children, onClick, className, disabled, iconName }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string, disabled?: boolean, iconName?: string }) => {
@@ -137,11 +145,13 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
       if (sessionResult.success) {
         setIsLoginDialogOpen(false);
         toast({ title: "Giriş Başarılı!", description: "Admin paneline yönlendiriliyorsunuz..." });
+        // setIsAuthenticated(true); // Let onAuthStateChanged handle this for consistency
         router.push('/admin');
+        router.refresh(); // Refresh to ensure server components update
       } else {
         setLoginError(sessionResult.error || "Giriş yapılamadı. Lütfen tekrar deneyin.");
         toast({ title: "Giriş Başarısız", description: sessionResult.error || "Bir hata oluştu.", variant: "destructive" });
-        await firebaseClientAuth.signOut(); // Ensure client is signed out if server session fails
+        await firebaseClientAuth.signOut();
       }
     } catch (error: any) {
       console.error("[Header handleLoginSubmit] Login error:", error);
@@ -153,7 +163,6 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
       toast({ title: "Giriş Hatası", description: message, variant: "destructive" });
     } finally {
       setIsSubmittingLogin(false);
-      router.refresh(); // Refresh to ensure server components update with new auth state from cookie
     }
   };
 
@@ -164,7 +173,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
       await firebaseClientAuth.signOut(); // Client-side sign out
       // onAuthStateChanged will set isAuthenticated to false
 
-      const result = await serverLogout(); // Server-side cookie deletion
+      const result = await serverLogout();
       console.log("[Header handleHeaderLogout] serverLogout result:", result);
       if (result.success) {
         toast({ title: "Başarıyla çıkış yapıldı." });
@@ -172,19 +181,20 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
         toast({ title: "Çıkış Hatası", description: result.error || "Sunucu tarafında çıkış sırasında bir sorun oluştu.", variant: "destructive" });
       }
       
+      // setIsAuthenticated(false); // Let onAuthStateChanged handle this
       if (pathname.startsWith('/admin')) {
         router.push('/');
       }
+      router.refresh();
     } catch (error) {
       console.error("[Header handleHeaderLogout] Logout error:", error);
       toast({ title: "Çıkış Hatası", description: "Bir hata oluştu.", variant: "destructive" });
     } finally {
       setIsSubmittingLogout(false);
-      router.refresh(); // Refresh to ensure server components reflect logged-out state
     }
   };
   
-  console.log("[Header Actual Render] isAuthenticated state:", isAuthenticated, "currentUser:", currentUser ? currentUser.uid : null);
+  console.log("[Header Actual Render] isAuthenticated state:", isAuthenticated, "currentUser:", currentUser ? currentUser.uid : null, "initialIsAuthenticated prop:", initialIsAuthenticated);
 
   return (
     <>
@@ -200,7 +210,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
 
             {isAuthenticated ? (
               <>
-                <NavLink key={`admin-panel-link-desktop-${isAuthenticated}`} href={adminNavItemData.href} iconName={adminNavItemData.iconName}>
+                <NavLink key={`admin-panel-link-desktop-${isAuthenticated.toString()}`} href={adminNavItemData.href} iconName={adminNavItemData.iconName}>
                   {adminNavItemData.label}
                 </NavLink>
                 <Button variant="outline" onClick={handleHeaderLogout} disabled={isSubmittingLogout}>
@@ -238,7 +248,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
                   {isAuthenticated ? (
                     <>
                       <SheetClose asChild>
-                        <NavLink key={`admin-panel-link-mobile-${isAuthenticated}`} href={adminNavItemData.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base" iconName={adminNavItemData.iconName}>
+                        <NavLink key={`admin-panel-link-mobile-${isAuthenticated.toString()}`} href={adminNavItemData.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base" iconName={adminNavItemData.iconName}>
                           {adminNavItemData.label}
                         </NavLink>
                       </SheetClose>
@@ -267,7 +277,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
       <Dialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <RadixDialogTitle className="font-headline text-primary">Admin Girişi</RadixDialogTitle>
+            <DialogTitle className="font-headline text-primary">Admin Girişi</DialogTitle> {/* Changed RadixDialogTitle back to DialogTitle */}
             <DialogDescription>
               Lütfen admin paneline erişmek için e-posta ve şifrenizi girin.
             </DialogDescription>
@@ -302,5 +312,3 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
     </>
   );
 }
-
-    
