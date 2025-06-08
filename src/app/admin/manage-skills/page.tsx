@@ -16,7 +16,7 @@ export default async function ManageSkillsPage() {
     <div className="space-y-8">
       <section className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-headline font-bold text-primary">Yetenek Yönetimi</h1>
+          <h1 className="text-3xl font-headline font-bold text-gradient">Yetenek Yönetimi</h1>
           <p className="text-muted-foreground">Mevcut yetenekleri görüntüleyin, düzenleyin veya yenilerini ekleyin.</p>
         </div>
         <Link href="/admin/manage-skills/new" passHref>
@@ -28,7 +28,7 @@ export default async function ManageSkillsPage() {
 
       <Card className="shadow-xl">
         <CardHeader>
-          <CardTitle>Tüm Yetenekler</CardTitle>
+          <CardTitle className="text-gradient">Tüm Yetenekler</CardTitle>
           <CardDescription>Toplam {skills.length} yetenek bulundu.</CardDescription>
         </CardHeader>
         <CardContent>

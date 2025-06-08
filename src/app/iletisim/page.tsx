@@ -71,7 +71,7 @@ export default function IletisimPage() {
   return (
     <div className="space-y-12">
       <section className="text-center">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-4">İletişim</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold text-gradient mb-4">İletişim</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Benimle iletişime geçmek, projeler hakkında konuşmak veya işbirliği yapmak için aşağıdaki formu kullanabilirsiniz.
         </p>
@@ -81,7 +81,7 @@ export default function IletisimPage() {
         <div className="lg:col-span-2 space-y-6">
           <Card className="shadow-xl">
             <CardHeader>
-              <CardTitle className="font-headline text-2xl text-primary">İletişim Bilgilerim</CardTitle>
+              <CardTitle className="font-headline text-2xl text-gradient">İletişim Bilgilerim</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start">
@@ -109,7 +109,7 @@ export default function IletisimPage() {
           </Card>
            <Card className="shadow-xl">
             <CardHeader>
-              <CardTitle className="font-headline text-2xl text-primary">Sosyal Medya</CardTitle>
+              <CardTitle className="font-headline text-2xl text-gradient">Sosyal Medya</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               {/* Add social media links here later */}
@@ -121,7 +121,7 @@ export default function IletisimPage() {
         <div className="lg:col-span-3">
           <Card className="shadow-xl">
             <CardHeader>
-              <CardTitle className="font-headline text-2xl text-primary">Mesaj Gönderin</CardTitle>
+              <CardTitle className="font-headline text-2xl text-gradient">Mesaj Gönderin</CardTitle>
               <CardDescription>Sorularınız veya önerileriniz için formu doldurun.</CardDescription>
             </CardHeader>
             <CardContent>

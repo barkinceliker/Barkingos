@@ -15,7 +15,7 @@ export default async function ManageServicesPage() {
     <div className="space-y-8">
       <section className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-headline font-bold text-primary">Hizmet Yönetimi</h1>
+          <h1 className="text-3xl font-headline font-bold text-gradient">Hizmet Yönetimi</h1>
           <p className="text-muted-foreground">Mevcut hizmetleri görüntüleyin, düzenleyin veya yenilerini ekleyin.</p>
         </div>
         <Link href="/admin/manage-services/new" passHref>
@@ -27,7 +27,7 @@ export default async function ManageServicesPage() {
 
       <Card className="shadow-xl">
         <CardHeader>
-          <CardTitle>Tüm Hizmetler</CardTitle>
+          <CardTitle className="text-gradient">Tüm Hizmetler</CardTitle>
           <CardDescription>Toplam {services.length} hizmet bulundu.</CardDescription>
         </CardHeader>
         <CardContent>

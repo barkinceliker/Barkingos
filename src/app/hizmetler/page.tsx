@@ -11,7 +11,7 @@ export default async function HizmetlerPage() {
   return (
     <div className="space-y-12">
       <section className="text-center">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-4">Hizmetlerim</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold text-gradient mb-4">Hizmetlerim</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Sunduğum profesyonel hizmetler ve uzmanlık alanlarım hakkında detaylı bilgi.
         </p>
@@ -26,7 +26,7 @@ export default async function HizmetlerPage() {
                 <div className="p-4 bg-accent/10 rounded-full inline-block mb-4">
                   <IconComponent className="h-10 w-10 text-accent" />
                 </div>
-                <CardTitle className="font-headline text-2xl">{service.title}</CardTitle>
+                <CardTitle className="font-headline text-2xl text-gradient">{service.title}</CardTitle>
                 <CardDescription className="mt-1">{service.description}</CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">

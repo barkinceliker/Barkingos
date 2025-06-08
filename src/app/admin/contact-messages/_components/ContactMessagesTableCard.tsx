@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { tr } from 'date-fns/locale'; 
+import { tr } from 'date-fns/locale';
 import { Mail } from 'lucide-react';
 
 export default async function ContactMessagesTableCard() {
@@ -23,7 +23,7 @@ export default async function ContactMessagesTableCard() {
   return (
     <Card className="shadow-xl">
       <CardHeader>
-        <CardTitle className="font-headline text-xl text-primary flex items-center">
+        <CardTitle className="font-headline text-xl text-gradient flex items-center">
           <Mail className="mr-3 h-6 w-6" /> Gelen İletişim Mesajları
         </CardTitle>
         <CardDescription>Toplam {messages.length} mesaj bulundu. Sitenizin iletişim formundan gönderilen mesajları burada görüntüleyebilirsiniz.</CardDescription>

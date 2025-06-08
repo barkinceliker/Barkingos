@@ -15,7 +15,6 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-// Textarea kaldırıldı çünkü siteDescription yok
 import { useToast } from "@/hooks/use-toast";
 import { updateSiteGeneralSettings, type SiteGeneralSettings } from "@/lib/actions/settings-actions";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -24,13 +23,12 @@ import { useRouter } from "next/navigation";
 
 const siteGeneralSettingsSchema = z.object({
   siteTitle: z.string().min(1, "Site başlığı gereklidir."),
-  // siteDescription kaldırıldı
 });
 
 type SiteGeneralSettingsFormValues = z.infer<typeof siteGeneralSettingsSchema>;
 
 interface SiteGeneralSettingsFormProps {
-  initialData: SiteGeneralSettings; // Artık SiteGeneralSettings 'siteDescription' içermiyor
+  initialData: SiteGeneralSettings; 
 }
 
 export default function SiteGeneralSettingsForm({ initialData }: SiteGeneralSettingsFormProps) {
@@ -41,7 +39,6 @@ export default function SiteGeneralSettingsForm({ initialData }: SiteGeneralSett
     resolver: zodResolver(siteGeneralSettingsSchema),
     defaultValues: {
       siteTitle: initialData?.siteTitle || "BenimSitem",
-      // siteDescription kaldırıldı
     },
   });
 
@@ -49,14 +46,13 @@ export default function SiteGeneralSettingsForm({ initialData }: SiteGeneralSett
 
   async function onSubmit(values: SiteGeneralSettingsFormValues) {
     try {
-      // updateSiteGeneralSettings artık sadece siteTitle bekliyor (veya SiteGeneralSettings tipine uygun)
       const result = await updateSiteGeneralSettings(values);
       if (result.success) {
         toast({
           title: "Başarılı!",
           description: result.message,
         });
-        router.refresh(); // Revalidate the layout to reflect new title/description
+        router.refresh(); 
       } else {
         toast({
           title: "Hata!",
@@ -85,7 +81,7 @@ export default function SiteGeneralSettingsForm({ initialData }: SiteGeneralSett
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Card className="shadow-lg">
           <CardHeader>
-             <CardTitle className="font-headline text-xl text-primary flex items-center">
+             <CardTitle className="font-headline text-xl text-gradient flex items-center">
                 <Settings className="mr-3 h-6 w-6" /> Genel Site Ayarları
             </CardTitle>
             <CardDescription>
@@ -101,7 +97,6 @@ export default function SiteGeneralSettingsForm({ initialData }: SiteGeneralSett
                 <FormMessage />
               </FormItem>
             )} />
-            {/* Site Açıklaması FormField kaldırıldı */}
           </CardContent>
         </Card>
 

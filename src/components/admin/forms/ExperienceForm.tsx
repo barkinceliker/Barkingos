@@ -36,7 +36,7 @@ const experienceFormSchema = z.object({
 type ExperienceFormValues = z.infer<typeof experienceFormSchema>;
 
 interface ExperienceFormProps {
-  initialData?: ExperienceInput; // Firestore document ID will be part of ExperienceInput if fetched
+  initialData?: ExperienceInput; 
   onSubmitAction: (data: Omit<ExperienceInput, 'id'>, id?: string) => Promise<{ success: boolean; message: string; id?: string; errors?: any }>;
   isEditing: boolean;
 }
@@ -81,10 +81,10 @@ export default function ExperienceForm({ initialData, onSubmitAction, isEditing 
         description: result.message,
       });
       if (isEditing && result.id) {
-        router.refresh(); // Stay on the page and refresh data
-      } else if (result.id) { // New item created, redirect to edit page
+        router.refresh(); 
+      } else if (result.id) { 
         router.push(`/admin/manage-experiences/edit/${result.id}`);
-      } else { // Fallback, go to list
+      } else { 
         router.push('/admin/manage-experiences');
       }
     } else {
@@ -111,7 +111,7 @@ export default function ExperienceForm({ initialData, onSubmitAction, isEditing 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="font-headline text-xl text-primary">{isEditing ? "Deneyimi Düzenle" : "Yeni Deneyim Oluştur"}</CardTitle>
+            <CardTitle className="font-headline text-xl text-gradient">{isEditing ? "Deneyimi Düzenle" : "Yeni Deneyim Oluştur"}</CardTitle>
             <CardDescription>
               {isEditing ? "Mevcut deneyimin detaylarını güncelleyin." : "Yeni bir deneyim için aşağıdaki alanları doldurun."}
             </CardDescription>

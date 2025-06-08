@@ -23,7 +23,6 @@ import { useRouter } from "next/navigation";
 import type { ServiceInput } from '@/lib/actions/service-actions';
 import Link from "next/link";
 
-// Schema for form values, details will be a single string, split/joined in onSubmit/defaultValues
 const serviceFormSchema = z.object({
   id: z.string().min(1, "Hizmet ID (slug) gereklidir.").regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "ID sadece küçük harf, rakam ve tire içerebilir."),
   title: z.string().min(1, "Başlık gereklidir."),
@@ -107,7 +106,7 @@ export default function ServiceForm({ initialData, onSubmitAction, isEditing }: 
   
   const generateSlugFromTitle = () => {
     const title = form.getValues("title");
-    if (title && !form.getValues("id") && !isEditing) { // Sadece yeni ve id boşken
+    if (title && !form.getValues("id") && !isEditing) { 
         const slug = title
           .toLowerCase()
           .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's').replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
@@ -124,7 +123,7 @@ export default function ServiceForm({ initialData, onSubmitAction, isEditing }: 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="font-headline text-xl text-primary">{isEditing ? "Hizmeti Düzenle" : "Yeni Hizmet Oluştur"}</CardTitle>
+            <CardTitle className="font-headline text-xl text-gradient">{isEditing ? "Hizmeti Düzenle" : "Yeni Hizmet Oluştur"}</CardTitle>
             <CardDescription>
               {isEditing ? "Mevcut hizmetin detaylarını güncelleyin." : "Yeni bir hizmet için aşağıdaki alanları doldurun."}
             </CardDescription>

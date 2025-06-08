@@ -21,7 +21,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Save, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-// Schema should now only contain heroTitle and heroSubtitle
 const homepageContentSchema = z.object({
   heroTitle: z.string().min(1, "Hero başlığı gereklidir."),
   heroSubtitle: z.string().min(1, "Hero alt başlığı gereklidir."),
@@ -30,7 +29,7 @@ const homepageContentSchema = z.object({
 type EditHomepageFormValues = z.infer<typeof homepageContentSchema>;
 
 interface EditHomepageFormProps {
-  initialData: HomepageContent; // This interface in page-content-actions.ts was already updated
+  initialData: HomepageContent; 
 }
 
 export default function EditHomepageForm({ initialData }: EditHomepageFormProps) {
@@ -42,11 +41,6 @@ export default function EditHomepageForm({ initialData }: EditHomepageFormProps)
     defaultValues: {
       heroTitle: initialData.heroTitle || "",
       heroSubtitle: initialData.heroSubtitle || "",
-      // Removed fields:
-      // aboutSnippetTitle: initialData.aboutSnippetTitle || "",
-      // aboutSnippetDescription: initialData.aboutSnippetDescription || "",
-      // recentProjectsTitle: initialData.recentProjectsTitle || "",
-      // recentBlogPostsTitle: initialData.recentBlogPostsTitle || "",
     },
   });
 
@@ -54,8 +48,6 @@ export default function EditHomepageForm({ initialData }: EditHomepageFormProps)
 
   async function onSubmit(values: EditHomepageFormValues) {
     try {
-      // updateHomepageContent action in page-content-actions.ts was already updated
-      // to accept only heroTitle and heroSubtitle.
       const result = await updateHomepageContent(values);
       if (result.success) {
         toast({
@@ -91,7 +83,7 @@ export default function EditHomepageForm({ initialData }: EditHomepageFormProps)
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="font-headline text-xl text-primary">Hero Alanı</CardTitle>
+            <CardTitle className="font-headline text-xl text-gradient">Hero Alanı</CardTitle>
             <CardDescription>Sitenizin ana karşılama bölümünün başlıklarını buradan düzenleyebilirsiniz.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -111,9 +103,6 @@ export default function EditHomepageForm({ initialData }: EditHomepageFormProps)
             )} />
           </CardContent>
         </Card>
-
-        {/* Removed "Kısaca Ben" Card */}
-        {/* Removed "Diğer Bölüm Başlıkları" Card */}
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}

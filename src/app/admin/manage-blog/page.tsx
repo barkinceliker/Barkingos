@@ -14,7 +14,7 @@ export default async function ManageBlogPage() {
     <div className="space-y-8">
       <section className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-headline font-bold text-primary">Blog Yazısı Yönetimi</h1>
+          <h1 className="text-3xl font-headline font-bold text-gradient">Blog Yazısı Yönetimi</h1>
           <p className="text-muted-foreground">Mevcut blog yazılarını görüntüleyin, düzenleyin veya yenilerini ekleyin.</p>
         </div>
         <Link href="/admin/manage-blog/new" passHref>
@@ -26,7 +26,7 @@ export default async function ManageBlogPage() {
 
       <Card className="shadow-xl">
         <CardHeader>
-          <CardTitle>Tüm Blog Yazıları</CardTitle>
+          <CardTitle className="text-gradient">Tüm Blog Yazıları</CardTitle>
           <CardDescription>Toplam {posts.length} yazı bulundu.</CardDescription>
         </CardHeader>
         <CardContent>

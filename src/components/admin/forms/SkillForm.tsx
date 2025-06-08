@@ -33,7 +33,7 @@ const skillFormSchema = z.object({
 type SkillFormValues = z.infer<typeof skillFormSchema>;
 
 interface SkillFormProps {
-  initialData?: SkillInput; // Firestore document ID will be part of SkillInput if fetched
+  initialData?: SkillInput; 
   onSubmitAction: (data: Omit<SkillInput, 'id'>, id?: string) => Promise<{ success: boolean; message: string; id?: string; errors?: any }>;
   isEditing: boolean;
 }
@@ -59,7 +59,7 @@ export default function SkillForm({ initialData, onSubmitAction, isEditing }: Sk
       name: values.name,
       proficiency: values.proficiency,
       category: values.category,
-      iconName: values.iconName || undefined, // Ensure empty string becomes undefined
+      iconName: values.iconName || undefined, 
     };
 
     const result = await onSubmitAction(skillData, initialData?.id);
@@ -100,7 +100,7 @@ export default function SkillForm({ initialData, onSubmitAction, isEditing }: Sk
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="font-headline text-xl text-primary">{isEditing ? "Yeteneği Düzenle" : "Yeni Yetenek Oluştur"}</CardTitle>
+            <CardTitle className="font-headline text-xl text-gradient">{isEditing ? "Yeteneği Düzenle" : "Yeni Yetenek Oluştur"}</CardTitle>
             <CardDescription>
               {isEditing ? "Mevcut yeteneğin detaylarını güncelleyin." : "Yeni bir yetenek için aşağıdaki alanları doldurun."}
             </CardDescription>

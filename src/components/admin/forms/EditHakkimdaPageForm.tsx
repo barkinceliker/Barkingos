@@ -69,7 +69,6 @@ export default function EditHakkimdaPageForm({ initialData }: EditHakkimdaPageFo
 
   async function onSubmit(values: EditHakkimdaPageFormValues) {
     try {
-      // Server action'a gönderilecek veriyi hazırla (id ve updatedAt hariç)
       const dataToSubmit: Omit<HakkimdaPageContent, 'id' | 'updatedAt'> = {
         ...values,
         profileImageUrl: values.profileImageUrl || 'https://placehold.co/400x400.png',
@@ -82,7 +81,7 @@ export default function EditHakkimdaPageForm({ initialData }: EditHakkimdaPageFo
           title: "Başarılı!",
           description: result.message,
         });
-        router.refresh(); // Sunucu bileşenlerini yenile
+        router.refresh(); 
       } else {
         toast({
           title: "Hata!",
@@ -91,7 +90,7 @@ export default function EditHakkimdaPageForm({ initialData }: EditHakkimdaPageFo
         });
         if (result.errors) {
           Object.entries(result.errors).forEach(([field, messages]) => {
-            const fieldName = field as keyof EditHakkimdaPageFormValues; // Tip güvencesi
+            const fieldName = field as keyof EditHakkimdaPageFormValues; 
             const message = Array.isArray(messages) ? messages.join(', ') : typeof messages === 'string' ? messages : 'Bilinmeyen hata';
             form.setError(fieldName, { type: "manual", message });
           });
@@ -110,7 +109,7 @@ export default function EditHakkimdaPageForm({ initialData }: EditHakkimdaPageFo
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Card className="shadow-lg">
-          <CardHeader><CardTitle className="font-headline text-xl text-primary">Genel Sayfa Bilgileri</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="font-headline text-xl text-gradient">Genel Sayfa Bilgileri</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <FormField control={form.control} name="pageTitle" render={({ field }) => (
               <FormItem>
@@ -130,7 +129,7 @@ export default function EditHakkimdaPageForm({ initialData }: EditHakkimdaPageFo
         </Card>
 
         <Card className="shadow-lg">
-          <CardHeader><CardTitle className="font-headline text-xl text-primary">Profil Bölümü</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="font-headline text-xl text-gradient">Profil Bölümü</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <FormField control={form.control} name="profileImageUrl" render={({ field }) => (
               <FormItem>
@@ -173,7 +172,7 @@ export default function EditHakkimdaPageForm({ initialData }: EditHakkimdaPageFo
         </Card>
 
         <Card className="shadow-lg">
-          <CardHeader><CardTitle className="font-headline text-xl text-primary">İstatistik Kartları</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="font-headline text-xl text-gradient">İstatistik Kartları</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <FormField control={form.control} name="stat_experience_value" render={({ field }) => (
               <FormItem>
@@ -200,7 +199,7 @@ export default function EditHakkimdaPageForm({ initialData }: EditHakkimdaPageFo
         </Card>
 
         <Card className="shadow-lg">
-          <CardHeader><CardTitle className="font-headline text-xl text-primary">Misyon Bölümü</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="font-headline text-xl text-gradient">Misyon Bölümü</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <FormField control={form.control} name="mission_title" render={({ field }) => (
               <FormItem>
@@ -227,5 +226,4 @@ export default function EditHakkimdaPageForm({ initialData }: EditHakkimdaPageFo
     </Form>
   );
 }
-
     

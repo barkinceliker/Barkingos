@@ -80,12 +80,11 @@ export default function BlogPostForm({ initialData, onSubmitAction, isEditing }:
         title: "Başarılı!",
         description: result.message,
       });
-      // Düzenleme ise aynı sayfada kal, yeni ise oluşturulan yazıya veya listeye git
       if (isEditing && result.slug) {
-         if (initialData?.slug !== result.slug) { // Slug değiştiyse
+         if (initialData?.slug !== result.slug) { 
             router.push(`/admin/manage-blog/edit/${result.slug}`);
          } else {
-            router.refresh(); // Sayfayı yenile, veriler güncellensin
+            router.refresh(); 
          }
       } else if (result.slug) {
         router.push(`/admin/manage-blog/edit/${result.slug}`);
@@ -114,10 +113,10 @@ export default function BlogPostForm({ initialData, onSubmitAction, isEditing }:
     const title = form.getValues("title");
     const slug = title
       .toLowerCase()
-      .replace(/\s+/g, '-') // boşlukları tire ile değiştir
-      .replace(/[^\w-]+/g, '') // alfanumerik olmayan karakterleri kaldır (tireler hariç)
-      .replace(/--+/g, '-') // birden fazla tireyi tek tire yap
-      .replace(/^-+|-+$/g, ''); // baştaki ve sondaki tireleri kaldır
+      .replace(/\s+/g, '-') 
+      .replace(/[^\w-]+/g, '') 
+      .replace(/--+/g, '-') 
+      .replace(/^-+|-+$/g, ''); 
     form.setValue("slug", slug, { shouldValidate: true });
   };
 
@@ -127,7 +126,7 @@ export default function BlogPostForm({ initialData, onSubmitAction, isEditing }:
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="font-headline text-xl text-primary">{isEditing ? "Blog Yazısını Düzenle" : "Yeni Blog Yazısı Oluştur"}</CardTitle>
+            <CardTitle className="font-headline text-xl text-gradient">{isEditing ? "Blog Yazısını Düzenle" : "Yeni Blog Yazısı Oluştur"}</CardTitle>
             <CardDescription>
               {isEditing ? "Mevcut blog yazısının detaylarını güncelleyin." : "Yeni bir blog yazısı için aşağıdaki alanları doldurun."}
             </CardDescription>

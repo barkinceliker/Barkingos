@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Download, Award, Briefcase, GraduationCap } from 'lucide-react';
@@ -7,7 +8,7 @@ export default function ResumePage() {
   return (
     <div className="space-y-12">
       <section className="text-center">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-4">Özgeçmişim</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold text-gradient mb-4">Özgeçmişim</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Profesyonel deneyimlerimi, eğitim bilgilerimi ve yeteneklerimi içeren detaylı özgeçmişim.
         </p>
@@ -15,21 +16,21 @@ export default function ResumePage() {
 
       <Card className="max-w-3xl mx-auto shadow-xl p-6 md:p-8">
         <CardHeader className="text-center mb-6">
-          <Image 
-            src="https://placehold.co/150x150.png" 
-            alt="Profil Fotoğrafı" 
-            width={150} 
-            height={150} 
+          <Image
+            src="https://placehold.co/150x150.png"
+            alt="Profil Fotoğrafı"
+            width={150}
+            height={150}
             className="rounded-full mx-auto mb-4 border-4 border-primary/30"
             data-ai-hint="professional headshot"
           />
-          <CardTitle className="font-headline text-3xl text-primary">[Adınız Soyadınız]</CardTitle>
+          <CardTitle className="font-headline text-3xl text-gradient">[Adınız Soyadınız]</CardTitle>
           <p className="text-xl text-accent">[Unvanınız, örn: Kıdemli Yazılım Geliştirici]</p>
         </CardHeader>
 
         <CardContent className="space-y-8">
           <section>
-            <h2 className="text-2xl font-headline font-semibold text-primary mb-3 flex items-center">
+            <h2 className="text-2xl font-headline font-semibold text-gradient mb-3 flex items-center">
               <Briefcase className="mr-3 h-6 w-6 text-accent" /> Deneyimlerim
             </h2>
             <div className="space-y-4 border-l-2 border-accent pl-4 ml-3">
@@ -47,7 +48,7 @@ export default function ResumePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-headline font-semibold text-primary mb-3 flex items-center">
+            <h2 className="text-2xl font-headline font-semibold text-gradient mb-3 flex items-center">
               <GraduationCap className="mr-3 h-6 w-6 text-accent" /> Eğitimim
             </h2>
             <div className="space-y-4 border-l-2 border-accent pl-4 ml-3">
@@ -60,7 +61,7 @@ export default function ResumePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-headline font-semibold text-primary mb-3 flex items-center">
+            <h2 className="text-2xl font-headline font-semibold text-gradient mb-3 flex items-center">
               <Award className="mr-3 h-6 w-6 text-accent" /> Yetenekler
             </h2>
             <div className="flex flex-wrap gap-2">

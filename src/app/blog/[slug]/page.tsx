@@ -8,10 +8,9 @@ import { getBlogPostBySlug, getAllPostSlugs, type BlogPostInput } from '@/lib/ac
 
 export async function generateStaticParams() {
   const slugs = await getAllPostSlugs();
-  // Ensure the returned format is Array<{ slug: string }>
   if (!Array.isArray(slugs) || !slugs.every(s => typeof s.slug === 'string')) {
     console.error("[Blog generateStaticParams] getAllPostSlugs did not return the expected format. Received:", slugs);
-    return []; // Return empty array on unexpected format to prevent build errors
+    return []; 
   }
   return slugs;
 }
@@ -41,16 +40,16 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   return (
     <article className="max-w-4xl mx-auto space-y-8">
       <header className="space-y-4">
-        <Image 
+        <Image
           src={post.imageUrl || 'https://placehold.co/1200x600.png'}
-          alt={post.title} 
-          width={1200} 
-          height={600} 
+          alt={post.title}
+          width={1200}
+          height={600}
           className="rounded-lg shadow-lg w-full max-h-[400px] object-cover"
-          data-ai-hint={post.dataAiHint || "blog header"} 
+          data-ai-hint={post.dataAiHint || "blog header"}
           priority
         />
-        <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary">{post.title}</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold text-gradient">{post.title}</h1>
         <div className="flex flex-wrap items-center space-x-4 text-muted-foreground">
           <div className="flex items-center">
             <CalendarDays className="mr-2 h-5 w-5 text-accent" />
@@ -69,7 +68,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </header>
 
       <Card className="shadow-xl">
-        <CardContent className="prose prose-lg max-w-none py-8 text-foreground prose-headings:font-headline prose-headings:text-primary prose-p:text-foreground prose-a:text-accent prose-strong:text-primary prose-code:font-code prose-code:bg-muted prose-code:p-1 prose-code:rounded prose-pre:bg-muted prose-pre:p-4 prose-pre:rounded-md prose-pre:overflow-x-auto"
+        <CardContent className="prose prose-lg max-w-none py-8 text-foreground prose-headings:font-headline prose-headings:text-gradient prose-p:text-foreground prose-a:text-accent prose-strong:text-primary prose-code:font-code prose-code:bg-muted prose-code:p-1 prose-code:rounded prose-pre:bg-muted prose-pre:p-4 prose-pre:rounded-md prose-pre:overflow-x-auto"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
       </Card>

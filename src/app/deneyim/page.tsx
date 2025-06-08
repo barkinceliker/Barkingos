@@ -12,7 +12,7 @@ export default async function DeneyimPage() {
   return (
     <div className="space-y-12">
       <section className="text-center">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-4">Deneyimlerim</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold text-gradient mb-4">Deneyimlerim</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Profesyonel kariyerim boyunca edindiğim tecrübeler, üstlendiğim roller ve katkıda bulunduğum projeler.
         </p>
@@ -43,7 +43,7 @@ export default async function DeneyimPage() {
                   </div>
                 )}
                 <div className="flex-1">
-                  <CardTitle className="font-headline text-2xl text-primary">{item.role}</CardTitle>
+                  <CardTitle className="font-headline text-2xl text-gradient">{item.role}</CardTitle>
                   <CardDescription className="text-lg font-semibold text-accent">{item.company}</CardDescription>
                   <div className="flex flex-wrap items-center text-sm text-muted-foreground mt-1 space-x-4">
                     <div className="flex items-center">

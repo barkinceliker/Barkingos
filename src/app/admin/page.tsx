@@ -112,8 +112,8 @@ export default async function AdminUnifiedPage() {
   return (
     <div className="space-y-8 p-4 md:p-8">
       <section className="text-center py-10 md:py-12 bg-card shadow-xl rounded-xl border border-border">
-        <Settings className="h-16 w-16 text-primary mx-auto mb-6" />
-        <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-4">Site Yönetim Paneli</h1>
+        <Settings className="h-16 w-16 text-gradient mx-auto mb-6" />
+        <h1 className="text-4xl md:text-5xl font-headline font-bold text-gradient mb-4">Site Yönetim Paneli</h1>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto px-4">
           Web sitenizin tüm içeriğini ve ayarlarını tek bir yerden yönetin. Aşağıdaki bölümlerden düzenlemek istediğinizi seçin.
         </p>
@@ -134,7 +134,7 @@ export default async function AdminUnifiedPage() {
                     <Icon className="h-8 w-8 text-accent group-hover:scale-110 transition-transform" />
                   </div>
                   <div className="flex-1">
-                    <h2 className="text-xl md:text-2xl font-headline font-semibold text-primary group-hover:text-primary/90 transition-colors">{section.title}</h2>
+                    <h2 className="text-xl md:text-2xl font-headline font-semibold text-gradient group-hover:text-primary/90 transition-colors">{section.title}</h2>
                     <p className="text-sm text-muted-foreground mt-1 pr-4 group-hover:text-foreground/80 transition-colors">{section.description}</p>
                   </div>
                 </div>

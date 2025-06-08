@@ -41,7 +41,7 @@ const projectFormSchema = z.object({
 type ProjectFormValues = z.infer<typeof projectFormSchema>;
 
 interface ProjectFormProps {
-  initialData?: ProjectInput; // Firestore'dan gelen 'id' zaten document ID
+  initialData?: ProjectInput; 
   onSubmitAction: (id: string, data: ProjectInput) => Promise<{ success: boolean; message: string; id?: string; errors?: any }>;
   isEditing: boolean;
 }
@@ -59,7 +59,7 @@ export default function ProjectForm({ initialData, onSubmitAction, isEditing }: 
       description: initialData?.description || "",
       longDescription: initialData?.longDescription || "",
       imageUrl: initialData?.imageUrl || "https://placehold.co/800x500.png",
-      status: initialData?.status || undefined, // Select için undefined daha iyi
+      status: initialData?.status || undefined, 
       technologies: initialData?.technologies?.join(", ") || "",
       liveDemoUrl: initialData?.liveDemoUrl || "",
       sourceCodeUrl: initialData?.sourceCodeUrl || "",
@@ -72,16 +72,13 @@ export default function ProjectForm({ initialData, onSubmitAction, isEditing }: 
   async function onSubmit(values: ProjectFormValues) {
     const technologiesArray = values.technologies.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
     
-    // ProjectInput'a uygun hale getiriyoruz, formdaki `id` alanı document ID olacak.
     const projectData: ProjectInput = {
       ...values,
-      id: values.id, // Formdan gelen id'yi kullan
+      id: values.id, 
       technologies: technologiesArray,
       imageUrl: values.imageUrl || 'https://placehold.co/800x500.png',
     };
 
-    // `onSubmitAction` ilk parametre olarak `id` (document id) bekliyor.
-    // Yeni oluşturmada bu `values.id` olacak, düzenlemede `initialData.id`.
     const submissionId = isEditing && initialData?.id ? initialData.id : values.id;
     const result = await onSubmitAction(submissionId, projectData);
 
@@ -122,7 +119,7 @@ export default function ProjectForm({ initialData, onSubmitAction, isEditing }: 
   
   const generateSlugFromTitle = () => {
     const title = form.getValues("title");
-    if (title && !form.getValues("id") && !isEditing) { // Sadece yeni ve id boşken
+    if (title && !form.getValues("id") && !isEditing) { 
         const slug = title
           .toLowerCase()
           .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's').replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
@@ -140,7 +137,7 @@ export default function ProjectForm({ initialData, onSubmitAction, isEditing }: 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="font-headline text-xl text-primary">{isEditing ? "Projeyi Düzenle" : "Yeni Proje Oluştur"}</CardTitle>
+            <CardTitle className="font-headline text-xl text-gradient">{isEditing ? "Projeyi Düzenle" : "Yeni Proje Oluştur"}</CardTitle>
             <CardDescription>
               {isEditing ? "Mevcut projenin detaylarını güncelleyin." : "Yeni bir proje için aşağıdaki alanları doldurun."}
             </CardDescription>
@@ -267,5 +264,4 @@ export default function ProjectForm({ initialData, onSubmitAction, isEditing }: 
     </Form>
   );
 }
-
     

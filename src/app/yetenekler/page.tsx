@@ -24,7 +24,7 @@ export default async function YeteneklerPage() {
   return (
     <div className="space-y-12">
       <section className="text-center">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-4">Yeteneklerim</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold text-gradient mb-4">Yeteneklerim</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Sahip olduğum teknik ve sosyal beceriler, uzmanlık alanlarım ve yetkinlik seviyelerim.
         </p>
@@ -46,7 +46,7 @@ export default async function YeteneklerPage() {
             return (
               <Card key={category} className="shadow-xl">
                 <CardHeader>
-                  <CardTitle className="font-headline text-2xl text-primary">{category}</CardTitle>
+                  <CardTitle className="font-headline text-2xl text-gradient">{category}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {categorySkills.map((skill) => {

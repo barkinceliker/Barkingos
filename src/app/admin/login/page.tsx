@@ -7,7 +7,7 @@ export default function AdminLoginPage() {
     <div className="flex items-center justify-center min-h-[calc(100vh-200px)] py-12">
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-headline text-primary">Admin Erişimi</CardTitle>
+          <CardTitle className="text-3xl font-headline text-gradient">Admin Erişimi</CardTitle>
           <CardDescription>
             Admin paneline erişim için lütfen sayfanın üst kısmındaki "Giriş Yap" butonunu kullanın.
             Bu sayfa, yetkisiz erişim denemelerinde veya doğrudan yönlendirmelerde gösterilir.

@@ -12,7 +12,7 @@ export default async function ProjelerPage() {
   return (
     <div className="space-y-12">
       <section className="text-center">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-4">Projelerim</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold text-gradient mb-4">Projelerim</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Üzerinde çalıştığım veya tamamladığım daha kapsamlı projeler ve teknik detayları.
         </p>
@@ -37,7 +37,7 @@ export default async function ProjelerPage() {
                 <CardHeader className="p-6">
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="font-headline text-2xl md:text-3xl mb-1">{item.title}</CardTitle>
+                      <CardTitle className="font-headline text-2xl md:text-3xl text-gradient mb-1">{item.title}</CardTitle>
                       {item.subtitle && <p className="text-md text-accent font-semibold mb-2">{item.subtitle}</p>}
                     </div>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium
@@ -52,7 +52,7 @@ export default async function ProjelerPage() {
                 <CardContent className="p-6 flex-grow">
                   {item.longDescription && <p className="mb-4">{item.longDescription}</p>}
                   <div>
-                    <h4 className="font-semibold text-primary mb-2">Kullanılan Teknolojiler:</h4>
+                    <h4 className="font-semibold text-gradient mb-2">Kullanılan Teknolojiler:</h4>
                     <div className="flex flex-wrap gap-2">
                       {item.technologies.map(tech => (
                         <span key={tech} className="text-sm bg-secondary px-2 py-1 rounded">{tech}</span>
@@ -75,13 +75,6 @@ export default async function ProjelerPage() {
                       </Button>
                     </Link>
                   )}
-                   {/* Detay sayfası şu an için linklenmiyor, gerekirse eklenebilir.
-                   <Link href={`/projeler/${item.id}/detay`} passHref> 
-                      <Button variant="ghost">
-                        <BarChart className="mr-2 h-4 w-4" /> Daha Fazla Bilgi
-                      </Button>
-                    </Link>
-                   */}
                 </CardFooter>
               </div>
             </div>

@@ -99,7 +99,7 @@ export default async function SinglePageApp() {
         className="w-full bg-gradient-to-br from-primary/10 via-background to-background shadow-xl"
       >
         <div className="container mx-auto px-4 py-24 md:py-36 lg:py-48 text-center">
-          <h1 className="text-4xl md:text-6xl font-headline font-bold text-primary mb-6">
+          <h1 className="text-4xl md:text-6xl font-headline font-bold text-gradient mb-6">
             {homepageContent.heroTitle}
           </h1>
           <p className="text-lg md:text-xl text-foreground mb-10 max-w-2xl mx-auto">
@@ -124,7 +124,7 @@ export default async function SinglePageApp() {
       <section id="hakkimda-section" className="py-16 md:py-20 lg:py-24">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-primary mb-4">{hakkimdaContent.pageTitle}</h2>
+            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">{hakkimdaContent.pageTitle}</h2>
             <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto">
               {hakkimdaContent.pageSubtitle}
             </p>
@@ -146,7 +146,7 @@ export default async function SinglePageApp() {
             <div className="md:col-span-2">
               <Card className="shadow-xl">
                 <CardHeader>
-                  <CardTitle className="font-headline text-2xl text-primary">Ben Kimim?</CardTitle>
+                  <CardTitle className="font-headline text-2xl text-gradient">Ben Kimim?</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 text-lg text-foreground/90">
                   {hakkimdaContent.whoAmI_p1 && <p>{hakkimdaContent.whoAmI_p1}</p>}
@@ -160,24 +160,24 @@ export default async function SinglePageApp() {
           <div className="grid sm:grid-cols-1 md:grid-cols-3 gap-8 text-center pt-8 md:pt-12">
             <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow">
               <Briefcase className="h-10 w-10 md:h-12 md:w-12 text-accent mx-auto mb-4" />
-              <h3 className="text-xl font-headline font-semibold text-primary mb-2">Deneyim</h3>
+              <h3 className="text-xl font-headline font-semibold text-gradient mb-2">Deneyim</h3>
               <p className="text-muted-foreground">{hakkimdaContent.stat_experience_value}</p>
             </Card>
             <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow">
               <Award className="h-10 w-10 md:h-12 md:w-12 text-accent mx-auto mb-4" />
-              <h3 className="text-xl font-headline font-semibold text-primary mb-2">Uzmanlık Alanları</h3>
+              <h3 className="text-xl font-headline font-semibold text-gradient mb-2">Uzmanlık Alanları</h3>
               <p className="text-muted-foreground">{hakkimdaContent.stat_expertise_value}</p>
             </Card>
             <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow">
               <Users className="h-10 w-10 md:h-12 md:w-12 text-accent mx-auto mb-4" />
-              <h3 className="text-xl font-headline font-semibold text-primary mb-2">Takım Çalışması</h3>
+              <h3 className="text-xl font-headline font-semibold text-gradient mb-2">Takım Çalışması</h3>
               <p className="text-muted-foreground">{hakkimdaContent.stat_teamwork_value}</p>
             </Card>
           </div>
 
           <Card className="shadow-xl mt-8 md:mt-12">
             <CardHeader>
-              <CardTitle className="font-headline text-2xl text-primary">{hakkimdaContent.mission_title}</CardTitle>
+              <CardTitle className="font-headline text-2xl text-gradient">{hakkimdaContent.mission_title}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-lg text-foreground/90">
               {hakkimdaContent.mission_p1 && <p>{hakkimdaContent.mission_p1}</p>}
@@ -190,7 +190,7 @@ export default async function SinglePageApp() {
       <section id="hizmetler-section" className="py-16 md:py-20 lg:py-24 bg-secondary/30">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-primary mb-4">Hizmetlerim</h2>
+            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Hizmetlerim</h2>
             <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto">
               Sunduğum profesyonel hizmetler ve uzmanlık alanlarım hakkında detaylı bilgi.
             </p>
@@ -204,7 +204,7 @@ export default async function SinglePageApp() {
                     <div className="p-4 bg-accent/10 rounded-full inline-block mb-4">
                       <IconComponent className="h-10 w-10 text-accent" />
                     </div>
-                    <CardTitle className="font-headline text-2xl">{service.title}</CardTitle>
+                    <CardTitle className="font-headline text-2xl text-gradient">{service.title}</CardTitle>
                     <CardDescription className="mt-1 text-base">{service.description}</CardDescription>
                   </CardHeader>
                   <CardContent className="flex-grow p-6">
@@ -230,7 +230,7 @@ export default async function SinglePageApp() {
       <section id="projeler-section" className="py-16 md:py-20 lg:py-24">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-primary mb-4">Projelerim</h2>
+            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Projelerim</h2>
             <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto">
               Üzerinde çalıştığım veya tamamladığım daha kapsamlı projeler ve teknik detayları.
             </p>
@@ -254,7 +254,7 @@ export default async function SinglePageApp() {
                     <CardHeader className="p-6">
                       <div className="flex justify-between items-start">
                         <div>
-                          <CardTitle className="font-headline text-2xl md:text-3xl mb-1">{item.title}</CardTitle>
+                          <CardTitle className="font-headline text-2xl md:text-3xl text-gradient mb-1">{item.title}</CardTitle>
                           {item.subtitle && <p className="text-md text-accent font-semibold mb-2">{item.subtitle}</p>}
                         </div>
                         <span className={`px-3 py-1 rounded-full text-sm font-medium
@@ -269,7 +269,7 @@ export default async function SinglePageApp() {
                     <CardContent className="p-6 flex-grow">
                       {item.longDescription && <p className="mb-4 text-foreground/90">{item.longDescription}</p>}
                       <div>
-                        <h4 className="font-semibold text-primary mb-2">Kullanılan Teknolojiler:</h4>
+                        <h4 className="font-semibold text-gradient mb-2">Kullanılan Teknolojiler:</h4>
                         <div className="flex flex-wrap gap-2">
                           {item.technologies.map(tech => (
                             <span key={tech} className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-md">{tech}</span>
@@ -310,7 +310,7 @@ export default async function SinglePageApp() {
       <section id="yetenekler-section" className="py-16 md:py-20 lg:py-24 bg-background">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-primary mb-4">Yeteneklerim</h2>
+            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Yeteneklerim</h2>
             <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto">
               Sahip olduğum teknik ve sosyal beceriler, uzmanlık alanlarım ve yetkinlik seviyelerim.
             </p>
@@ -329,7 +329,7 @@ export default async function SinglePageApp() {
                 return (
                   <Card key={category} className="shadow-xl">
                     <CardHeader className="pb-4">
-                      <CardTitle className="font-headline text-2xl text-primary flex items-center">
+                      <CardTitle className="font-headline text-2xl text-gradient flex items-center">
                         <CategoryIcon className="mr-3 h-6 w-6 text-accent" />
                         {category}
                       </CardTitle>
@@ -363,7 +363,7 @@ export default async function SinglePageApp() {
       <section id="deneyim-section" className="py-16 md:py-20 lg:py-24 bg-secondary/30">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-primary mb-4">Deneyimlerim</h2>
+            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Deneyimlerim</h2>
             <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto">
               Profesyonel kariyerim boyunca edindiğim tecrübeler, üstlendiğim roller ve katkıda bulunduğum projeler.
             </p>
@@ -391,7 +391,7 @@ export default async function SinglePageApp() {
                       </div>
                     )}
                     <div className="flex-1">
-                      <CardTitle className="font-headline text-2xl text-primary mb-0.5">{item.role}</CardTitle>
+                      <CardTitle className="font-headline text-2xl text-gradient mb-0.5">{item.role}</CardTitle>
                       <CardDescription className="text-lg font-semibold text-accent">{item.company}</CardDescription>
                       <div className="flex flex-wrap items-center text-sm text-muted-foreground mt-1.5 space-x-3">
                         <div className="flex items-center">
@@ -421,7 +421,7 @@ export default async function SinglePageApp() {
       <section id="ozgecmis-section" className="py-16 md:py-20 lg:py-24">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-primary mb-4">Özgeçmişim</h2>
+            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Özgeçmişim</h2>
             <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto">
               Profesyonel deneyimlerimi, eğitim bilgilerimi ve yeteneklerimi içeren detaylı özgeçmişim.
             </p>
@@ -437,12 +437,12 @@ export default async function SinglePageApp() {
                 data-ai-hint={resumePageData.profileImageAiHint}
                 sizes="120px"
               />
-              <CardTitle className="font-headline text-3xl text-primary">{resumePageData.name}</CardTitle>
+              <CardTitle className="font-headline text-3xl text-gradient">{resumePageData.name}</CardTitle>
               <p className="text-xl text-accent">{resumePageData.title}</p>
             </CardHeader>
             <CardContent className="space-y-8">
               <section>
-                <h3 className="text-xl md:text-2xl font-headline font-semibold text-primary mb-4 flex items-center">
+                <h3 className="text-xl md:text-2xl font-headline font-semibold text-gradient mb-4 flex items-center">
                   <Briefcase className="mr-3 h-5 w-5 md:h-6 md:w-6 text-accent" /> Deneyimlerim
                 </h3>
                 <div className="space-y-5 border-l-2 border-accent/50 pl-4 ml-3">
@@ -459,7 +459,7 @@ export default async function SinglePageApp() {
                 </div>
               </section>
               <section>
-                <h3 className="text-xl md:text-2xl font-headline font-semibold text-primary mb-4 flex items-center">
+                <h3 className="text-xl md:text-2xl font-headline font-semibold text-gradient mb-4 flex items-center">
                   <GraduationCap className="mr-3 h-5 w-5 md:h-6 md:w-6 text-accent" /> Eğitimim
                 </h3>
                 <div className="space-y-5 border-l-2 border-accent/50 pl-4 ml-3">
@@ -473,7 +473,7 @@ export default async function SinglePageApp() {
                 </div>
               </section>
               <section>
-                <h3 className="text-xl md:text-2xl font-headline font-semibold text-primary mb-4 flex items-center">
+                <h3 className="text-xl md:text-2xl font-headline font-semibold text-gradient mb-4 flex items-center">
                   <Award className="mr-3 h-5 w-5 md:h-6 md:w-6 text-accent" /> Yetenekler
                 </h3>
                 <div className="flex flex-wrap gap-2.5">
@@ -499,7 +499,7 @@ export default async function SinglePageApp() {
       <section id="blog-section" className="py-16 md:py-20 lg:py-24 bg-secondary/30">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-primary mb-4">Blog Yazılarım</h2>
+            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Blog Yazılarım</h2>
             <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto">
               Teknoloji, tasarım ve geliştirme üzerine düşüncelerimi, deneyimlerimi ve güncel haberleri paylaştığım alan.
             </p>
@@ -521,7 +521,7 @@ export default async function SinglePageApp() {
                 <CardHeader className="p-5">
                   <span className="text-xs text-accent font-semibold mb-1 uppercase tracking-wider">{post.category}</span>
                   <Link href={`/blog/${post.slug}`} passHref>
-                    <CardTitle className="font-headline text-xl hover:text-primary transition-colors cursor-pointer line-clamp-2">{post.title}</CardTitle>
+                    <CardTitle className="font-headline text-xl text-gradient hover:text-primary transition-colors cursor-pointer line-clamp-2">{post.title}</CardTitle>
                   </Link>
                   <div className="flex items-center text-xs text-muted-foreground mt-1.5">
                     <CalendarDays className="mr-1.5 h-4 w-4" />
@@ -553,7 +553,7 @@ export default async function SinglePageApp() {
       <section id="iletisim-section" className="py-16 md:py-20 lg:py-24">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-primary mb-4">İletişim</h2>
+            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">İletişim</h2>
             <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto">
               Benimle iletişime geçmek, projeler hakkında konuşmak veya işbirliği yapmak için aşağıdaki formu kullanabilirsiniz.
             </p>

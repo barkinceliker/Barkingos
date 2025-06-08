@@ -15,7 +15,7 @@ export default async function ManageExperiencesPage() {
     <div className="space-y-8">
       <section className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-headline font-bold text-primary flex items-center">
+          <h1 className="text-3xl font-headline font-bold text-gradient flex items-center">
             <Briefcase className="mr-3 h-8 w-8" /> Deneyim Yönetimi
           </h1>
           <p className="text-muted-foreground">Mevcut deneyimleri görüntüleyin, düzenleyin veya yenilerini ekleyin.</p>
@@ -29,7 +29,7 @@ export default async function ManageExperiencesPage() {
 
       <Card className="shadow-xl">
         <CardHeader>
-          <CardTitle>Tüm Deneyimler</CardTitle>
+          <CardTitle className="text-gradient">Tüm Deneyimler</CardTitle>
           <CardDescription>Toplam {experiences.length} deneyim bulundu.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -48,8 +48,8 @@ export default async function ManageExperiencesPage() {
               {experiences.map((exp) => (
                 <TableRow key={exp.id}>
                   <TableCell className="hidden md:table-cell">
-                    <Image 
-                        src={exp.logoUrl || `https://placehold.co/40x40.png?text=${exp.company.substring(0,1)}`} 
+                    <Image
+                        src={exp.logoUrl || `https://placehold.co/40x40.png?text=${exp.company.substring(0,1)}`}
                         alt={`${exp.company} logo`}
                         width={40}
                         height={40}
@@ -67,10 +67,10 @@ export default async function ManageExperiencesPage() {
                         <Pencil className="mr-1 h-4 w-4" /> Düzenle
                       </Link>
                     </Button>
-                    <DeleteExperienceButton 
-                        experienceId={exp.id} 
-                        experienceRole={exp.role} 
-                        experienceCompany={exp.company} 
+                    <DeleteExperienceButton
+                        experienceId={exp.id}
+                        experienceRole={exp.role}
+                        experienceCompany={exp.company}
                     />
                   </TableCell>
                 </TableRow>

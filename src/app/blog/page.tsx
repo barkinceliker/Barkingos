@@ -12,7 +12,7 @@ export default async function BlogPage() {
   return (
     <div className="space-y-12">
       <section className="text-center">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-4">Blog</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold text-gradient mb-4">Blog</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Teknoloji, tasarım ve geliştirme üzerine düşüncelerimi, deneyimlerimi ve güncel haberleri paylaştığım alan.
         </p>
@@ -35,7 +35,7 @@ export default async function BlogPage() {
             <CardHeader>
               <span className="text-sm text-accent font-medium mb-1">{post.category}</span>
               <Link href={`/blog/${post.slug}`} passHref>
-                <CardTitle className="font-headline text-xl hover:text-primary transition-colors cursor-pointer">{post.title}</CardTitle>
+                <CardTitle className="font-headline text-xl text-gradient hover:text-primary transition-colors cursor-pointer">{post.title}</CardTitle>
               </Link>
               <div className="flex items-center text-sm text-muted-foreground mt-1">
                 <CalendarDays className="mr-2 h-4 w-4" />
