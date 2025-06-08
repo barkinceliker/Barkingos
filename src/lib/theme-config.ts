@@ -18,8 +18,51 @@ export type ThemeName = (typeof THEME_OPTIONS)[number];
 // Değerler ise HSL'nin içindeki sayılar olmalı (örn: "220 17% 95%")
 export type ThemePalette = Record<string, string>;
 
+const commonVariablesForAllThemes = {
+  // Chart Colors
+  '--chart-1': '12 76% 61%', // Örnek, her tema kendi değerini ezebilir
+  '--chart-2': '173 58% 39%',
+  '--chart-3': '197 37% 24%',
+  '--chart-4': '43 74% 66%',
+  '--chart-5': '27 87% 67%',
+  // Sidebar Colors
+  '--sidebar-background': '0 0% 98%', // Örnek
+  '--sidebar-foreground': '240 5.3% 26.1%',
+  '--sidebar-primary': '240 5.9% 10%',
+  '--sidebar-primary-foreground': '0 0% 98%',
+  '--sidebar-accent': '240 4.8% 95.9%',
+  '--sidebar-accent-foreground': '240 5.9% 10%',
+  '--sidebar-border': '220 13% 91%',
+  '--sidebar-ring': '217.2 91.2% 59.8%',
+  // Fine-tuning & Specific Element Colors
+  '--link-text': 'hsl(var(--accent))', // Bu genellikle doğrudan accent kullanır
+  '--link-hover-text': 'hsl(var(--accent) / 0.8)',
+  '--button-primary-bg': 'hsl(var(--primary))',
+  '--button-primary-text': 'hsl(var(--primary-foreground))',
+  '--button-primary-hover-bg': 'hsl(var(--primary) / 0.9)',
+  '--button-secondary-bg': 'hsl(var(--secondary))',
+  '--button-secondary-text': 'hsl(var(--secondary-foreground))',
+  '--button-secondary-hover-bg': 'hsl(var(--secondary) / 0.8)',
+  '--input-bg': 'hsl(var(--input))',
+  '--input-border': 'hsl(var(--border))',
+  '--input-text': 'hsl(var(--foreground))',
+  '--input-focus-ring': 'hsl(var(--ring))',
+  '--card-title-text': 'hsl(var(--card-foreground))', // Genellikle card-foreground olur
+  '--card-description-text': 'hsl(var(--muted-foreground))',
+  '--blockquote-bg': 'hsl(var(--secondary) / 0.5)',
+  '--blockquote-border': 'hsl(var(--accent))',
+  '--blockquote-text': 'hsl(var(--foreground) / 0.85)',
+  '--code-bg': 'hsl(var(--muted))',
+  '--code-text': 'hsl(var(--muted-foreground))',
+  '--separator-color': 'hsl(var(--border))',
+  '--toast-bg': 'hsl(var(--card))',
+  '--toast-text': 'hsl(var(--card-foreground))',
+  '--toast-border': 'hsl(var(--border))',
+};
+
+
 export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
-  default: {
+  default: { // Corresponds to :root in globals.css
     '--background': '220 17% 95%',
     '--foreground': '220 10% 20%',
     '--card': '0 0% 100%',
@@ -39,7 +82,22 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--border': '220 10% 80%',
     '--input': '220 10% 88%',
     '--ring': '231 48% 48%',
-    // Diğer default tema değişkenleri buraya eklenecek...
+    '--radius': '0.5rem',
+    ...commonVariablesForAllThemes, // Default chart, sidebar, etc.
+    // Override specific commonVariables if needed for default theme
+    '--chart-1': '12 76% 61%',
+    '--chart-2': '173 58% 39%',
+    '--chart-3': '197 37% 24%',
+    '--chart-4': '43 74% 66%',
+    '--chart-5': '27 87% 67%',
+    '--sidebar-background': '0 0% 98%',
+    '--sidebar-foreground': '240 5.3% 26.1%',
+    '--sidebar-primary': '240 5.9% 10%',
+    '--sidebar-primary-foreground': '0 0% 98%',
+    '--sidebar-accent': '240 4.8% 95.9%',
+    '--sidebar-accent-foreground': '240 5.9% 10%',
+    '--sidebar-border': '220 13% 91%',
+    '--sidebar-ring': '217.2 91.2% 59.8%',
   },
   'ocean-depth': {
     '--background': '205 50% 12%',
@@ -61,7 +119,24 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--border': '205 40% 30%',
     '--input': '205 40% 20%',
     '--ring': '180 70% 65%',
-    // Diğer ocean-depth tema değişkenleri buraya eklenecek...
+    '--radius': '0.75rem',
+    ...commonVariablesForAllThemes,
+    '--chart-1': '30 85% 60%',
+    '--chart-2': '180 65% 55%',
+    '--chart-3': '210 50% 70%',
+    '--chart-4': '50 70% 60%',
+    '--chart-5': '150 60% 45%',
+    '--sidebar-background': '205 50% 10%',
+    '--sidebar-foreground': '200 20% 80%',
+    '--sidebar-primary': '180 65% 55%',
+    '--sidebar-primary-foreground': '205 50% 8%',
+    '--sidebar-accent': '205 45% 15%',
+    '--sidebar-accent-foreground': '180 65% 75%',
+    '--sidebar-border': '205 40% 25%',
+    '--sidebar-ring': '180 70% 65%',
+    '--blockquote-bg': 'hsl(var(--secondary) / 0.7)',
+    '--code-bg': 'hsl(205 40% 15%)',
+    '--code-text': 'hsl(200 20% 80%)',
   },
   'cyber-punk': {
     '--background': '270 70% 7%',
@@ -83,9 +158,28 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--border': '270 50% 25%',
     '--input': '270 50% 15%',
     '--ring': '300 100% 75%',
-    // Diğer cyber-punk tema değişkenleri buraya eklenecek...
+    '--radius': '0.25rem',
+    ...commonVariablesForAllThemes,
+    '--chart-1': '300 100% 70%',
+    '--chart-2': '180 100% 50%',
+    '--chart-3': '240 100% 70%',
+    '--chart-4': '60 100% 55%',
+    '--chart-5': '120 100% 50%',
+    '--sidebar-background': '270 70% 5%',
+    '--sidebar-foreground': '300 100% 80%',
+    '--sidebar-primary': '180 100% 50%',
+    '--sidebar-primary-foreground': '270 70% 3%',
+    '--sidebar-accent': '270 60% 8%',
+    '--sidebar-accent-foreground': '180 100% 75%',
+    '--sidebar-border': '270 50% 20%',
+    '--sidebar-ring': '300 100% 75%',
+    '--blockquote-bg': 'hsl(270 60% 12%)',
+    '--blockquote-border': 'hsl(var(--primary))',
+    '--blockquote-text': 'hsl(300 100% 80%)',
+    '--code-bg': 'hsl(270 50% 8%)',
+    '--code-text': 'hsl(180 100% 70%)',
   },
-  'midnight-gradient': { /* "Gradient Güzel Dark" */
+  'midnight-gradient': {
     '--background': '240 10% 4%',
     '--foreground': '240 8% 90%',
     '--card': '240 10% 8%',
@@ -105,8 +199,22 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--border': '240 10% 15%',
     '--input': '240 10% 12%',
     '--ring': '280 80% 70%',
+    '--radius': '0.5rem',
+    ...commonVariablesForAllThemes,
+    '--chart-1': '280 80% 65%', // primary
+    '--chart-2': '180 90% 50%', // accent
+    '--chart-3': '260 60% 50%', // a darker secondary
+    '--chart-4': '300 70% 60%', // a pink/magenta
+    '--chart-5': '240 60% 70%', // a lighter blue
+     '--sidebar-background': '240 10% 6%',
+    '--sidebar-foreground': '240 8% 80%',
+    '--sidebar-primary': '280 80% 65%',
+    '--sidebar-primary-foreground': '240 5% 95%',
+    '--sidebar-accent': '260 50% 12%',
+    '--sidebar-accent-foreground': '280 80% 70%',
+    '--sidebar-border': '240 10% 12%',
   },
-  'forest-green': { /* "Yeşil" */
+  'forest-green': {
     '--background': '120 20% 96%',
     '--foreground': '120 60% 10%',
     '--card': '120 10% 100%',
@@ -126,8 +234,22 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--border': '120 20% 85%',
     '--input': '120 20% 90%',
     '--ring': '130 55% 50%',
+    '--radius': '0.5rem',
+    ...commonVariablesForAllThemes,
+    '--chart-1': '130 55% 45%', // primary
+    '--chart-2': '90 60% 50%',  // accent
+    '--chart-3': '125 40% 60%', // a lighter green
+    '--chart-4': '40 50% 50%',  // a brown/earthy
+    '--chart-5': '110 30% 70%', // a pale green
+    '--sidebar-background': '120 15% 94%',
+    '--sidebar-foreground': '120 50% 15%',
+    '--sidebar-primary': '130 55% 40%',
+    '--sidebar-primary-foreground': '120 20% 98%',
+    '--sidebar-accent': '125 30% 85%',
+    '--sidebar-accent-foreground': '130 55% 30%',
+    '--sidebar-border': '120 20% 80%',
   },
-  'deep-navy': { /* "Lacivert" */
+  'deep-navy': {
     '--background': '220 40% 10%',
     '--foreground': '220 20% 85%',
     '--card': '220 40% 15%',
@@ -147,8 +269,22 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--border': '220 30% 30%',
     '--input': '220 30% 22%',
     '--ring': '200 80% 65%',
+    '--radius': '0.5rem',
+    ...commonVariablesForAllThemes,
+    '--chart-1': '200 80% 60%', // primary
+    '--chart-2': '250 70% 65%', // accent
+    '--chart-3': '210 50% 50%', // a medium blue
+    '--chart-4': '180 60% 40%', // a teal
+    '--chart-5': '230 40% 70%', // a light purple/blue
+    '--sidebar-background': '220 40% 8%',
+    '--sidebar-foreground': '220 20% 75%',
+    '--sidebar-primary': '200 80% 55%',
+    '--sidebar-primary-foreground': '220 40% 3%',
+    '--sidebar-accent': '220 30% 20%',
+    '--sidebar-accent-foreground': '200 80% 70%',
+    '--sidebar-border': '220 30% 25%',
   },
-  'blush-pink': { /* "Pembe" */
+  'blush-pink': {
     '--background': '340 80% 97%',
     '--foreground': '340 50% 25%',
     '--card': '340 60% 100%',
@@ -168,8 +304,22 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--border': '340 60% 88%',
     '--input': '340 60% 92%',
     '--ring': '330 70% 60%',
+    '--radius': '0.75rem',
+    ...commonVariablesForAllThemes,
+    '--chart-1': '330 70% 55%', // primary
+    '--chart-2': '300 70% 60%', // accent
+    '--chart-3': '350 80% 70%', // a lighter pink
+    '--chart-4': '20 60% 65%',  // a soft orange
+    '--chart-5': '280 50% 75%', // a lavender
+    '--sidebar-background': '340 70% 95%',
+    '--sidebar-foreground': '340 50% 30%',
+    '--sidebar-primary': '330 70% 50%',
+    '--sidebar-primary-foreground': '340 60% 98%',
+    '--sidebar-accent': '335 60% 88%',
+    '--sidebar-accent-foreground': '330 70% 40%',
+    '--sidebar-border': '340 60% 85%',
   },
-  'royal-purple': { /* "Mor" */
+  'royal-purple': {
     '--background': '270 50% 15%',
     '--foreground': '270 30% 88%',
     '--card': '270 50% 20%',
@@ -189,8 +339,22 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--border': '270 40% 35%',
     '--input': '270 40% 28%',
     '--ring': '280 70% 65%',
+    '--radius': '0.5rem',
+    ...commonVariablesForAllThemes,
+    '--chart-1': '280 70% 60%', // primary
+    '--chart-2': '310 80% 65%', // accent
+    '--chart-3': '260 50% 50%', // a deep blue
+    '--chart-4': '290 60% 70%', // a lighter purple
+    '--chart-5': '330 70% 60%', // a magenta
+    '--sidebar-background': '270 50% 12%',
+    '--sidebar-foreground': '270 30% 80%',
+    '--sidebar-primary': '280 70% 55%',
+    '--sidebar-primary-foreground': '270 30% 95%',
+    '--sidebar-accent': '275 40% 25%',
+    '--sidebar-accent-foreground': '280 70% 75%',
+    '--sidebar-border': '270 40% 30%',
   },
-  'burnt-orange': { /* "Turuncu" */
+  'burnt-orange': {
     '--background': '30 60% 95%',
     '--foreground': '25 60% 20%',
     '--card': '30 50% 100%',
@@ -210,8 +374,22 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--border': '30 60% 85%',
     '--input': '30 60% 90%',
     '--ring': '20 85% 60%',
+    '--radius': '0.5rem',
+    ...commonVariablesForAllThemes,
+    '--chart-1': '20 85% 55%', // primary
+    '--chart-2': '40 90% 60%', // accent
+    '--chart-3': '30 70% 70%', // a lighter orange
+    '--chart-4': '10 60% 50%', // a reddish brown
+    '--chart-5': '50 80% 75%', // a light yellow
+    '--sidebar-background': '30 55% 93%',
+    '--sidebar-foreground': '25 50% 25%',
+    '--sidebar-primary': '20 85% 50%',
+    '--sidebar-primary-foreground': '30 50% 98%',
+    '--sidebar-accent': '30 70% 85%',
+    '--sidebar-accent-foreground': '20 85% 40%',
+    '--sidebar-border': '30 60% 80%',
   },
-  'crimson-red': { /* "Kırmızı" */
+  'crimson-red': {
     '--background': '0 0% 12%',
     '--foreground': '0 0% 90%',
     '--card': '0 0% 18%',
@@ -231,9 +409,36 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--border': '0 0% 30%',
     '--input': '0 0% 25%',
     '--ring': '0 70% 55%',
+    '--radius': '0.5rem',
+    ...commonVariablesForAllThemes,
+    '--chart-1': '0 70% 50%',   // primary
+    '--chart-2': '30 80% 60%',  // accent
+    '--chart-3': '0 40% 40%',   // a darker red
+    '--chart-4': '350 60% 65%', // a pinkish red
+    '--chart-5': '20 50% 55%',  // an orange-red
+    '--sidebar-background': '0 0% 10%',
+    '--sidebar-foreground': '0 0% 85%',
+    '--sidebar-primary': '0 70% 45%',
+    '--sidebar-primary-foreground': '0 0% 98%',
+    '--sidebar-accent': '0 50% 20%',
+    '--sidebar-accent-foreground': '0 70% 70%',
+    '--sidebar-border': '0 0% 25%',
   },
 };
 
-// Helper to get all variable keys, useful for clearing styles
-export const ALL_THEME_VARIABLE_KEYS = Object.keys(THEME_PALETTES.default);
+// Helper to get all variable keys, useful for clearing styles or ensuring completeness
+// This now includes ALL variables defined in commonVariablesForAllThemes and the core shadcn vars
+const coreShadcnVariables = [
+  '--background', '--foreground', '--card', '--card-foreground', '--popover',
+  '--popover-foreground', '--primary', '--primary-foreground', '--secondary',
+  '--secondary-foreground', '--muted', '--muted-foreground', '--accent',
+  '--accent-foreground', '--destructive', '--destructive-foreground',
+  '--border', '--input', '--ring', '--radius'
+];
 
+export const ALL_THEME_VARIABLE_KEYS = [
+  ...coreShadcnVariables,
+  ...Object.keys(commonVariablesForAllThemes)
+];
+
+    
