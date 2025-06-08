@@ -77,14 +77,14 @@ export default async function RootLayout({
   console.log(`${logPrefix} Font variable classes for HTML: '${fontVariableClasses}'`);
   
   const finalHtmlClasses = cn(fontVariableClasses).trim(); 
-  const htmlKey = `${fontVariableClasses}`;
+  // const htmlKey = `${fontVariableClasses}`; // Removed: key prop on <html> is unconventional
 
   console.log(`${logPrefix} className to be applied to <html> tag: '${finalHtmlClasses}'`);
-  console.log(`${logPrefix} key to be applied to <html> tag: '${htmlKey}'`);
+  // console.log(`${logPrefix} key to be applied to <html> tag: '${htmlKey}'`); // Log for key removed
   console.log(`${logPrefix} ==================== END ====================`);
 
   return (
-    <html lang="en" className={finalHtmlClasses} key={htmlKey}>
+    <html lang="en" className={finalHtmlClasses}>
       <head />
       <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
         <AuthAwareUIComponents />
