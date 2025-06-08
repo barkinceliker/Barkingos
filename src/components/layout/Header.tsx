@@ -223,7 +223,14 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       <>
         {staticNavItems.map((item) => (
           <SheetClose asChild key={`sheet-nav-${item.id}`}>
-            <NavLink href={item.href} iconName={item.iconName} className="text-base py-2.5 px-4 w-full">
+            <NavLink
+              href={item.href}
+              iconName={item.iconName}
+              className={cn(
+                "text-base py-2.5 px-4 w-full",
+                item.id === 'services' && "text-gradient font-bold"
+              )}
+            >
               {item.label}
             </NavLink>
           </SheetClose>
@@ -325,7 +332,15 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
 
           <nav className="hidden lg:flex items-center space-x-0">
             {staticNavItems.map((item) => (
-              <NavLink key={`desktop-nav-${item.id}`} href={item.href} iconName={item.iconName} className="text-sm px-3">
+              <NavLink
+                key={`desktop-nav-${item.id}`}
+                href={item.href}
+                iconName={item.iconName}
+                className={cn(
+                  "text-sm px-3",
+                  item.id === 'services' && "text-gradient font-bold"
+                )}
+              >
                 {item.label}
               </NavLink>
             ))}
