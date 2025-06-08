@@ -179,9 +179,10 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     }, [href, router, onClick]);
 
     const commonClasses = cn(
-      "text-foreground hover:bg-accent/10 hover:text-accent-foreground",
+      // "text-foreground hover:bg-accent/10 hover:text-accent-foreground", // Original text color and hover
+      "hover:bg-accent/10", // Keep hover background, text color will be gradient
       "justify-start py-2 rounded-md",
-      isActiveClient && !isAction && "bg-accent/20 text-accent-foreground font-semibold",
+      isActiveClient && !isAction && "bg-accent/20", // Active state background
       className,
       disabled && "opacity-50 cursor-not-allowed"
     );
@@ -227,8 +228,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
               href={item.href}
               iconName={item.iconName}
               className={cn(
-                "text-base py-2.5 px-4 w-full",
-                item.id === 'services' && "text-gradient font-bold"
+                "text-base py-2.5 px-4 w-full text-gradient font-bold"
               )}
             >
               {item.label}
@@ -337,8 +337,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                 href={item.href}
                 iconName={item.iconName}
                 className={cn(
-                  "text-sm px-3",
-                  item.id === 'services' && "text-gradient font-bold"
+                  "text-sm px-3 text-gradient font-bold" 
                 )}
               >
                 {item.label}

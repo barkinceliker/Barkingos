@@ -68,7 +68,7 @@ html {
 
     /* Navigasyon Çubuğu Arka Plan Gradient Renkleri (Daha koyu, metalik) */
     --navbar-gradient-start-hsl: 220 15% 15%; /* Koyu Çelik */
-    --navbar-gradient-end-hsl: 220 10% 11%;   /* Çok Koyu, desatüre Çelik/Obsidyen */
+    --navbar-gradient-end-hsl: 210 10% 15%;   /* Çok Koyu, desatüre Çelik/Obsidyen - hafif metalik koyu */
 
     /* Grafik Renkleri (Obsidyen & Dövülmüş Çelik Tema için) */
     --chart-1: hsl(var(--primary));     /* Yanık Bronz */
