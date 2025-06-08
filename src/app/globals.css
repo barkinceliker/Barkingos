@@ -68,7 +68,7 @@ html {
 
     /* Navbar Background Gradient Colors */
     --navbar-gradient-start-hsl: 220 15% 15%; /* Darker Steel */
-    --navbar-gradient-end-hsl: 30 25% 20%;    /* Darker, desaturated Bronze */
+    --navbar-gradient-end-hsl: 220 10% 11%;    /* Very Dark Desaturated Steel/Obsidian */
 
     /* Chart Colors (Obsidian & Forged Steel Tema için) */
     --chart-1: hsl(var(--primary));     /* Burnished Bronze */
