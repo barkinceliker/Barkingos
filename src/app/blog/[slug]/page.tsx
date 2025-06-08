@@ -49,7 +49,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           data-ai-hint={post.dataAiHint || "blog header"}
           priority
         />
-        <h1 className="text-4xl md:text-5xl font-headline font-bold text-gradient">{post.title}</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold">{post.title}</h1> {/* text-gradient will be applied globally */}
         <div className="flex flex-wrap items-center space-x-4 text-muted-foreground">
           <div className="flex items-center">
             <CalendarDays className="mr-2 h-5 w-5 text-accent" />
@@ -68,7 +68,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </header>
 
       <Card className="shadow-xl">
-        <CardContent className="prose prose-lg max-w-none py-8 text-foreground prose-headings:font-headline prose-headings:text-gradient prose-p:text-foreground prose-a:text-accent prose-strong:text-primary prose-code:font-code prose-code:bg-muted prose-code:p-1 prose-code:rounded prose-pre:bg-muted prose-pre:p-4 prose-pre:rounded-md prose-pre:overflow-x-auto"
+        <CardContent className="prose prose-lg max-w-none py-8 text-foreground prose-headings:text-gradient prose-p:text-foreground prose-a:text-accent prose-strong:text-primary prose-code:font-code prose-code:bg-muted prose-code:p-1 prose-code:rounded prose-pre:bg-muted prose-pre:p-4 prose-pre:rounded-md prose-pre:overflow-x-auto"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
       </Card>

@@ -38,8 +38,8 @@ html {
     --radius: 0.5rem;
 
     /* Body Gradient Colors */
-    --gradient-body-start-hsl: 195 75% 88%; /* Light Sky Blue-ish */
-    --gradient-body-end-hsl: 165 50% 75%;   /* Soft Emerald/Mint */
+    --gradient-body-start-hsl: 190 100% 90%; /* Very Light Cyan */
+    --gradient-body-end-hsl: 160 80% 85%;   /* Very Light Mint */
 
     /* Gradient Colors for text-gradient utility */
     --gradient-start-hsl: var(--primary);
@@ -111,8 +111,8 @@ html {
     --ring: 0 0% 83.1%;
 
     /* Body Gradient Colors for Dark Theme */
-    --gradient-body-start-hsl: 200 40% 18%; /* Darker Blue */
-    --gradient-body-end-hsl: 160 35% 12%;   /* Dark Emerald/Teal */
+    --gradient-body-start-hsl: 200 50% 22%; /* Slightly lighter dark blue */
+    --gradient-body-end-hsl: 170 40% 18%;   /* Slightly lighter dark emerald */
 
     /* Gradient Colors for text-gradient utility */
     --gradient-start-hsl: var(--primary);
@@ -183,8 +183,8 @@ html {
     --ring: 180 70% 65%;
     --radius: 0.75rem;
 
-    --gradient-body-start-hsl: 205 50% 15%; /* Darker Ocean Start */
-    --gradient-body-end-hsl: 180 40% 25%;   /* Darker Ocean End */
+    --gradient-body-start-hsl: 205 60% 20%; /* Lighter Darker Ocean Start */
+    --gradient-body-end-hsl: 180 50% 30%;   /* Lighter Darker Ocean End */
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -249,8 +249,8 @@ html {
     --ring: 300 100% 75%;
     --radius: 0.25rem;
 
-    --gradient-body-start-hsl: 270 70% 9%;   /* Dark Purple Cyber */
-    --gradient-body-end-hsl: 240 80% 12%;   /* Dark Blue Cyber */
+    --gradient-body-start-hsl: 270 80% 12%;   /* Lighter Dark Purple Cyber */
+    --gradient-body-end-hsl: 240 90% 15%;   /* Lighter Dark Blue Cyber */
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -315,8 +315,8 @@ html {
     --ring: 280 80% 70%;
     --radius: 0.5rem;
 
-    --gradient-body-start-hsl: 240 15% 8%;   /* Midnight Start */
-    --gradient-body-end-hsl: 270 20% 5%;   /* Midnight End */
+    --gradient-body-start-hsl: 240 20% 10%;   /* Lighter Midnight Start */
+    --gradient-body-end-hsl: 270 25% 8%;   /* Lighter Midnight End */
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -344,8 +344,8 @@ html {
     --ring: 130 55% 50%;
     --radius: 0.5rem;
 
-    --gradient-body-start-hsl: 120 30% 92%; /* Light Forest Start */
-    --gradient-body-end-hsl: 100 40% 85%;   /* Light Forest End */
+    --gradient-body-start-hsl: 120 40% 90%; /* Lighter Forest Start */
+    --gradient-body-end-hsl: 100 50% 82%;   /* Lighter Forest End */
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -373,8 +373,8 @@ html {
     --ring: 200 80% 65%;
     --radius: 0.5rem;
 
-    --gradient-body-start-hsl: 220 40% 12%; /* Deep Navy Start */
-    --gradient-body-end-hsl: 200 30% 18%;   /* Deep Navy End */
+    --gradient-body-start-hsl: 220 50% 15%; /* Lighter Deep Navy Start */
+    --gradient-body-end-hsl: 200 40% 22%;   /* Lighter Deep Navy End */
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -402,8 +402,8 @@ html {
     --ring: 330 70% 60%;
     --radius: 0.75rem; /* Softer feel */
 
-    --gradient-body-start-hsl: 340 80% 95%; /* Blush Pink Start */
-    --gradient-body-end-hsl: 320 70% 90%;   /* Blush Pink End */
+    --gradient-body-start-hsl: 340 90% 92%; /* Lighter Blush Pink Start */
+    --gradient-body-end-hsl: 320 80% 88%;   /* Lighter Blush Pink End */
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -431,8 +431,8 @@ html {
     --ring: 280 70% 65%;
     --radius: 0.5rem;
 
-    --gradient-body-start-hsl: 270 50% 18%; /* Royal Purple Start */
-    --gradient-body-end-hsl: 290 45% 22%;   /* Royal Purple End */
+    --gradient-body-start-hsl: 270 60% 20%; /* Lighter Royal Purple Start */
+    --gradient-body-end-hsl: 290 55% 25%;   /* Lighter Royal Purple End */
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -460,8 +460,8 @@ html {
     --ring: 20 85% 60%;
     --radius: 0.5rem;
 
-    --gradient-body-start-hsl: 30 70% 92%; /* Burnt Orange Start */
-    --gradient-body-end-hsl: 15 65% 88%;   /* Burnt Orange End */
+    --gradient-body-start-hsl: 30 80% 90%; /* Lighter Burnt Orange Start */
+    --gradient-body-end-hsl: 15 75% 85%;   /* Lighter Burnt Orange End */
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -489,8 +489,8 @@ html {
     --ring: 0 70% 55%;
     --radius: 0.5rem;
 
-    --gradient-body-start-hsl: 0 10% 15%;  /* Crimson Start */
-    --gradient-body-end-hsl: 350 15% 18%;  /* Crimson End */
+    --gradient-body-start-hsl: 0 15% 18%;  /* Lighter Crimson Start */
+    --gradient-body-end-hsl: 350 20% 22%;  /* Lighter Crimson End */
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -505,6 +505,9 @@ html {
     @apply bg-background text-foreground;
     /* background-color is applied by bg-background */
     /* background-image is applied globally outside this layer */
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-gradient;
   }
 }
 
