@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { Menu, Loader2, LogIn, Shield } from 'lucide-react'; // Simplified imports, specific icons handled by NavLink
+import { Menu, Loader2, LogIn, Shield, MoreVertical } from 'lucide-react'; 
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -31,7 +31,8 @@ import { auth as firebaseClientAuth } from '@/lib/firebase';
 import { createSession } from '@/lib/actions/auth';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 
-// Statik Navigasyon Öğeleri
+// Statik Navigasyon Öğeleri - FloatingNavButton'da da kullanıldığı için oradan alınabilir veya burada tutulabilir.
+// Şimdilik burada bırakalım, tutarlılık için.
 const staticNavItems = [
   { id: 'home', label: 'Anasayfa', href: '/#anasayfa-section', iconName: 'Home' },
   { id: 'about', label: 'Hakkımda', href: '/#hakkimda-section', iconName: 'User' },
@@ -117,7 +118,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                 e.preventDefault();
                 targetElement.scrollIntoView({ behavior: 'smooth' });
                 if (window.history.pushState) {
-                    const newPath = pathname === '/' ? href : `/${href}`;
+                    const newPath = pathname === '/' ? href : `/${href}`; // Keep hash for single page
                     window.history.pushState(null, '', newPath);
                 } else {
                     window.location.hash = href.substring(1); 
@@ -133,8 +134,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         size="sm"
         className={cn(
           "text-foreground hover:bg-accent/10 hover:text-accent-foreground",
-          "w-full justify-start",
-          "md:w-auto md:justify-center", // This will be overridden by md:hidden on parent nav
+          "w-full justify-start", // Mobile Sheet için varsayılan
           isActive && "bg-accent/10 text-accent-foreground font-semibold",
           className,
           disabled && "opacity-50 cursor-not-allowed"
@@ -147,32 +147,29 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     );
   };
 
-  const renderNavItems = (items: typeof staticNavItems, isMobile = false) => {
-    console.log(`[Header renderNavItems] Rendering for ${isMobile ? 'Mobile' : 'Desktop'}. Item count: ${items.length}`);
+  const renderNavItemsForMobileSheet = (items: typeof staticNavItems) => {
+    console.log(`[Header renderNavItemsForMobileSheet] Rendering for Mobile Sheet. Item count: ${items.length}`);
     if (items.length === 0) {
-        console.log(`[Header renderNavItems] No nav items to render for ${isMobile ? 'Mobile' : 'Desktop'}.`);
-        return isMobile ? null : <span className="text-sm text-muted-foreground px-2">Navigasyon Tanımlanmamış</span>;
+        console.log(`[Header renderNavItemsForMobileSheet] No nav items to render for Mobile Sheet.`);
+        return null;
     }
     return items.map((item) => {
-      const itemKey = `${isMobile ? 'mobile' : 'desktop'}-${item.id}`;
+      const itemKey = `mobile-sheet-${item.id}`;
       const navLinkInstance = (
         <NavLink
           href={item.href}
-          onClick={isMobile ? () => setIsMobileMenuOpen(false) : undefined}
-          className={cn(isMobile ? "text-base py-3 px-4" : "", "whitespace-nowrap")} // Increased padding for mobile
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="text-base py-3 px-4" // Mobil için genişletilmiş padding
           iconName={item.iconName}
         >
           {item.label}
         </NavLink>
       );
-      if (isMobile) {
-        return (
-          <SheetClose asChild key={`sheetclose-${itemKey}`}>
-            {navLinkInstance}
-          </SheetClose>
-        );
-      }
-      return React.cloneElement(navLinkInstance, { key: itemKey });
+      return (
+        <SheetClose asChild key={`sheetclose-${itemKey}`}>
+          {navLinkInstance}
+        </SheetClose>
+      );
     });
   };
 
@@ -240,32 +237,23 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             {siteTitle}
           </Link>
 
-          {/* Main navigation links - hidden on medium screens and up, handled by FloatingNavButton */}
+          {/* Main navigation links - NOW HIDDEN on medium screens and up */}
           <nav className="hidden md:hidden space-x-1 items-center flex-wrap">
-            {renderNavItems(staticNavItems, false)}
-            {isAuthenticated ? (
-              <NavLink
-                key={`admin-panel-link-desktop-${isAuthenticated.toString()}-${currentUser?.uid}`}
-                href={adminNavItemData.href}
-                iconName={adminNavItemData.iconName}
-              >
-                {adminNavItemData.label}
-              </NavLink>
-            ) : (
-              <Button variant="default" size="sm" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin}>
-                {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />}
-                Giriş Yap
-              </Button>
-            )}
+            {/* Bu blok artık FloatingNavButton tarafından ele alındığı için boş veya tamamen kaldırılabilir.
+                Ancak, FloatingNavButton gizlenirse burası fallback olabilir. 
+                İsteğiniz üzere md:hidden olarak kalacak. */}
           </nav>
 
-          {/* Login/Admin button visible on medium screens and up if nav links are hidden */}
-          <div className="hidden md:flex items-center">
+          {/* Login/Admin button visible on medium screens and up */}
+          {/* This section now also becomes hidden on md and up IF FloatingNavButton is primary nav */}
+          {/* For clarity, we keep an auth button in header for all sizes, or manage it via FloatingNavButton's sheet */}
+          <div className="hidden md:flex items-center"> {/* This can be md:hidden too if FloatingNavButton replaces all nav on md+ */}
              {isAuthenticated ? (
               <NavLink
                 key={`admin-panel-link-desktop-standalone-${isAuthenticated.toString()}-${currentUser?.uid}`}
                 href={adminNavItemData.href}
                 iconName={adminNavItemData.iconName}
+                className="px-3" // Add some padding for standalone button
               >
                 {adminNavItemData.label}
               </NavLink>
@@ -279,7 +267,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
 
 
           {/* Mobile Hamburger Menu - only on small screens */}
-          <div className="md:hidden">
+          <div className="md:hidden"> {/* This remains for small screens */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(true)} aria-label="Menüyü Aç">
@@ -287,7 +275,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[320px] bg-card p-0 flex flex-col">
-                <SheetHeader className="p-4 border-b">
+                <SheetHeader className="p-4 border-b flex flex-row justify-between items-center">
                    <SheetTitle asChild>
                       <Link
                         href="/#anasayfa-section"
@@ -314,20 +302,20 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                         {siteTitle}
                       </Link>
                     </SheetTitle>
-                     <SheetClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 data-[state=open]:bg-secondary">
-                        <Menu className="h-5 w-5 rotate-90" /> {/* Changed to X or similar */}
+                     <SheetClose className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 data-[state=open]:bg-secondary">
+                        <X className="h-5 w-5" />
                         <span className="sr-only">Kapat</span>
                     </SheetClose>
                 </SheetHeader>
                 <nav className="flex-grow flex flex-col space-y-1 p-3 overflow-y-auto">
-                  {renderNavItems(staticNavItems, true)}
+                  {renderNavItemsForMobileSheet(staticNavItems)}
                   {isAuthenticated ? (
                     <SheetClose asChild>
                       <NavLink
                         key={`admin-panel-link-mobile-${isAuthenticated.toString()}-${currentUser?.uid}`}
                         href={adminNavItemData.href}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-base py-3 px-4" // Increased padding
+                        className="text-base py-3 px-4" 
                         iconName={adminNavItemData.iconName}
                        >
                         {adminNavItemData.label}

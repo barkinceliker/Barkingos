@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { List, X } from 'lucide-react'; // X for close icon
+import { MoreVertical, X } from 'lucide-react'; // Changed List to MoreVertical
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -99,12 +99,12 @@ export default function FloatingNavButton({ initialIsAuthenticated, siteTitle }:
           variant="ghost"
           size="sm" 
           className={cn(
-            "text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start text-base py-3 px-4", // Increased padding
+            "text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start text-base py-3 px-4",
             isActive && "bg-accent/10 text-accent-foreground font-semibold"
           )}
         >
           <Link href={href} onClick={handleLinkClick}>
-            {IconComponent && <IconComponent className="mr-3 h-5 w-5" />} {/* Increased margin */}
+            {IconComponent && <IconComponent className="mr-3 h-5 w-5" />}
             {children}
           </Link>
         </Button>
@@ -114,16 +114,16 @@ export default function FloatingNavButton({ initialIsAuthenticated, siteTitle }:
 
   return (
     // Positioned on the right, vertically centered. Only shows on md screens and up.
-    <div className="fixed top-1/2 -translate-y-1/2 right-6 z-[90] md:block hidden">
+    <div className="fixed top-1/2 -translate-y-1/2 right-4 sm:right-6 z-[90] md:block hidden">
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <Button
-            variant="default" // Changed to default for more prominence
+            variant="default" 
             size="icon"
-            className="shadow-xl rounded-full h-14 w-14 bg-card hover:bg-card/90 border border-primary/30" // Larger button
+            className="shadow-xl rounded-md h-24 w-10 bg-card hover:bg-card/90 border border-primary/30 flex flex-col items-center justify-center" 
             aria-label="Navigasyon Menüsünü Aç"
           >
-            <List className="h-7 w-7 text-primary" /> {/* Larger icon */}
+            <MoreVertical className="h-6 w-6 text-primary" />
           </Button>
         </SheetTrigger>
         <SheetContent side="right" className="w-[300px] sm:w-[320px] bg-card p-0 flex flex-col">
