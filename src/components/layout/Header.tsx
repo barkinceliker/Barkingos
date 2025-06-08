@@ -3,7 +3,8 @@
 
 import LinkFromNext from 'next/link'; // Renamed to avoid conflict with internal Link variable
 import React, { useState, useEffect } from 'react';
-import { Menu as MenuIcon, Loader2, LogIn, Shield, MoreVertical, X, ChevronDown, FileText, BookOpenText, User, Home, Award, Lightbulb, Briefcase, Sparkles, MessageSquare } from 'lucide-react';
+import { Menu as MenuIcon, Loader2, LogIn, Shield, MoreVertical, X, ChevronDown, FileText, BookOpenText, User, Home, Award, Lightbulb, Briefcase, Sparkles, MessageSquare, LogOut as LogOutIcon } from 'lucide-react';
+
 
 import { Button } from '@/components/ui/button';
 import {
@@ -64,7 +65,7 @@ interface HeaderProps {
 interface NavLinkProps {
   href?: string;
   children: React.ReactNode;
-  onClick?: () => void; // For parent actions like closing mobile menu via SheetClose
+  onClick?: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
   className?: string;
   disabled?: boolean;
   iconName?: string;
@@ -107,7 +108,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       if (pathname.startsWith('/admin')) {
         router.push('/');
       }
-      setIsMobileMenuOpen(false);
+      setIsMobileMenuOpen(false); // Mobil menüyü kapat
       router.refresh();
     } catch (error) {
       toast({ title: "Çıkış Hatası", description: "Bir hata oluştu.", variant: "destructive" });
@@ -120,36 +121,57 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
   const NavLink: React.FC<NavLinkProps> = ({ href, children, onClick, className, disabled, iconName, isAction }) => {
     const IconComponent = getLucideIcon(iconName);
     const currentPathname = usePathname();
-    const [isActiveClient, setIsActiveClient] = useState(false); // Default to false
+    const [isActiveClient, setIsActiveClient] = useState(false);
+
+    const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+        if (href && href.startsWith('/#')) {
+            const targetId = href.substring(href.indexOf('#') + 1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                e.preventDefault();
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+                if (window.history.pushState) {
+                    if (currentPathname === '/') {
+                        window.history.pushState(null, '', href);
+                    } else {
+                        router.push(href);
+                    }
+                } else {
+                    window.location.hash = href.substring(1); // Fallback
+                }
+            }
+        }
+        // Call the parent's onClick AFTER handling the link's own logic
+        // This is crucial for SheetClose to work correctly without interrupting event flow
+        if (onClick) {
+            onClick(e);
+        }
+    };
+    
 
     useEffect(() => {
-      // This effect runs only on the client.
       if (typeof window !== 'undefined' && href) {
         const checkActivity = () => {
           let currentActivity = false;
           if (href.startsWith('/#')) {
-            // Only consider hash links active if on the root page
             if (currentPathname === '/') {
-              const hash = window.location.hash; // e.g., "#projeler-section" or ""
-              const targetHash = href.substring(href.indexOf('#')); // e.g., "#anasayfa-section"
-
+              const hash = window.location.hash;
+              const targetHash = href.substring(href.indexOf('#'));
               if (href === '/#anasayfa-section') {
-                // The "Anasayfa" link is active if there's no hash or if the hash is specifically for it.
                 currentActivity = !hash || hash === '' || hash === targetHash;
               } else {
                 currentActivity = hash === targetHash;
               }
             } else {
-              currentActivity = false; // Hash links are not active if not on the root path
+              currentActivity = false;
             }
           } else {
-            currentActivity = currentPathname === href; // Exact path match for non-hash links
+            currentActivity = currentPathname === href;
           }
           setIsActiveClient(currentActivity);
         };
 
-        checkActivity(); // Check on mount and when pathname/href changes on client
-
+        checkActivity();
         window.addEventListener('hashchange', checkActivity);
         return () => {
           window.removeEventListener('hashchange', checkActivity);
@@ -158,35 +180,9 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     }, [href, currentPathname]);
 
 
-    const handleLinkClick = (e: React.MouseEvent) => {
-      if (onClick) onClick(); // This is typically used by SheetClose's asChild behavior
-
-      if (href && href.startsWith('/#')) {
-        const targetId = href.substring(href.indexOf('#') + 1);
-        const targetElement = document.getElementById(targetId);
-        if (targetElement) {
-          e.preventDefault();
-          targetElement.scrollIntoView({ behavior: 'smooth' });
-          if (window.history.pushState) {
-            // Only change hash if on the root page for SPA-like behavior
-             if (currentPathname === '/') {
-                window.history.pushState(null, '', href);
-             } else {
-                // If on a different page, navigate to root then hash.
-                // This will cause a page navigation, then the hash part will be handled by the browser.
-                router.push(href); 
-             }
-          } else {
-            window.location.hash = href.substring(1); // Fallback
-          }
-        }
-      }
-      // setIsMobileMenuOpen(false) is handled by SheetClose via its `onClick` prop if NavLink is a child of SheetClose.
-    };
-
     const commonClasses = cn(
       "text-foreground hover:bg-accent/10 hover:text-accent-foreground",
-      "justify-start text-sm py-2 px-3 rounded-md",
+      "justify-start py-2 rounded-md", // Removed text-sm to allow responsive overrides
       isActiveClient && !isAction && "bg-accent/20 text-accent-foreground font-semibold",
       className,
       disabled && "opacity-50 cursor-not-allowed"
@@ -196,8 +192,8 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       return (
         <Button
           variant="ghost"
-          size="sm"
-          onClick={handleLinkClick}
+          size="sm" // Kept size sm for consistency with other buttons
+          onClick={(e) => handleLinkClick(e as any)} // Cast e if necessary, or adjust handleLinkClick signature
           className={commonClasses}
           disabled={disabled}
         >
@@ -211,7 +207,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       <Button
         asChild
         variant="ghost"
-        size="sm"
+        size="sm" // Kept size sm for consistency
         className={commonClasses}
         disabled={disabled}
       >
@@ -247,13 +243,13 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         {isAuthenticated ? (
            <SheetClose asChild>
              <Button variant="ghost" onClick={handleLogout} className="text-base py-2.5 px-4 text-destructive hover:bg-destructive/10 hover:text-destructive justify-start w-full" disabled={isSubmittingLogout}>
-               {isSubmittingLogout ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <LogOut className="mr-2 h-5 w-5" />}
+               {isSubmittingLogout ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <LogOutIcon className="mr-2 h-5 w-5" />}
                {logoutNavItemData.label}
              </Button>
            </SheetClose>
         ) : (
            <SheetClose asChild>
-              <Button variant="default" onClick={() => { setIsLoginDialogOpen(true); /* setIsMobileMenuOpen(false) is handled by SheetClose */ }} className="text-base py-2.5 px-4 justify-start w-full mt-2" disabled={isSubmittingLogin}>
+              <Button variant="default" onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }} className="text-base py-2.5 px-4 justify-start w-full mt-2" disabled={isSubmittingLogin}>
                 {isSubmittingLogin ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <LogIn className="mr-3 h-5 w-5" />}
                 Giriş Yap
               </Button>
@@ -306,7 +302,6 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             href="/#anasayfa-section"
             className="text-2xl font-headline font-bold text-gradient"
             onClick={(e) => {
-              //setIsMobileMenuOpen(false); // Not needed here, Link is not in mobile menu context directly
               const hrefAttr = e.currentTarget.getAttribute('href');
               if (typeof window !== 'undefined' && window.location.pathname === '/' && hrefAttr && hrefAttr.startsWith('/#')) {
                  e.preventDefault();
@@ -327,20 +322,22 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             {siteTitle}
           </LinkFromNext>
 
+          {/* Desktop Navigation Links */}
           <nav className="hidden lg:flex space-x-1 items-center">
             {staticNavItems.map((item) => (
-              <NavLink key={`desktop-nav-${item.id}`} href={item.href} iconName={item.iconName} className="px-3">
+              <NavLink key={`desktop-nav-${item.id}`} href={item.href} iconName={item.iconName} className="px-3 lg:text-xs xl:text-sm">
                 {item.label}
               </NavLink>
             ))}
           </nav>
 
           <div className="flex items-center space-x-2">
-             <div className="hidden lg:flex items-center"> {/* This div now also hides on lg: and smaller */}
+             {/* Desktop Admin/Login Button Area */}
+             <div className="hidden lg:flex items-center">
               {isAuthenticated ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="px-3">
+                    <Button variant="ghost" className="px-3 lg:text-xs xl:text-sm">
                       <Shield className="mr-2 h-4 w-4" />
                       {adminNavItemData.label}
                       <ChevronDown className="ml-1 h-4 w-4" />
@@ -359,13 +356,13 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                       disabled={isSubmittingLogout}
                       className="text-destructive focus:bg-destructive focus:text-destructive-foreground cursor-pointer"
                     >
-                      {isSubmittingLogout ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOut className="mr-2 h-4 w-4" />}
+                      {isSubmittingLogout ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOutIcon className="mr-2 h-4 w-4" />}
                       <span>Çıkış Yap</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button variant="default" size="sm" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin}>
+                <Button variant="default" size="sm" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin} className="lg:text-xs xl:text-sm">
                   {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />}
                   Giriş Yap
                 </Button>
@@ -374,7 +371,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
 
 
             {/* Mobile Hamburger Menu */}
-            <div className="lg:hidden"> {/* Changed from md:hidden to lg:hidden */}
+            <div className="lg:hidden">
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(true)} aria-label="Menüyü Aç">
@@ -387,7 +384,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                         <LinkFromNext
                           href="/#anasayfa-section"
                           className="text-xl font-headline font-bold text-gradient"
-                           onClick={(e) => { // This onClick closes the sheet and scrolls
+                           onClick={(e) => {
                               setIsMobileMenuOpen(false);
                               const hrefAttr = e.currentTarget.getAttribute('href');
                                if (typeof window !== 'undefined' && window.location.pathname === '/' && hrefAttr && hrefAttr.startsWith('/#')) {
@@ -395,21 +392,21 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                                   const targetId = hrefAttr.substring(hrefAttr.indexOf('#') + 1);
                                   document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth'});
                                   window.history.pushState(null, '', hrefAttr);
-                              } else if (typeof window !== 'undefined' && window.location.pathname === '/') { // Fallback for just '/'
+                              } else if (typeof window !== 'undefined' && window.location.pathname === '/') {
                                   const targetElement = document.getElementById('anasayfa-section');
                                   if (targetElement) {
                                       e.preventDefault();
                                       targetElement.scrollIntoView({ behavior: 'smooth' });
                                        window.history.pushState(null, '', '/#anasayfa-section');
                                   }
-                              } // If not on root, NextLink handles navigation
+                              }
                           }}
                           key={`site-title-mobile-${siteTitle}`}
                         >
                           {siteTitle}
                         </LinkFromNext>
                       </SheetTitle>
-                       <SheetClose className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 data-[state=open]:bg-secondary">
+                       <SheetClose>
                           <X className="h-5 w-5" />
                           <span className="sr-only">Kapat</span>
                       </SheetClose>
