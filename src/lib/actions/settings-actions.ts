@@ -21,7 +21,7 @@ const themeSettingSchema = z.object({
 });
 
 const DEFAULT_THEME_SETTING: ThemeSetting = {
-  activeThemeName: 'midnight-gradient', // Varsayılan tema 'midnight-gradient' olarak ayarlandı
+  activeThemeName: 'midnight-gradient', // Varsayılan tema 'midnight-gradient' (yani "siyah" tema) olarak ayarlandı
 };
 
 // --- Site General Settings ---
@@ -54,8 +54,8 @@ async function getDb() {
 
 const SITE_SETTINGS_COLLECTION = 'siteSettings';
 const GENERAL_SETTINGS_DOCUMENT_ID = 'general';
-const CUSTOM_THEMES_COLLECTION = 'customThemes'; // Bu koleksiyon adı korunuyor
-const ACTIVE_THEME_DOCUMENT_ID = 'activeSystemTheme'; // Doküman adı sadece tema adını tutacak şekilde basitleştirildi
+const CUSTOM_THEMES_COLLECTION = 'customThemes'; 
+const ACTIVE_THEME_DOCUMENT_ID = 'activeSystemTheme'; 
 
 // --- Theme Setting Actions ---
 export const getThemeSetting = cache(async (): Promise<ThemeSetting> => {
@@ -82,7 +82,7 @@ export const getThemeSetting = cache(async (): Promise<ThemeSetting> => {
     } else {
       console.log(`${logPrefix} VERİTABANINDA '${ACTIVE_THEME_DOCUMENT_ID}' dokümanı bulunamadı. Varsayılan tema ayarı oluşturuluyor ve kaydediliyor.`);
     }
-    // Varsayılanı kaydet ve döndür
+    
     const defaultDataToSave: ThemeSetting & { updatedAt: admin.firestore.FieldValue } = {
         activeThemeName: DEFAULT_THEME_SETTING.activeThemeName,
         updatedAt: admin.firestore.FieldValue.serverTimestamp()
@@ -120,7 +120,7 @@ export async function updateThemeSetting(themeName: ThemeName) {
   }
   console.log(`${logPrefix} Tema adı '${themeName}' doğrulaması başarılı.`);
 
-  // Palet THEME_PALETTES'ten kontrol ediliyor ama veritabanına sadece isim kaydedilecek.
+  
   if (!THEME_PALETTES[themeName]) {
     console.error(`${logPrefix} '${themeName}' için THEME_PALETTES içinde palet bulunamadı! Bu tema adı geçersiz veya yapılandırılmamış.`);
     return { success: false, message: `Seçilen tema için palet yapılandırması bulunamadı: ${themeName}` };
@@ -130,19 +130,19 @@ export async function updateThemeSetting(themeName: ThemeName) {
   try {
     const db = await getDb();
     const docRef = db.collection(CUSTOM_THEMES_COLLECTION).doc(ACTIVE_THEME_DOCUMENT_ID);
-    const dataToSave = { // Sadece tema adını ve timestamp'i kaydediyoruz.
+    const dataToSave = { 
       activeThemeName: themeName,
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     };
 
     console.log(`${logPrefix} Firestore'a YAZILACAK VERİ ('${docRef.path}'): Ad='${dataToSave.activeThemeName}'`);
-    await docRef.set(dataToSave, { merge: true }); // merge: true ile sadece bu alanları günceller, dokümandaki diğer alanları (varsa) korur.
+    await docRef.set(dataToSave, { merge: true }); 
     console.log(`${logPrefix} VERİTABANI GÜNCELLEME BAŞARILI: Tema adı '${themeName}' olarak kaydedildi.`);
 
     try {
       console.log(`${logPrefix} Yollar yeniden doğrulanmaya çalışılıyor: revalidatePath('/', 'layout') ve revalidatePath('/admin')...`);
-      revalidatePath('/', 'layout'); // RootLayout'u etkiler
-      revalidatePath('/admin'); // Admin sayfasındaki tema seçiciyi etkileyebilir
+      revalidatePath('/', 'layout'); 
+      revalidatePath('/admin'); 
       console.log(`${logPrefix} Yollar başarıyla yeniden doğrulandı.`);
     } catch (revalidateError: any) {
       console.warn(`${logPrefix} UYARI: Yol yeniden doğrulama başarısız oldu ancak veritabanı güncellemesi başarılıydı. Hata: ${revalidateError.message}`, revalidateError.stack);
