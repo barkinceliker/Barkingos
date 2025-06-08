@@ -21,7 +21,7 @@ const themeSettingSchema = z.object({
 });
 
 const DEFAULT_THEME_SETTING: ThemeSetting = {
-  activeThemeName: 'midnight-gradient', // Varsayılan tema 'midnight-gradient' olarak değiştirildi
+  activeThemeName: 'midnight-gradient', // Varsayılan tema 'midnight-gradient' olarak ayarlandı
 };
 
 // --- Site General Settings ---

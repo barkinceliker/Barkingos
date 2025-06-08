@@ -83,8 +83,11 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--input': '220 10% 88%',
     '--ring': '231 48% 48%',
     '--radius': '0.5rem',
-    ...commonVariablesForAllThemes, // Default chart, sidebar, etc.
-    // Override specific commonVariables if needed for default theme
+    '--gradient-body-start-hsl': '195 75% 88%',
+    '--gradient-body-end-hsl': '165 50% 75%',
+    '--gradient-start-hsl': 'var(--primary)',
+    '--gradient-end-hsl': 'var(--accent)',
+    ...commonVariablesForAllThemes,
     '--chart-1': '12 76% 61%',
     '--chart-2': '173 58% 39%',
     '--chart-3': '197 37% 24%',
@@ -120,6 +123,10 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--input': '205 40% 20%',
     '--ring': '180 70% 65%',
     '--radius': '0.75rem',
+    '--gradient-body-start-hsl': '205 55% 22%',
+    '--gradient-body-end-hsl': '180 50% 28%',
+    '--gradient-start-hsl': 'var(--primary)',
+    '--gradient-end-hsl': 'var(--accent)',
     ...commonVariablesForAllThemes,
     '--chart-1': '30 85% 60%',
     '--chart-2': '180 65% 55%',
@@ -159,6 +166,10 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--input': '270 50% 15%',
     '--ring': '300 100% 75%',
     '--radius': '0.25rem',
+    '--gradient-body-start-hsl': '270 75% 10%',
+    '--gradient-body-end-hsl': '240 85% 12%',
+    '--gradient-start-hsl': 'var(--primary)',
+    '--gradient-end-hsl': 'var(--accent)',
     ...commonVariablesForAllThemes,
     '--chart-1': '300 100% 70%',
     '--chart-2': '180 100% 50%',
@@ -179,40 +190,45 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--code-bg': 'hsl(270 50% 8%)',
     '--code-text': 'hsl(180 100% 70%)',
   },
-  'midnight-gradient': {
-    '--background': '240 10% 4%',
-    '--foreground': '240 8% 90%',
-    '--card': '240 10% 8%',
-    '--card-foreground': '240 8% 85%',
-    '--popover': '240 10% 7%',
-    '--popover-foreground': '240 8% 85%',
-    '--primary': '280 80% 65%',
-    '--primary-foreground': '240 5% 95%',
-    '--secondary': '260 50% 15%',
-    '--secondary-foreground': '280 80% 75%',
-    '--muted': '240 8% 12%',
-    '--muted-foreground': '240 5% 55%',
-    '--accent': '180 90% 50%',
-    '--accent-foreground': '240 10% 5%',
-    '--destructive': '0 70% 55%',
-    '--destructive-foreground': '0 0% 98%',
-    '--border': '240 10% 15%',
-    '--input': '240 10% 12%',
-    '--ring': '280 80% 70%',
+  'midnight-gradient': { /* "Zümrüt ve Mavi Karışımı İhtişamlı Dark" */
+    '--background': '210 30% 8%',
+    '--foreground': '180 15% 90%',
+    '--card': '210 30% 12%',
+    '--card-foreground': '180 15% 85%',
+    '--popover': '210 30% 11%',
+    '--popover-foreground': '180 15% 85%',
+    '--primary': '200 75% 55%',
+    '--primary-foreground': '210 20% 95%',
+    '--secondary': '170 40% 20%',
+    '--secondary-foreground': '170 60% 80%',
+    '--muted': '210 25% 18%',
+    '--muted-foreground': '180 10% 60%',
+    '--accent': '160 70% 45%',
+    '--accent-foreground': '170 20% 95%',
+    '--destructive': '0 60% 50%',
+    '--destructive-foreground': '0 0% 95%',
+    '--border': '200 20% 25%',
+    '--input': '200 20% 22%',
+    '--ring': '200 75% 60%',
     '--radius': '0.5rem',
+    '--gradient-body-start-hsl': '200 50% 12%',
+    '--gradient-body-end-hsl': '160 55% 10%',
+    '--gradient-start-hsl': 'var(--primary)',
+    '--gradient-end-hsl': 'var(--accent)',
     ...commonVariablesForAllThemes,
-    '--chart-1': '280 80% 65%', // primary
-    '--chart-2': '180 90% 50%', // accent
-    '--chart-3': '260 60% 50%', // a darker secondary
-    '--chart-4': '300 70% 60%', // a pink/magenta
-    '--chart-5': '240 60% 70%', // a lighter blue
-     '--sidebar-background': '240 10% 6%',
-    '--sidebar-foreground': '240 8% 80%',
-    '--sidebar-primary': '280 80% 65%',
-    '--sidebar-primary-foreground': '240 5% 95%',
-    '--sidebar-accent': '260 50% 12%',
-    '--sidebar-accent-foreground': '280 80% 70%',
-    '--sidebar-border': '240 10% 12%',
+    '--chart-1': 'var(--primary)',
+    '--chart-2': 'var(--accent)',
+    '--chart-3': '210 60% 65%',
+    '--chart-4': '150 60% 55%',
+    '--chart-5': '190 50% 50%',
+    '--sidebar-background': '210 30% 7%',
+    '--sidebar-foreground': '180 15% 80%',
+    '--sidebar-primary': 'var(--primary)',
+    '--sidebar-primary-foreground': 'var(--primary-foreground)',
+    '--sidebar-accent': '170 40% 18%',
+    '--sidebar-accent-foreground': '170 60% 75%',
+    '--sidebar-border': '200 20% 20%',
+    '--sidebar-ring': 'var(--ring)',
   },
   'forest-green': {
     '--background': '120 20% 96%',
@@ -235,12 +251,16 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--input': '120 20% 90%',
     '--ring': '130 55% 50%',
     '--radius': '0.5rem',
+    '--gradient-body-start-hsl': '120 45% 88%',
+    '--gradient-body-end-hsl': '100 55% 80%',
+    '--gradient-start-hsl': 'var(--primary)',
+    '--gradient-end-hsl': 'var(--accent)',
     ...commonVariablesForAllThemes,
-    '--chart-1': '130 55% 45%', // primary
-    '--chart-2': '90 60% 50%',  // accent
-    '--chart-3': '125 40% 60%', // a lighter green
-    '--chart-4': '40 50% 50%',  // a brown/earthy
-    '--chart-5': '110 30% 70%', // a pale green
+    '--chart-1': '130 55% 45%',
+    '--chart-2': '90 60% 50%',
+    '--chart-3': '125 40% 60%',
+    '--chart-4': '40 50% 50%',
+    '--chart-5': '110 30% 70%',
     '--sidebar-background': '120 15% 94%',
     '--sidebar-foreground': '120 50% 15%',
     '--sidebar-primary': '130 55% 40%',
@@ -270,12 +290,16 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--input': '220 30% 22%',
     '--ring': '200 80% 65%',
     '--radius': '0.5rem',
+    '--gradient-body-start-hsl': '220 45% 18%',
+    '--gradient-body-end-hsl': '200 45% 25%',
+    '--gradient-start-hsl': 'var(--primary)',
+    '--gradient-end-hsl': 'var(--accent)',
     ...commonVariablesForAllThemes,
-    '--chart-1': '200 80% 60%', // primary
-    '--chart-2': '250 70% 65%', // accent
-    '--chart-3': '210 50% 50%', // a medium blue
-    '--chart-4': '180 60% 40%', // a teal
-    '--chart-5': '230 40% 70%', // a light purple/blue
+    '--chart-1': '200 80% 60%',
+    '--chart-2': '250 70% 65%',
+    '--chart-3': '210 50% 50%',
+    '--chart-4': '180 60% 40%',
+    '--chart-5': '230 40% 70%',
     '--sidebar-background': '220 40% 8%',
     '--sidebar-foreground': '220 20% 75%',
     '--sidebar-primary': '200 80% 55%',
@@ -305,12 +329,16 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--input': '340 60% 92%',
     '--ring': '330 70% 60%',
     '--radius': '0.75rem',
+    '--gradient-body-start-hsl': '340 85% 90%',
+    '--gradient-body-end-hsl': '320 85% 85%',
+    '--gradient-start-hsl': 'var(--primary)',
+    '--gradient-end-hsl': 'var(--accent)',
     ...commonVariablesForAllThemes,
-    '--chart-1': '330 70% 55%', // primary
-    '--chart-2': '300 70% 60%', // accent
-    '--chart-3': '350 80% 70%', // a lighter pink
-    '--chart-4': '20 60% 65%',  // a soft orange
-    '--chart-5': '280 50% 75%', // a lavender
+    '--chart-1': '330 70% 55%',
+    '--chart-2': '300 70% 60%',
+    '--chart-3': '350 80% 70%',
+    '--chart-4': '20 60% 65%',
+    '--chart-5': '280 50% 75%',
     '--sidebar-background': '340 70% 95%',
     '--sidebar-foreground': '340 50% 30%',
     '--sidebar-primary': '330 70% 50%',
@@ -340,12 +368,16 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--input': '270 40% 28%',
     '--ring': '280 70% 65%',
     '--radius': '0.5rem',
+    '--gradient-body-start-hsl': '270 55% 22%',
+    '--gradient-body-end-hsl': '290 60% 28%',
+    '--gradient-start-hsl': 'var(--primary)',
+    '--gradient-end-hsl': 'var(--accent)',
     ...commonVariablesForAllThemes,
-    '--chart-1': '280 70% 60%', // primary
-    '--chart-2': '310 80% 65%', // accent
-    '--chart-3': '260 50% 50%', // a deep blue
-    '--chart-4': '290 60% 70%', // a lighter purple
-    '--chart-5': '330 70% 60%', // a magenta
+    '--chart-1': '280 70% 60%',
+    '--chart-2': '310 80% 65%',
+    '--chart-3': '260 50% 50%',
+    '--chart-4': '290 60% 70%',
+    '--chart-5': '330 70% 60%',
     '--sidebar-background': '270 50% 12%',
     '--sidebar-foreground': '270 30% 80%',
     '--sidebar-primary': '280 70% 55%',
@@ -375,12 +407,16 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--input': '30 60% 90%',
     '--ring': '20 85% 60%',
     '--radius': '0.5rem',
+    '--gradient-body-start-hsl': '30 75% 88%',
+    '--gradient-body-end-hsl': '15 80% 82%',
+    '--gradient-start-hsl': 'var(--primary)',
+    '--gradient-end-hsl': 'var(--accent)',
     ...commonVariablesForAllThemes,
-    '--chart-1': '20 85% 55%', // primary
-    '--chart-2': '40 90% 60%', // accent
-    '--chart-3': '30 70% 70%', // a lighter orange
-    '--chart-4': '10 60% 50%', // a reddish brown
-    '--chart-5': '50 80% 75%', // a light yellow
+    '--chart-1': '20 85% 55%',
+    '--chart-2': '40 90% 60%',
+    '--chart-3': '30 70% 70%',
+    '--chart-4': '10 60% 50%',
+    '--chart-5': '50 80% 75%',
     '--sidebar-background': '30 55% 93%',
     '--sidebar-foreground': '25 50% 25%',
     '--sidebar-primary': '20 85% 50%',
@@ -410,12 +446,16 @@ export const THEME_PALETTES: Record<ThemeName, ThemePalette> = {
     '--input': '0 0% 25%',
     '--ring': '0 70% 55%',
     '--radius': '0.5rem',
+    '--gradient-body-start-hsl': '0 20% 20%',
+    '--gradient-body-end-hsl': '350 25% 25%',
+    '--gradient-start-hsl': 'var(--primary)',
+    '--gradient-end-hsl': 'var(--accent)',
     ...commonVariablesForAllThemes,
-    '--chart-1': '0 70% 50%',   // primary
-    '--chart-2': '30 80% 60%',  // accent
-    '--chart-3': '0 40% 40%',   // a darker red
-    '--chart-4': '350 60% 65%', // a pinkish red
-    '--chart-5': '20 50% 55%',  // an orange-red
+    '--chart-1': '0 70% 50%',
+    '--chart-2': '30 80% 60%',
+    '--chart-3': '0 40% 40%',
+    '--chart-4': '350 60% 65%',
+    '--chart-5': '20 50% 55%',
     '--sidebar-background': '0 0% 10%',
     '--sidebar-foreground': '0 0% 85%',
     '--sidebar-primary': '0 70% 45%',
@@ -433,12 +473,12 @@ const coreShadcnVariables = [
   '--popover-foreground', '--primary', '--primary-foreground', '--secondary',
   '--secondary-foreground', '--muted', '--muted-foreground', '--accent',
   '--accent-foreground', '--destructive', '--destructive-foreground',
-  '--border', '--input', '--ring', '--radius'
+  '--border', '--input', '--ring', '--radius',
+  '--gradient-body-start-hsl', '--gradient-body-end-hsl',
+  '--gradient-start-hsl', '--gradient-end-hsl'
 ];
 
-export const ALL_THEME_VARIABLE_KEYS = [
+export const ALL_THEME_VARIABLE_KEYS = Array.from(new Set([ // Use Set to remove duplicates
   ...coreShadcnVariables,
   ...Object.keys(commonVariablesForAllThemes)
-];
-
-    
+]));

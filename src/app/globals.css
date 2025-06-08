@@ -183,8 +183,8 @@ html {
     --ring: 180 70% 65%;
     --radius: 0.75rem;
 
-    --gradient-body-start-hsl: 205 55% 22%; 
-    --gradient-body-end-hsl: 180 50% 28%;   
+    --gradient-body-start-hsl: 205 55% 22%;
+    --gradient-body-end-hsl: 180 50% 28%;
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -249,8 +249,8 @@ html {
     --ring: 300 100% 75%;
     --radius: 0.25rem;
 
-    --gradient-body-start-hsl: 270 75% 10%;  
-    --gradient-body-end-hsl: 240 85% 12%;   
+    --gradient-body-start-hsl: 270 75% 10%;
+    --gradient-body-end-hsl: 240 85% 12%;
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -293,63 +293,68 @@ html {
     --toast-border: hsl(var(--primary));
   }
 
-  .theme-midnight-gradient { /* "Gradient Güzel Dark" - Updated for Blue/Emerald */
-    --background: 240 10% 4%; 
-    --foreground: 240 8% 90%; 
-    --card: 240 10% 8%; 
-    --card-foreground: 240 8% 85%;
-    --popover: 240 10% 7%;
-    --popover-foreground: 240 8% 85%;
-    --primary: 220 70% 60%; /* Richer Blue as Primary */
-    --primary-foreground: 240 5% 95%;
-    --secondary: 230 40% 15%; /* Darker Blue/Indigo */
-    --secondary-foreground: 220 70% 75%;
-    --muted: 240 8% 12%;
-    --muted-foreground: 240 5% 55%;
-    --accent: 170 70% 50%; /* Richer Emerald/Teal as Accent */
-    --accent-foreground: 240 10% 5%;
-    --destructive: 0 70% 55%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 10% 15%;
-    --input: 240 10% 12%;
-    --ring: 220 70% 65%; /* Ring matches new primary */
+  .theme-midnight-gradient { /* "Zümrüt ve Mavi Karışımı İhtişamlı Dark" */
+    --background: 210 30% 8%;      /* Very dark, slightly desaturated blue/cyan */
+    --foreground: 180 15% 90%;     /* Off-white with a hint of cyan */
+    --card: 210 30% 12%;
+    --card-foreground: 180 15% 85%;
+    --popover: 210 30% 11%;
+    --popover-foreground: 180 15% 85%;
+    --primary: 200 75% 55%;         /* Main Blue: A vibrant, slightly desaturated royal blue */
+    --primary-foreground: 210 20% 95%; /* Light text for primary */
+    --secondary: 170 40% 20%;       /* Darker Emerald for secondary elements */
+    --secondary-foreground: 170 60% 80%; /* Text on secondary */
+    --muted: 210 25% 18%;
+    --muted-foreground: 180 10% 60%;
+    --accent: 160 70% 45%;          /* Emerald/Teal: A rich, vibrant emerald */
+    --accent-foreground: 170 20% 95%;  /* Light text for accent */
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 0 0% 95%;
+    --border: 200 20% 25%;
+    --input: 200 20% 22%;
+    --ring: 200 75% 60%;            /* Ring matches primary */
     --radius: 0.5rem;
 
-    /* Updated "ihtişamlı" dark blue and emerald gradient */
-    --gradient-body-start-hsl: 220 50% 15%;   /* Deep Blue */
-    --gradient-body-end-hsl: 170 50% 15%;     /* Deep Emerald */
+    /* Body Gradient: Deep Blue to Deep Emerald */
+    --gradient-body-start-hsl: 200 50% 12%;
+    --gradient-body-end-hsl: 160 55% 10%;
 
-    --gradient-start-hsl: var(--primary); /* Use updated primary for text gradient */
-    --gradient-end-hsl: var(--accent);   /* Use updated accent for text gradient */
-    
-    --chart-1: 220 70% 60%; 
-    --chart-2: 170 70% 50%; 
-    --chart-3: 200 60% 45%; 
-    --chart-4: 150 60% 40%; 
-    --chart-5: 240 50% 70%; 
-     --sidebar-background: 230 30% 7%; /* Even darker for sidebar */
-    --sidebar-foreground: 220 20% 80%;
-    --sidebar-primary: 220 70% 55%;
-    --sidebar-primary-foreground: 230 10% 95%;
-    --sidebar-accent: 220 25% 12%;
-    --sidebar-accent-foreground: 170 70% 65%;
-    --sidebar-border: 230 20% 18%;
+    /* Text Gradient: Blue to Emerald */
+    --gradient-start-hsl: var(--primary);
+    --gradient-end-hsl: var(--accent);
+
+    /* Chart Colors */
+    --chart-1: var(--primary);
+    --chart-2: var(--accent);
+    --chart-3: 210 60% 65%; /* Lighter variant of blue */
+    --chart-4: 150 60% 55%; /* Another shade of green/emerald */
+    --chart-5: 190 50% 50%; /* Cyan-blue */
+
+    /* Sidebar Colors */
+    --sidebar-background: 210 30% 7%;
+    --sidebar-foreground: 180 15% 80%;
+    --sidebar-primary: var(--primary);
+    --sidebar-primary-foreground: var(--primary-foreground);
+    --sidebar-accent: 170 40% 18%;
+    --sidebar-accent-foreground: 170 60% 75%;
+    --sidebar-border: 200 20% 20%;
+    --sidebar-ring: var(--ring);
   }
 
-  .theme-forest-green { 
-    --background: 120 20% 96%; 
-    --foreground: 120 60% 10%; 
+  .theme-forest-green {
+    --background: 120 20% 96%;
+    --foreground: 120 60% 10%;
     --card: 120 10% 100%;
     --card-foreground: 120 60% 10%;
     --popover: 120 10% 100%;
     --popover-foreground: 120 60% 10%;
-    --primary: 130 55% 45%; 
+    --primary: 130 55% 45%;
     --primary-foreground: 120 20% 98%;
-    --secondary: 125 30% 88%; 
+    --secondary: 125 30% 88%;
     --secondary-foreground: 130 55% 35%;
     --muted: 120 20% 92%;
     --muted-foreground: 120 30% 40%;
-    --accent: 90 60% 50%; 
+    --accent: 90 60% 50%;
     --accent-foreground: 120 60% 10%;
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 98%;
@@ -358,17 +363,17 @@ html {
     --ring: 130 55% 50%;
     --radius: 0.5rem;
 
-    --gradient-body-start-hsl: 120 45% 88%; 
-    --gradient-body-end-hsl: 100 55% 80%;   
+    --gradient-body-start-hsl: 120 45% 88%;
+    --gradient-body-end-hsl: 100 55% 80%;
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
-    
-    --chart-1: 130 55% 45%; 
-    --chart-2: 90 60% 50%;  
-    --chart-3: 125 40% 60%; 
-    --chart-4: 40 50% 50%;  
-    --chart-5: 110 30% 70%; 
+
+    --chart-1: 130 55% 45%;
+    --chart-2: 90 60% 50%;
+    --chart-3: 125 40% 60%;
+    --chart-4: 40 50% 50%;
+    --chart-5: 110 30% 70%;
     --sidebar-background: 120 15% 94%;
     --sidebar-foreground: 120 50% 15%;
     --sidebar-primary: 130 55% 40%;
@@ -378,20 +383,20 @@ html {
     --sidebar-border: 120 20% 80%;
   }
 
-  .theme-deep-navy { 
-    --background: 220 40% 10%; 
-    --foreground: 220 20% 85%; 
+  .theme-deep-navy {
+    --background: 220 40% 10%;
+    --foreground: 220 20% 85%;
     --card: 220 40% 15%;
     --card-foreground: 220 20% 85%;
     --popover: 220 40% 12%;
     --popover-foreground: 220 20% 85%;
-    --primary: 200 80% 60%; 
+    --primary: 200 80% 60%;
     --primary-foreground: 220 40% 5%;
     --secondary: 220 30% 25%;
     --secondary-foreground: 200 80% 75%;
     --muted: 220 30% 20%;
     --muted-foreground: 220 15% 60%;
-    --accent: 250 70% 65%; 
+    --accent: 250 70% 65%;
     --accent-foreground: 220 40% 5%;
     --destructive: 0 60% 50%;
     --destructive-foreground: 0 0% 98%;
@@ -400,17 +405,17 @@ html {
     --ring: 200 80% 65%;
     --radius: 0.5rem;
 
-    --gradient-body-start-hsl: 220 45% 18%; 
-    --gradient-body-end-hsl: 200 45% 25%;   
+    --gradient-body-start-hsl: 220 45% 18%;
+    --gradient-body-end-hsl: 200 45% 25%;
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
-     
-    --chart-1: 200 80% 60%; 
-    --chart-2: 250 70% 65%; 
-    --chart-3: 210 50% 50%; 
-    --chart-4: 180 60% 40%; 
-    --chart-5: 230 40% 70%; 
+
+    --chart-1: 200 80% 60%;
+    --chart-2: 250 70% 65%;
+    --chart-3: 210 50% 50%;
+    --chart-4: 180 60% 40%;
+    --chart-5: 230 40% 70%;
     --sidebar-background: 220 40% 8%;
     --sidebar-foreground: 220 20% 75%;
     --sidebar-primary: 200 80% 55%;
@@ -420,39 +425,39 @@ html {
     --sidebar-border: 220 30% 25%;
   }
 
-  .theme-blush-pink { 
-    --background: 340 80% 97%; 
-    --foreground: 340 50% 25%; 
+  .theme-blush-pink {
+    --background: 340 80% 97%;
+    --foreground: 340 50% 25%;
     --card: 340 60% 100%;
     --card-foreground: 340 50% 25%;
     --popover: 340 60% 100%;
     --popover-foreground: 340 50% 25%;
-    --primary: 330 70% 55%; 
+    --primary: 330 70% 55%;
     --primary-foreground: 340 60% 98%;
-    --secondary: 335 60% 90%; 
+    --secondary: 335 60% 90%;
     --secondary-foreground: 330 70% 45%;
     --muted: 340 60% 94%;
     --muted-foreground: 340 30% 50%;
-    --accent: 300 70% 60%; 
+    --accent: 300 70% 60%;
     --accent-foreground: 340 60% 98%;
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 98%;
     --border: 340 60% 88%;
     --input: 340 60% 92%;
     --ring: 330 70% 60%;
-    --radius: 0.75rem; 
+    --radius: 0.75rem;
 
-    --gradient-body-start-hsl: 340 85% 90%; 
-    --gradient-body-end-hsl: 320 85% 85%;   
+    --gradient-body-start-hsl: 340 85% 90%;
+    --gradient-body-end-hsl: 320 85% 85%;
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
-    
-    --chart-1: 330 70% 55%; 
-    --chart-2: 300 70% 60%; 
-    --chart-3: 350 80% 70%; 
-    --chart-4: 20 60% 65%;  
-    --chart-5: 280 50% 75%; 
+
+    --chart-1: 330 70% 55%;
+    --chart-2: 300 70% 60%;
+    --chart-3: 350 80% 70%;
+    --chart-4: 20 60% 65%;
+    --chart-5: 280 50% 75%;
     --sidebar-background: 340 70% 95%;
     --sidebar-foreground: 340 50% 30%;
     --sidebar-primary: 330 70% 50%;
@@ -462,20 +467,20 @@ html {
     --sidebar-border: 340 60% 85%;
   }
 
-  .theme-royal-purple { 
-    --background: 270 50% 15%; 
-    --foreground: 270 30% 88%; 
+  .theme-royal-purple {
+    --background: 270 50% 15%;
+    --foreground: 270 30% 88%;
     --card: 270 50% 20%;
     --card-foreground: 270 30% 88%;
     --popover: 270 50% 18%;
     --popover-foreground: 270 30% 88%;
-    --primary: 280 70% 60%; 
+    --primary: 280 70% 60%;
     --primary-foreground: 270 30% 95%;
     --secondary: 275 40% 30%;
     --secondary-foreground: 280 70% 80%;
     --muted: 270 40% 25%;
     --muted-foreground: 270 20% 65%;
-    --accent: 310 80% 65%; 
+    --accent: 310 80% 65%;
     --accent-foreground: 270 30% 95%;
     --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 98%;
@@ -484,17 +489,17 @@ html {
     --ring: 280 70% 65%;
     --radius: 0.5rem;
 
-    --gradient-body-start-hsl: 270 55% 22%; 
-    --gradient-body-end-hsl: 290 60% 28%;   
+    --gradient-body-start-hsl: 270 55% 22%;
+    --gradient-body-end-hsl: 290 60% 28%;
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
-    
-    --chart-1: 280 70% 60%; 
-    --chart-2: 310 80% 65%; 
-    --chart-3: 260 50% 50%; 
-    --chart-4: 290 60% 70%; 
-    --chart-5: 330 70% 60%; 
+
+    --chart-1: 280 70% 60%;
+    --chart-2: 310 80% 65%;
+    --chart-3: 260 50% 50%;
+    --chart-4: 290 60% 70%;
+    --chart-5: 330 70% 60%;
     --sidebar-background: 270 50% 12%;
     --sidebar-foreground: 270 30% 80%;
     --sidebar-primary: 280 70% 55%;
@@ -504,20 +509,20 @@ html {
     --sidebar-border: 270 40% 30%;
   }
 
-  .theme-burnt-orange { 
-    --background: 30 60% 95%; 
-    --foreground: 25 60% 20%; 
+  .theme-burnt-orange {
+    --background: 30 60% 95%;
+    --foreground: 25 60% 20%;
     --card: 30 50% 100%;
     --card-foreground: 25 60% 20%;
     --popover: 30 50% 100%;
     --popover-foreground: 25 60% 20%;
-    --primary: 20 85% 55%; 
+    --primary: 20 85% 55%;
     --primary-foreground: 30 50% 98%;
-    --secondary: 30 70% 88%; 
+    --secondary: 30 70% 88%;
     --secondary-foreground: 20 85% 45%;
     --muted: 30 60% 92%;
     --muted-foreground: 25 40% 45%;
-    --accent: 40 90% 60%; 
+    --accent: 40 90% 60%;
     --accent-foreground: 25 60% 15%;
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 98%;
@@ -526,17 +531,17 @@ html {
     --ring: 20 85% 60%;
     --radius: 0.5rem;
 
-    --gradient-body-start-hsl: 30 75% 88%; 
-    --gradient-body-end-hsl: 15 80% 82%;   
+    --gradient-body-start-hsl: 30 75% 88%;
+    --gradient-body-end-hsl: 15 80% 82%;
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
-    
-    --chart-1: 20 85% 55%; 
-    --chart-2: 40 90% 60%; 
-    --chart-3: 30 70% 70%; 
-    --chart-4: 10 60% 50%; 
-    --chart-5: 50 80% 75%; 
+
+    --chart-1: 20 85% 55%;
+    --chart-2: 40 90% 60%;
+    --chart-3: 30 70% 70%;
+    --chart-4: 10 60% 50%;
+    --chart-5: 50 80% 75%;
     --sidebar-background: 30 55% 93%;
     --sidebar-foreground: 25 50% 25%;
     --sidebar-primary: 20 85% 50%;
@@ -546,39 +551,39 @@ html {
     --sidebar-border: 30 60% 80%;
   }
 
-  .theme-crimson-red { 
-    --background: 0 0% 12%; 
-    --foreground: 0 0% 90%; 
+  .theme-crimson-red {
+    --background: 0 0% 12%;
+    --foreground: 0 0% 90%;
     --card: 0 0% 18%;
     --card-foreground: 0 0% 90%;
     --popover: 0 0% 15%;
     --popover-foreground: 0 0% 90%;
-    --primary: 0 70% 50%; 
+    --primary: 0 70% 50%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 0 50% 25%; 
+    --secondary: 0 50% 25%;
     --secondary-foreground: 0 70% 75%;
     --muted: 0 0% 22%;
     --muted-foreground: 0 0% 60%;
-    --accent: 30 80% 60%; 
+    --accent: 30 80% 60%;
     --accent-foreground: 0 0% 10%;
-    --destructive: 0 80% 55%; 
+    --destructive: 0 80% 55%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 30%;
     --input: 0 0% 25%;
     --ring: 0 70% 55%;
     --radius: 0.5rem;
 
-    --gradient-body-start-hsl: 0 20% 20%;  
-    --gradient-body-end-hsl: 350 25% 25%;  
+    --gradient-body-start-hsl: 0 20% 20%;
+    --gradient-body-end-hsl: 350 25% 25%;
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
-    
-    --chart-1: 0 70% 50%;   
-    --chart-2: 30 80% 60%;  
-    --chart-3: 0 40% 40%;   
-    --chart-4: 350 60% 65%; 
-    --chart-5: 20 50% 55%;  
+
+    --chart-1: 0 70% 50%;
+    --chart-2: 30 80% 60%;
+    --chart-3: 0 40% 40%;
+    --chart-4: 350 60% 65%;
+    --chart-5: 20 50% 55%;
     --sidebar-background: 0 0% 10%;
     --sidebar-foreground: 0 0% 85%;
     --sidebar-primary: 0 70% 45%;
@@ -612,5 +617,4 @@ html {
     text-fill-color: transparent;
   }
 }
-
     
