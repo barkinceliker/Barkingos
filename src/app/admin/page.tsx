@@ -1,7 +1,7 @@
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Settings, LayoutDashboard, Newspaper, FolderKanban, Sparkles, Brain, Briefcase, FileText, Palette, MailIcon, ListCollapse, Paintbrush } from 'lucide-react';
+import { Settings, LayoutDashboard, Newspaper, FolderKanban, Sparkles, Brain, Briefcase, FileText, Palette, MailIcon, ListCollapse } from 'lucide-react';
 
 // Data fetching functions for embedded forms
 import { getHomepageContent } from '@/lib/actions/page-content-actions';
@@ -12,6 +12,7 @@ import { getSiteGeneralSettings } from '@/lib/actions/settings-actions';
 import EditHomepageForm from '@/components/admin/forms/EditHomepageForm';
 import EditHakkimdaPageForm from '@/components/admin/forms/EditHakkimdaPageForm';
 import SiteGeneralSettingsForm from '@/components/admin/forms/SiteGeneralSettingsForm'; 
+import ThemeSettingsDropdown from '@/app/admin/settings/_components/ThemeSettingsDropdown'; // Yeni tema seçici
 
 // Management Content Components (Tables and links)
 import BlogManagementContent from '@/app/admin/manage-blog/_components/BlogManagementContent';
@@ -19,12 +20,7 @@ import ProjectManagementContent from '@/app/admin/manage-projects/_components/Pr
 import ServiceManagementContent from '@/app/admin/manage-services/_components/ServiceManagementContent';
 import SkillManagementContent from '@/app/admin/manage-skills/_components/SkillManagementContent';
 import ExperienceManagementContent from '@/app/admin/manage-experiences/_components/ExperienceManagementContent';
-import NavigationManagementContentObsolete from '@/app/admin/manage-navigation/_components/NavigationManagementContent'; // Artık Obsolete
-
-// Settings and Other Content Components
-// import ThemeSettingsFormCard from '@/app/admin/manage-settings/theme/_components/ThemeSettingsFormCard'; // Kaldırıldı
-// import CustomThemesTableCard from '@/app/admin/manage-settings/custom-themes/_components/CustomThemesTableCard'; // Kaldırıldı
-import ThemeSelectorCard from "@/app/admin/themes/_components/ThemeSelectorCard"; // Yeni tema seçici
+import NavigationManagementContentObsolete from '@/app/admin/manage-navigation/_components/NavigationManagementContent'; 
 import ContactMessagesTableCard from '@/app/admin/contact-messages/_components/ContactMessagesTableCard';
 
 
@@ -85,10 +81,10 @@ export default async function AdminUnifiedPage() {
     },
     { 
       value: "navigasyon-yonetimi",
-      title: "Navigasyon Yönetimi (Devre Dışı)", // Güncellendi
+      title: "Navigasyon Yönetimi (Devre Dışı)", 
       icon: ListCollapse, 
-      description: "Navigasyon menüsü artık Header.tsx dosyasından statik olarak yönetilmektedir.", // Güncellendi
-      content: <NavigationManagementContentObsolete /> // Güncellendi
+      description: "Navigasyon menüsü artık Header.tsx dosyasından statik olarak yönetilmektedir.", 
+      content: <NavigationManagementContentObsolete /> 
     },
     {
       value: "genel-site-ayarlari",
@@ -98,20 +94,12 @@ export default async function AdminUnifiedPage() {
       content: <SiteGeneralSettingsForm initialData={siteGeneralSettings} />
     },
     { 
-      value: "temalar", // Yeni sekme
-      title: "Site Teması Seçimi", 
+      value: "temalar", 
+      title: "Site Teması", 
       icon: Palette,
       description: "Sitenizin genel görünümünü ve renk paletini seçin.",
-      content: <ThemeSelectorCard /> // Yeni bileşen
+      content: <ThemeSettingsDropdown /> 
     },
-    // Kaldırılan Özel Tema Yönetimi
-    // { 
-    //   value: "ozel-temalar", 
-    //   title: "Özel Tema Yönetimi (Devre Dışı)", 
-    //   icon: Paintbrush,
-    //   description: "Bu bölüm devre dışı bırakılmıştır. Tema seçimi 'Temalar' bölümünden yapılmaktadır.",
-    //   content: <p>Özel tema oluşturma/düzenleme özelliği kaldırılmıştır. Lütfen 'Temalar' bölümünden önceden tanımlanmış bir tema seçin.</p> 
-    // },
      { 
       value: "gelen-mesajlar", 
       title: "Gelen İletişim Mesajları", 
