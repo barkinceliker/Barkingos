@@ -3,7 +3,7 @@
 
 import LinkFromNext from 'next/link';
 import React, { useState, useEffect, useCallback } from 'react';
-import { Menu as MenuIcon, Loader2, LogIn, Shield, MoreVertical, X, ChevronDown, FileText, BookOpenText, User, Home, Award, Lightbulb, Briefcase, Sparkles, MessageSquare, LogOut as LogOutIcon } from 'lucide-react';
+import { Menu as MenuIcon, Loader2, X, ChevronDown, FileText, BookOpenText, User, Home, Award, Lightbulb, Briefcase, Sparkles, MessageSquare } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -14,30 +14,10 @@ import {
   SheetHeader,
   SheetTitle
 } from '@/components/ui/sheet';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter
-} from '@/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+// Dialog, DropdownMenu and related imports removed as login/admin features are gone
 import { cn } from '@/lib/utils';
-import { useToast } from "@/hooks/use-toast";
+// Toast, Firebase auth imports removed
 import { useRouter, usePathname } from 'next/navigation';
-import { signInWithEmailAndPassword, User as FirebaseUserType, signOut as firebaseSignOut, onAuthStateChanged } from 'firebase/auth';
-import { auth as firebaseClientAuth } from '@/lib/firebase';
-import { createSession, logout as serverLogout } from '@/lib/actions/auth';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 
 const staticNavItems = [
@@ -51,12 +31,9 @@ const staticNavItems = [
   { id: 'contact', label: 'Contact', href: '/#iletisim-section', iconName: 'MessageSquare' },
 ];
 
-const adminNavItemData = { label: 'Admin Panel', href: '/admin', iconName: 'Shield' };
-const logoutNavItemData = { label: 'Logout', action: 'logout', iconName: 'LogOut' };
-
+// Admin and logout nav items removed
 
 interface HeaderProps {
-  initialIsAuthenticated: boolean;
   initialSiteTitle: string;
 }
 
@@ -67,53 +44,19 @@ interface NavLinkProps {
   className?: string;
   disabled?: boolean;
   iconName?: string;
-  isAction?: boolean;
+  isAction?: boolean; // Kept for consistency if ever needed, but not used for admin actions now
 }
 
-export default function Header({ initialIsAuthenticated, initialSiteTitle }: HeaderProps) {
-  const [currentUser, setCurrentUser] = useState<FirebaseUserType | null>(null);
+export default function Header({ initialSiteTitle }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
-  const [loginError, setLoginError] = useState<string | null>(null);
-  const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
-  const [isSubmittingLogout, setIsSubmittingLogout] = useState(false);
   const [siteTitle, setSiteTitle] = useState(initialSiteTitle);
 
   const router = useRouter();
   const pathname = usePathname();
-  const { toast } = useToast();
 
   useEffect(() => {
     setSiteTitle(initialSiteTitle);
-    const unsubscribeAuth = onAuthStateChanged(firebaseClientAuth, (user) => {
-      setCurrentUser(user);
-    });
-    return () => unsubscribeAuth();
   }, [initialSiteTitle]);
-
-  const isAuthenticated = currentUser !== null;
-
-  const handleLogout = async () => {
-    setIsSubmittingLogout(true);
-    try {
-      await firebaseSignOut(firebaseClientAuth);
-      const result = await serverLogout();
-      if (result.success) {
-        toast({ title: "Successfully logged out." });
-      } else {
-        toast({ title: "Logout Error", description: result.error || "An issue occurred during server-side logout.", variant: "destructive" });
-      }
-      if (pathname.startsWith('/admin')) {
-        router.push('/');
-      }
-      setIsMobileMenuOpen(false);
-      router.refresh();
-    } catch (error) {
-      toast({ title: "Logout Error", description: "An error occurred.", variant: "destructive" });
-    } finally {
-      setIsSubmittingLogout(false);
-    }
-  };
 
   const NavLink: React.FC<NavLinkProps> = ({ href, children, onClick, className, disabled, iconName, isAction }) => {
     const IconComponent = getLucideIcon(iconName);
@@ -144,10 +87,8 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       };
 
       handleActivityUpdate();
-
       window.addEventListener('hashchange', handleActivityUpdate);
       window.addEventListener('popstate', handleActivityUpdate);
-
       return () => {
         window.removeEventListener('hashchange', handleActivityUpdate);
         window.removeEventListener('popstate', handleActivityUpdate);
@@ -157,14 +98,12 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
 
     const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement, MouseEvent>) => {
       const currentHref = href || '';
-
       if (currentHref.startsWith('/#')) {
         const targetId = currentHref.substring(currentHref.indexOf('#') + 1);
         const targetElement = document.getElementById(targetId);
         if (targetElement) {
           e.preventDefault();
           targetElement.scrollIntoView({ behavior: 'smooth' });
-
           if (window.location.pathname === '/') {
             window.history.pushState(null, '', currentHref);
           } else {
@@ -172,7 +111,6 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           }
         }
       }
-
       if (onClick) {
         onClick(e);
       }
@@ -188,8 +126,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     
     const isServicesLink = href === '/#hizmetler-section';
 
-
-    if (isAction) {
+    if (isAction) { // This block might be unused now as admin actions are removed
       return (
         <Button
           variant="ghost"
@@ -220,7 +157,6 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     );
   };
 
-
   const renderNavItemsForSheet = () => {
     return (
       <>
@@ -238,75 +174,9 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             </NavLink>
           </SheetClose>
         ))}
-        {isAuthenticated && (
-          <>
-            <div className="my-2 border-t border-border" />
-            <SheetClose asChild>
-              <NavLink href={adminNavItemData.href} iconName={adminNavItemData.iconName} className="text-base py-2.5 px-4 w-full text-gradient font-bold">
-                {adminNavItemData.label}
-              </NavLink>
-            </SheetClose>
-          </>
-        )}
-        <div className="my-2 border-t border-border" />
-        {isAuthenticated ? (
-           <SheetClose asChild>
-             <Button variant="ghost" onClick={handleLogout} className="text-base py-2.5 px-4 text-destructive hover:bg-destructive/10 hover:text-destructive justify-start w-full" disabled={isSubmittingLogout}>
-               {isSubmittingLogout ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <LogOutIcon className="h-5 w-5 mr-2" />}
-               <span>{logoutNavItemData.label}</span>
-             </Button>
-           </SheetClose>
-        ) : (
-           <SheetClose asChild>
-              <Button
-                variant="default"
-                onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }}
-                className="w-full mt-2 py-2.5 px-4 text-base"
-                disabled={isSubmittingLogin}
-                aria-label="Login"
-              >
-                {isSubmittingLogin ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <LogIn className="h-5 w-5 mr-2" />}
-                Login
-              </Button>
-            </SheetClose>
-        )}
+        {/* Admin Login/Logout buttons removed */}
       </>
     );
-  };
-
-  const handleLoginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsSubmittingLogin(true);
-    setLoginError(null);
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-
-    try {
-      const userCredential = await signInWithEmailAndPassword(firebaseClientAuth, email, password);
-      const idToken = await userCredential.user.getIdToken();
-      const sessionResult = await createSession(idToken);
-
-      if (sessionResult.success) {
-        setIsLoginDialogOpen(false);
-        toast({ title: "Login Successful!", description: "Redirecting to admin panel..." });
-        router.push('/admin');
-        router.refresh();
-      } else {
-        setLoginError(sessionResult.error || "Login failed. Please try again.");
-        toast({ title: "Login Failed", description: sessionResult.error || "An error occurred.", variant: "destructive" });
-        await firebaseSignOut(firebaseClientAuth);
-      }
-    } catch (error: any) {
-      let message = "An error occurred during login.";
-      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-        message = "Incorrect email or password.";
-      }
-      setLoginError(message);
-      toast({ title: "Login Error", description: message, variant: "destructive" });
-    } finally {
-      setIsSubmittingLogin(false);
-    }
   };
 
   return (
@@ -350,48 +220,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           </nav>
 
           <div className="flex items-center space-x-2">
-            <div className="hidden lg:flex items-center">
-              {isAuthenticated ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="text-sm px-3 gap-1 text-foreground hover:bg-accent/10 hover:text-accent-foreground">
-                      <Shield className="h-4 w-4" />
-                      <span>{adminNavItemData.label}</span>
-                      <ChevronDown className="ml-1 h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56" sideOffset={2}>
-                    <DropdownMenuItem asChild className="cursor-pointer">
-                      <LinkFromNext href={adminNavItemData.href} className="w-full flex items-center">
-                        <Shield className="h-4 w-4 mr-2" />
-                        <span>{adminNavItemData.label}</span>
-                      </LinkFromNext>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={handleLogout}
-                      disabled={isSubmittingLogout}
-                      className="text-destructive focus:bg-destructive focus:text-destructive-foreground cursor-pointer flex items-center"
-                    >
-                      {isSubmittingLogout ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <LogOutIcon className="h-4 w-4 mr-2" />}
-                      <span>Logout</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsLoginDialogOpen(true)}
-                  disabled={isSubmittingLogin}
-                  className="p-2 text-foreground hover:bg-accent/10 hover:text-accent-foreground"
-                  aria-label="Login"
-                >
-                  {isSubmittingLogin ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="h-5 w-5" />}
-                </Button>
-              )}
-            </div>
-
+            {/* Desktop Admin Login/Logout Dropdown removed */}
             <div className="lg:hidden">
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
@@ -437,42 +266,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           </div>
         </div>
       </header>
-
-      <Dialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle className="font-headline text-primary text-gradient">Admin Login</DialogTitle>
-            <DialogDescription>
-              Please enter your email and password to access the admin panel.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleLoginSubmit}>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="email-login" className="text-right">
-                  Email
-                </Label>
-                <Input id="email-login" name="email" type="email" required className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="password-login" className="text-right">
-                  Password
-                </Label>
-                <Input id="password-login" name="password" type="password" required className="col-span-3" />
-              </div>
-              {loginError && (
-                <p className="col-span-4 text-sm text-destructive text-center">{loginError}</p>
-              )}
-            </div>
-            <DialogFooter>
-              <Button type="submit" disabled={isSubmittingLogin}>
-                {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Login
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      {/* Login Dialog removed */}
     </>
   );
 }

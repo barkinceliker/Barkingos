@@ -1,21 +1,5 @@
-
-import BlogPostForm from '@/components/admin/forms/BlogPostForm';
-import { createBlogPost, BlogPostInput } from '@/lib/actions/blog-actions';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-
-export default function NewBlogPostPage() {
-  
-  async function handleCreateBlogPost(data: BlogPostInput) {
-    "use server"; // Next.js Server Action
-    return createBlogPost(data);
-  }
-
-  return (
-    <div className="space-y-6">
-      <BlogPostForm 
-        onSubmitAction={handleCreateBlogPost} 
-        isEditing={false} 
-      />
-    </div>
-  );
+// This file has been removed as the admin panel is no longer used.
+// You can safely delete this file from your project.
+export default function AdminPanelRemoved() {
+  return null;
 }

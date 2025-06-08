@@ -1,6 +1,6 @@
-// This page now re-exports the AdminLoginPage from its new location.
-// The /login route will render the content of /app/admin/login/page.tsx.
-
-import AdminLoginPage from '@/app/admin/login/page';
-
-export default AdminLoginPage;
+// This file has been removed as the admin panel and its login page are no longer used.
+// The /login route is no longer functional.
+// You can safely delete this file from your project.
+export default function AdminPanelRemoved() {
+  return null;
+}

@@ -4,7 +4,7 @@ import './globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
-import { checkAuthStatus } from '@/lib/actions/auth';
+// import { checkAuthStatus } from '@/lib/actions/auth'; // Removed as admin panel is gone
 import { getSiteGeneralSettings } from '@/lib/actions/settings-actions';
 import { cn } from '@/lib/utils';
 import { PT_Sans, Playfair_Display, Source_Code_Pro } from 'next/font/google';
@@ -48,23 +48,6 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-async function AuthAwareUIComponents() {
-  const logPrefix = "[RootLayout AuthAwareUIComponents] SERVER:";
-  console.log(`${logPrefix} Fetching authentication status and site settings...`);
-  const auth = await checkAuthStatus();
-  const siteSettings = await getSiteGeneralSettings();
-  console.log(`${logPrefix} Auth status: ${auth.isAuthenticated}, Site Title: ${siteSettings.siteTitle}`);
-  return (
-    <>
-      <Header
-        key={`header-${auth.isAuthenticated.toString()}-${siteSettings.siteTitle}`}
-        initialIsAuthenticated={auth.isAuthenticated}
-        initialSiteTitle={siteSettings.siteTitle}
-      />
-    </>
-  );
-}
-
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -77,17 +60,19 @@ export default async function RootLayout({
   console.log(`${logPrefix} Font variable classes for HTML: '${fontVariableClasses}'`);
   
   const finalHtmlClasses = cn(fontVariableClasses).trim(); 
-  // const htmlKey = `${fontVariableClasses}`; // Removed: key prop on <html> is unconventional
 
   console.log(`${logPrefix} className to be applied to <html> tag: '${finalHtmlClasses}'`);
-  // console.log(`${logPrefix} key to be applied to <html> tag: '${htmlKey}'`); // Log for key removed
   console.log(`${logPrefix} ==================== END ====================`);
+
+  const siteSettings = await getSiteGeneralSettings();
 
   return (
     <html lang="en" className={finalHtmlClasses}>
       <head />
       <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
-        <AuthAwareUIComponents />
+        <Header
+          initialSiteTitle={siteSettings.siteTitle}
+        />
         <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {children}
         </main>
