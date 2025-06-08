@@ -66,9 +66,9 @@ html {
     --hero-gradient-mid-hsl: 210 10% 18%;
     --hero-gradient-end-hsl: 30 15% 16%;
 
-    /* Navigasyon Çubuğu Arka Plan Gradient Renkleri (Hizmetler metin gradientiyle aynı) */
-    --navbar-gradient-start-hsl: 30 65% 55%; /* Parlak Yanık Bronz */
-    --navbar-gradient-end-hsl: 210 65% 70%;   /* Parlak Çelik Mavisi */
+    /* Navigasyon Çubuğu Arka Plan Gradient Renkleri (Daha koyu, metalik) */
+    --navbar-gradient-start-hsl: 220 15% 15%; /* Koyu Çelik */
+    --navbar-gradient-end-hsl: 220 10% 11%;   /* Çok Koyu, desatüre Çelik/Obsidyen */
 
     /* Grafik Renkleri (Obsidyen & Dövülmüş Çelik Tema için) */
     --chart-1: hsl(var(--primary));     /* Yanık Bronz */
@@ -136,3 +136,5 @@ html {
     background-image: linear-gradient(to right, hsl(var(--navbar-gradient-start-hsl)), hsl(var(--navbar-gradient-end-hsl)));
   }
 }
+
+    
