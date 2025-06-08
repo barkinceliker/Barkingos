@@ -5,9 +5,7 @@ import { z } from 'zod';
 import { admin, getAdminInitializationError } from '@/lib/firebaseAdmin';
 import { cache } from 'react';
 import { revalidatePath } from 'next/cache';
-
-const THEME_OPTIONS = ['default', 'ocean-depth', 'cyber-punk'] as const;
-export type ThemeName = (typeof THEME_OPTIONS)[number];
+import { THEME_OPTIONS, type ThemeName } from '@/lib/theme-config'; // Import from new config file
 
 export interface ThemeSetting {
   activeTheme: ThemeName;
@@ -46,13 +44,12 @@ export const getThemeSetting = cache(async (): Promise<ThemeSetting> => {
 
     if (docSnap.exists) {
       const data = docSnap.data();
-      const parsedTheme = THEME_OPTIONS.includes(data?.activeTheme) ? data?.activeTheme : 'default';
+      const parsedTheme = THEME_OPTIONS.includes(data?.activeTheme as ThemeName) ? data?.activeTheme as ThemeName : 'default';
       return {
         activeTheme: parsedTheme,
         updatedAt: data?.updatedAt?.toDate()?.toISOString() || new Date().toISOString(),
       };
     } else {
-      // Create default setting if it doesn't exist
       await docRef.set({ 
         ...DEFAULT_THEME_SETTING, 
         updatedAt: admin.firestore.FieldValue.serverTimestamp() 
@@ -79,15 +76,10 @@ export async function updateThemeSetting(themeName: ThemeName) {
       updatedAt: admin.firestore.FieldValue.serverTimestamp() 
     }, { merge: true });
     
-    revalidatePath('/', 'layout'); // Revalidate all layouts/pages
+    revalidatePath('/', 'layout'); 
     return { success: true, message: 'Tema başarıyla güncellendi.' };
   } catch (error: any) {
     console.error("Error updating theme setting:", error);
     return { success: false, message: `Bir hata oluştu: ${error.message}` };
   }
 }
-
-export const themeOptionsList = THEME_OPTIONS.map(theme => ({
-  value: theme,
-  label: theme.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
-}));

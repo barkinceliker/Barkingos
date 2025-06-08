@@ -20,10 +20,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Save, Loader2, Palette } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getThemeSetting, updateThemeSetting, themeOptionsList, type ThemeName } from "@/lib/actions/settings-actions";
+import { getThemeSetting, updateThemeSetting } from "@/lib/actions/settings-actions";
+import { THEME_OPTIONS, type ThemeName } from "@/lib/theme-config"; // Import from new config file
+
+const themeOptionsList = THEME_OPTIONS.map(theme => ({
+  value: theme,
+  label: theme.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+}));
 
 const themeFormSchema = z.object({
-  activeTheme: z.custom<ThemeName>((val) => themeOptionsList.some(opt => opt.value === val), "Geçersiz tema seçimi."),
+  activeTheme: z.custom<ThemeName>((val) => THEME_OPTIONS.includes(val as ThemeName), "Geçersiz tema seçimi."),
 });
 
 type ThemeFormValues = z.infer<typeof themeFormSchema>;
@@ -36,7 +42,7 @@ export default function EditThemeSettingsPage() {
   const form = useForm<ThemeFormValues>({
     resolver: zodResolver(themeFormSchema),
     defaultValues: {
-      activeTheme: 'default', // Default value before fetching
+      activeTheme: 'default', 
     },
   });
 
@@ -69,7 +75,6 @@ export default function EditThemeSettingsPage() {
           title: "Başarılı!",
           description: result.message,
         });
-        // Re-fetch or let revalidatePath handle it, force refresh if needed
         router.refresh(); 
       } else {
         toast({
