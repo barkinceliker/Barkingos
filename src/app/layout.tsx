@@ -38,17 +38,16 @@ export async function generateMetadata(): Promise<Metadata> {
   const siteSettings = await getSiteGeneralSettings();
   return {
     title: siteSettings.siteTitle || 'BenimSitem | Portfolyo ve Blog',
-    description: staticMetadataDescription, // siteSettings.siteDescription kaldırıldı, statik kullanılıyor
+    description: staticMetadataDescription, 
     icons: {
-      icon: '/favicon.ico', // Varsayılan favicon yolu
+      icon: '/favicon.ico', 
     },
   };
 }
 
 async function AuthAwareUIComponents() {
-  // Bu bileşenin içindeki checkAuthStatus çağrısı sunucu tarafında çalışır.
   const auth = await checkAuthStatus();
-  const siteSettings = await getSiteGeneralSettings(); // Site başlığı için
+  const siteSettings = await getSiteGeneralSettings(); 
   return (
     <>
       <Header
@@ -67,22 +66,25 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const themeSetting = await getThemeSetting();
-  // SUNUCU TARAFI LOG: Bu log, her sayfa isteğinde veya revalidate sonrası sunucuda görünecektir.
-  console.log(`[RootLayout SERVER RENDER] Aktif Tema Veritabanından: '${themeSetting.activeTheme}'`);
+  
+  console.log(`[RootLayout SERVER RENDER] ==========================================`);
+  console.log(`[RootLayout SERVER RENDER] getThemeSetting() sonucu:`, JSON.stringify(themeSetting));
+  console.log(`[RootLayout SERVER RENDER] Alınan aktif tema: '${themeSetting.activeTheme}'`);
   
   const themeClass = themeSetting.activeTheme === 'default' ? '' : `theme-${themeSetting.activeTheme}`;
   const fontVariableClasses = cn(ptSans.variable, playfairDisplay.variable, sourceCodePro.variable);
   
-  console.log(`[RootLayout SERVER RENDER] Uygulanacak HTML Sınıfı (themeClass): '${themeClass}'`);
-  console.log(`[RootLayout SERVER RENDER] Uygulanacak HTML Sınıfı (fontVariableClasses): '${fontVariableClasses}'`);
+  console.log(`[RootLayout SERVER RENDER] Oluşturulan tema sınıfı: '${themeClass}'`);
+  console.log(`[RootLayout SERVER RENDER] Font değişken sınıfları: '${fontVariableClasses}'`);
+  
   const finalHtmlClasses = cn(themeClass, fontVariableClasses);
-  console.log(`[RootLayout SERVER RENDER] Nihai HTML Sınıfları: '${finalHtmlClasses}'`);
+  console.log(`[RootLayout SERVER RENDER] <html>'e uygulanacak nihai sınıflar: '${finalHtmlClasses}'`);
+  console.log(`[RootLayout SERVER RENDER] ==========================================`);
 
 
   return (
-    <html lang="tr" className={finalHtmlClasses}>
+    <html lang="tr" className={finalHtmlClasses} key={finalHtmlClasses}>
       <head>
-        {/* Favicon linkleri generateMetadata içinde yönetiliyor */}
       </head>
       <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
         <AuthAwareUIComponents />
@@ -95,3 +97,4 @@ export default async function RootLayout({
     </html>
   );
 }
+

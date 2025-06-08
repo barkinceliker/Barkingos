@@ -22,17 +22,17 @@ const getThemeDisplayName = (themeKey: ThemeName): string => {
 const getThemePreviewColors = (themeKey: ThemeName): { primary: string; accent: string; background: string } => {
   // Bu renkler globals.css'deki HSL değerleriyle eşleşmeli veya temsil etmeli
   switch (themeKey) {
-    case 'default': return { primary: 'hsl(231 48% 48%)', accent: 'hsl(174 100% 29%)', background: 'hsl(220 17% 95%)' }; // Deep Blue, Teal, Light Gray
-    case 'ocean-depth': return { primary: 'hsl(180 65% 55%)', accent: 'hsl(30 85% 60%)', background: 'hsl(205 50% 12%)' }; // Teal, Orange, Dark Blue
-    case 'cyber-punk': return { primary: 'hsl(180 100% 50%)', accent: 'hsl(60 100% 55%)', background: 'hsl(270 70% 7%)' }; // Cyan, Yellow, Deep Purple
-    case 'midnight-gradient': return { primary: 'hsl(280 80% 65%)', accent: 'hsl(180 90% 50%)', background: 'hsl(240 10% 4%)' }; // Purple, Teal, Very Dark Blue
-    case 'forest-green': return { primary: 'hsl(130 55% 45%)', accent: 'hsl(90 60% 50%)', background: 'hsl(120 20% 96%)' }; // Forest Green, Lime Green, Light Green/Off-white
-    case 'deep-navy': return { primary: 'hsl(200 80% 60%)', accent: 'hsl(250 70% 65%)', background: 'hsl(220 40% 10%)' }; // Bright Cyan, Indigo, Deep Navy
-    case 'blush-pink': return { primary: 'hsl(330 70% 55%)', accent: 'hsl(300 70% 60%)', background: 'hsl(340 80% 97%)' }; // Strong Pink, Magenta, Light Pink
-    case 'royal-purple': return { primary: 'hsl(280 70% 60%)', accent: 'hsl(310 80% 65%)', background: 'hsl(270 50% 15%)' }; // Royal Purple, Bright Pink, Dark Purple
-    case 'burnt-orange': return { primary: 'hsl(20 85% 55%)', accent: 'hsl(40 90% 60%)', background: 'hsl(30 60% 95%)' }; // Burnt Orange, Gold, Light Cream
-    case 'crimson-red': return { primary: 'hsl(0 70% 50%)', accent: 'hsl(30 80% 60%)', background: 'hsl(0 0% 12%)' }; // Crimson Red, Orange, Dark Gray
-    default: return { primary: 'hsl(0 0% 50%)', accent: 'hsl(0 0% 60%)', background: 'hsl(0 0% 90%)' }; // Fallback
+    case 'default': return { primary: 'hsl(231 48% 48%)', accent: 'hsl(174 100% 29%)', background: 'hsl(220 17% 95%)' }; 
+    case 'ocean-depth': return { primary: 'hsl(180 65% 55%)', accent: 'hsl(30 85% 60%)', background: 'hsl(205 50% 12%)' }; 
+    case 'cyber-punk': return { primary: 'hsl(180 100% 50%)', accent: 'hsl(60 100% 55%)', background: 'hsl(270 70% 7%)' }; 
+    case 'midnight-gradient': return { primary: 'hsl(280 80% 65%)', accent: 'hsl(180 90% 50%)', background: 'hsl(240 10% 4%)' }; 
+    case 'forest-green': return { primary: 'hsl(130 55% 45%)', accent: 'hsl(90 60% 50%)', background: 'hsl(120 20% 96%)' }; 
+    case 'deep-navy': return { primary: 'hsl(200 80% 60%)', accent: 'hsl(250 70% 65%)', background: 'hsl(220 40% 10%)' }; 
+    case 'blush-pink': return { primary: 'hsl(330 70% 55%)', accent: 'hsl(300 70% 60%)', background: 'hsl(340 80% 97%)' }; 
+    case 'royal-purple': return { primary: 'hsl(280 70% 60%)', accent: 'hsl(310 80% 65%)', background: 'hsl(270 50% 15%)' }; 
+    case 'burnt-orange': return { primary: 'hsl(20 85% 55%)', accent: 'hsl(40 90% 60%)', background: 'hsl(30 60% 95%)' }; 
+    case 'crimson-red': return { primary: 'hsl(0 70% 50%)', accent: 'hsl(30 80% 60%)', background: 'hsl(0 0% 12%)' }; 
+    default: return { primary: 'hsl(0 0% 50%)', accent: 'hsl(0 0% 60%)', background: 'hsl(0 0% 90%)' }; 
   }
 };
 
@@ -49,17 +49,24 @@ export default function ThemeSelectorCard() {
       try {
         const setting = await getThemeSetting();
         setCurrentTheme(setting.activeTheme);
+        console.log("[ThemeSelectorCard useEffect] Initial theme fetched on client:", setting.activeTheme);
         // Apply initial theme from DB to HTML element on client mount
+        // This ensures the client is in sync with server-rendered theme
         if (typeof window !== "undefined") {
           const htmlEl = document.documentElement;
-          THEME_OPTIONS.forEach(opt => {
-            if (opt !== 'default') htmlEl.classList.remove(`theme-${opt}`);
-          });
+          // Preserve existing non-theme classes (like font variables)
+          const existingClasses = Array.from(htmlEl.classList).filter(cls => !cls.startsWith('theme-') && cls !== 'dark');
+          
+          htmlEl.className = ''; // Clear all classes first
+          existingClasses.forEach(cls => htmlEl.classList.add(cls)); // Re-add non-theme classes
+
           if (setting.activeTheme !== 'default') {
             htmlEl.classList.add(`theme-${setting.activeTheme}`);
           }
+          console.log(`[ThemeSelectorCard useEffect] Applied initial theme '${setting.activeTheme}' to <html>. Current classes: '${htmlEl.className}'`);
         }
       } catch (error) {
+        console.error("[ThemeSelectorCard useEffect] Error fetching current theme:", error);
         toast({
           title: "Hata",
           description: "Mevcut tema ayarı yüklenemedi.",
@@ -75,8 +82,11 @@ export default function ThemeSelectorCard() {
   const handleThemeSelect = async (themeName: ThemeName) => {
     if (themeName === currentTheme) return;
     setIsSaving(themeName);
+    console.log(`[ThemeSelectorCard handleThemeSelect] Attempting to set theme to: ${themeName}`);
     try {
       const result = await updateThemeSetting(themeName);
+      console.log(`[ThemeSelectorCard handleThemeSelect] updateThemeSetting result for '${themeName}':`, result);
+
       if (result.success) {
         setCurrentTheme(themeName); 
         toast({
@@ -84,28 +94,23 @@ export default function ThemeSelectorCard() {
           description: `${getThemeDisplayName(themeName)} teması başarıyla uygulandı. Değişikliklerin yansıması için sayfa yenileniyor...`,
         });
         
-        console.log(`[ThemeSelectorCard] İstemci tarafı: ${themeName} teması seçildi. HTML sınıfı güncelleniyor.`);
+        console.log(`[ThemeSelectorCard handleThemeSelect] İstemci tarafı: ${themeName} teması seçildi. HTML sınıfı güncelleniyor.`);
         if (typeof window !== "undefined") {
           const htmlEl = document.documentElement;
-          // Önce tüm bilinen tema sınıflarını kaldır
-          THEME_OPTIONS.forEach(opt => {
-              if (opt !== 'default') { // 'default' bir sınıf olarak eklenmez, :root kullanılır
-                  htmlEl.classList.remove(`theme-${opt}`);
-              }
-          });
-          // htmlEl.classList.remove('dark'); // .dark sınıfını yönetmek için ayrı bir mantık olabilir, şimdilik temalar kendi karanlık/aydınlık modunu yönetiyor varsayalım.
+          const existingClasses = Array.from(htmlEl.classList).filter(cls => !cls.startsWith('theme-') && cls !== 'dark');
+          
+          htmlEl.className = ''; 
+          existingClasses.forEach(cls => htmlEl.classList.add(cls));
 
-          // Yeni tema sınıfını ekle (eğer 'default' değilse)
           if (themeName !== 'default') {
             htmlEl.classList.add(`theme-${themeName}`);
-            console.log(`[ThemeSelectorCard] İstemci tarafı: 'theme-${themeName}' sınıfı <html>'e eklendi.`);
+            console.log(`[ThemeSelectorCard handleThemeSelect] İstemci tarafı: 'theme-${themeName}' sınıfı <html>'e eklendi. Current classes: '${htmlEl.className}'`);
           } else {
-            console.log(`[ThemeSelectorCard] İstemci tarafı: 'default' tema seçildi, özel 'theme-*' sınıfı eklenmedi.`);
+            console.log(`[ThemeSelectorCard handleThemeSelect] İstemci tarafı: 'default' tema seçildi, özel 'theme-*' sınıfı eklenmedi. Current classes: '${htmlEl.className}'`);
           }
         }
-        // Sunucudan güncel veriyi çekmek ve RootLayout'un yeniden render olmasını sağlamak için
         router.refresh(); 
-        console.log("[ThemeSelectorCard] router.refresh() çağrıldı.");
+        console.log("[ThemeSelectorCard handleThemeSelect] router.refresh() çağrıldı.");
       } else {
         toast({
           title: "Hata!",
@@ -113,10 +118,11 @@ export default function ThemeSelectorCard() {
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error("[ThemeSelectorCard handleThemeSelect] Hata Yakalandı:", error);
       toast({
-        title: "Sunucu Hatası!",
-        description: "Tema güncellenemedi.",
+        title: "İstemci Hatası!",
+        description: error.message || "Tema güncellenemedi.",
         variant: "destructive",
       });
     } finally {
@@ -198,3 +204,4 @@ export default function ThemeSelectorCard() {
     </Card>
   );
 }
+
