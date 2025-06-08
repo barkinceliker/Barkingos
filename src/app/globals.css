@@ -5,8 +5,8 @@
 
 body {
   font-family: 'PT Sans', sans-serif;
-  /* Midnight Bloom gradient background - top-left to bottom-right */
-  background: hsl(var(--background)); /* Fallback solid dark teal */
+  /* Ethereal Twilight gradient background - top-left to bottom-right */
+  background: hsl(var(--background)); /* Fallback solid dark indigo */
   background-image: linear-gradient(to bottom right,
     hsl(var(--gradient-body-start-hsl)) 0%,
     hsl(var(--gradient-body-mid-hsl)) 50%,
@@ -22,69 +22,69 @@ html {
 }
 
 @layer base {
-  :root { /* Dark Theme: Midnight Bloom */
+  :root { /* Dark Theme: Ethereal Twilight */
     /* Body Gradient Colors (Top-left to Bottom-right) */
-    --gradient-body-start-hsl: 180 50% 10%; /* Dark, deep Cyan/Teal */
-    --gradient-body-mid-hsl: 270 40% 15%;   /* Dark, rich Purple */
-    --gradient-body-end-hsl: 300 60% 25%;   /* Dark, vibrant Magenta */
+    --gradient-body-start-hsl: 260 40% 15%; /* Deep, muted Indigo/Purple */
+    --gradient-body-mid-hsl: 330 30% 25%;   /* Soft, dusty Rose/Mauve */
+    --gradient-body-end-hsl: 200 35% 20%;   /* Dark, desaturated Teal/Blue */
 
-    --background: 180 50% 5%;             /* Very Dark Cyan (Fallback) */
-    --foreground: 240 10% 95%;           /* Clean Off-White (Text) */
+    --background: 260 40% 10%;             /* Very Dark Muted Indigo (Fallback) */
+    --foreground: 40 20% 95%;           /* Soft Off-White, slightly warm (Text) */
 
-    --card: 180 45% 8%;                 /* Slightly Lighter Dark Cyan (Cards) */
+    --card: 260 38% 12%;                 /* Slightly Lighter Dark Muted Indigo (Cards) */
     --card-foreground: hsl(var(--foreground));
 
-    --popover: 180 40% 10%;              /* Dark Popover Background */
+    --popover: 260 35% 14%;              /* Dark Popover Background */
     --popover-foreground: hsl(var(--foreground));
 
-    /* Primary and Accent colors will be vibrant Magenta and luminous Teal */
-    --primary: 300 70% 60%;            /* Vibrant, luminous Magenta - Primary actions */
-    --primary-foreground: 300 15% 97%;   /* Light text on Magenta buttons */
+    /* Primary and Accent colors will be soft, luminous Lavender and muted Gold */
+    --primary: 275 60% 65%;            /* Luminous, soft Lavender/Lilac - Primary actions */
+    --primary-foreground: 275 15% 97%;   /* Light text on Lavender buttons */
 
-    --accent: 170 75% 55%;            /* Bright, luminous Teal/Mint - Accents */
-    --accent-foreground: 170 70% 10%;    /* Dark text on Teal/Mint accents */
+    --accent: 45 50% 60%;            /* Muted, desaturated Gold/Pale Orange - Accents */
+    --accent-foreground: 45 60% 10%;    /* Dark text on Gold accents */
 
-    --secondary: 210 30% 18%;            /* Darker Desaturated Blue for secondary elements */
-    --secondary-foreground: 210 15% 80%; /* Lighter Grey text on secondary elements */
+    --secondary: 240 20% 20%;            /* Darker Desaturated Blue for secondary elements */
+    --secondary-foreground: 240 10% 80%; /* Lighter Grey text on secondary elements */
 
-    --muted: 210 25% 15%;                /* Muted Dark Blue */
-    --muted-foreground: 210 15% 65%;     /* Muted Grey text */
+    --muted: 240 15% 18%;                /* Muted Dark Blue */
+    --muted-foreground: 240 10% 65%;     /* Muted Grey text */
 
-    --destructive: 0 75% 55%;         /* Classic strong red for destructive actions */
+    --destructive: 0 65% 50%;         /* Muted but clear red for destructive actions */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 200 30% 25%;               /* Desaturated Blue Border */
-    --input: 190 35% 12%;                /* Dark Input Background (Tealish) */
-    --ring: 170 80% 60%;               /* Luminous Teal Ring for focus */
+    --border: 220 20% 30%;               /* Desaturated Blue Border */
+    --input: 250 25% 15%;                /* Dark Input Background (Indigoish) */
+    --ring: 275 65% 70%;               /* Luminous Lavender Ring for focus */
     --radius: 0.5rem;
 
-    /* Text Gradient - Luminous Magenta to Luminous Teal */
-    --gradient-start-hsl: 300 75% 65%; /* Brighter Primary Magenta */
-    --gradient-end-hsl: 170 80% 60%;   /* Brighter Accent Teal */
+    /* Text Gradient - Luminous Lavender to Muted Gold */
+    --gradient-start-hsl: 275 65% 70%; /* Brighter Primary Lavender */
+    --gradient-end-hsl: 45 55% 65%;   /* Brighter Accent Gold */
 
-    /* Hero Section Background Gradient */
-    --hero-gradient-start-hsl: 180 55% 12%;    /* Dark Cyan */
-    --hero-gradient-mid-hsl: 285 50% 20%;     /* Mid-tone Purple/Magenta */
-    --hero-gradient-end-hsl: 310 65% 30%;     /* Vibrant Dark Magenta */
+    /* Hero Section Background Gradient Colors (Solid, opacity applied via Tailwind class) */
+    --hero-gradient-start-hsl: 260 45% 22%;    /* Muted Indigo (for Hero) */
+    --hero-gradient-mid-hsl: 330 35% 32%;     /* Dusty Rose (for Hero) */
+    --hero-gradient-end-hsl: 200 40% 28%;     /* Desaturated Teal (for Hero) */
 
-    /* Chart Colors (Teals & Magentas for Dark Theme) */
-    --chart-1: hsl(var(--primary));    /* Luminous Magenta */
-    --chart-2: hsl(var(--accent));     /* Luminous Teal */
-    --chart-3: 300 60% 50%;            /* Darker Magenta */
-    --chart-4: 170 65% 45%;            /* Darker Teal */
-    --chart-5: 240 10% 70%;            /* Contrast Light Cool Grey */
+    /* Chart Colors (Muted Tones for Ethereal Twilight Theme) */
+    --chart-1: hsl(var(--primary));    /* Luminous Lavender */
+    --chart-2: hsl(var(--accent));     /* Muted Gold */
+    --chart-3: 275 50% 55%;            /* Darker Lavender */
+    --chart-4: 45 40% 50%;            /* Darker Gold */
+    --chart-5: 210 15% 70%;            /* Contrast Light Cool Grey */
 
-    /* Sidebar Colors (Dark Theme) */
-    --sidebar-background: 180 50% 7%;      /* Similar to main background, slightly darker card */
+    /* Sidebar Colors (Ethereal Twilight Theme) */
+    --sidebar-background: 260 39% 11%;      /* Similar to card background, slightly darker */
     --sidebar-foreground: hsl(var(--foreground));
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 190 40% 15%;         /* Active item background - a bit lighter dark teal */
+    --sidebar-accent: 250 28% 18%;         /* Active item background - a bit lighter dark indigo */
     --sidebar-accent-foreground: hsl(var(--accent)); /* Accent color for icons/text */
     --sidebar-border: hsl(var(--border));
     --sidebar-ring: hsl(var(--ring));
 
-    /* Fine-tune and Custom Element Colors (Midnight Bloom Theme) */
+    /* Fine-tune and Custom Element Colors (Ethereal Twilight Theme) */
     --link-text: hsl(var(--accent));
     --link-hover-text: hsl(var(--accent) / 0.8);
     --button-primary-bg: hsl(var(--primary));
@@ -97,7 +97,7 @@ html {
     --input-border: hsl(var(--border));
     --input-text: hsl(var(--foreground));
     --input-focus-ring: hsl(var(--ring));
-    --card-title-text: hsl(var(--foreground));
+    --card-title-text: hsl(var(--foreground)); /* Uses text-gradient by default */
     --card-description-text: hsl(var(--muted-foreground));
 
     --blockquote-bg: hsl(var(--secondary));
