@@ -3,21 +3,21 @@
 
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Loader2, LogIn, Shield, LogOut as LogOutIcon } from 'lucide-react';
+import { Menu, X, Loader2, LogIn, Shield } from 'lucide-react'; // LogOutIcon kaldırıldı
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
   SheetClose,
-  SheetTitle,
-  SheetHeader
+  SheetHeader, // SheetHeader importu kalmalı
+  SheetTitle
 } from '@/components/ui/sheet';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle, // Changed from DialogTitle as RadixDialogTitle
+  DialogTitle, // RadixDialogTitle yerine DialogTitle kullanılacak
   DialogDescription,
   DialogFooter
 } from '@/components/ui/dialog';
@@ -28,7 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
 import { signInWithEmailAndPassword, onAuthStateChanged, User } from 'firebase/auth';
 import { auth as firebaseClientAuth } from '@/lib/firebase';
-import { createSession, logout as serverLogout } from '@/lib/actions/auth';
+import { createSession } from '@/lib/actions/auth'; // serverLogout importu kaldırıldı
 import type { LucideIcon } from 'lucide-react';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 
@@ -50,35 +50,31 @@ interface HeaderProps {
 }
 
 export default function Header({ initialIsAuthenticated }: HeaderProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState(initialIsAuthenticated);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
-  const [isSubmittingLogout, setIsSubmittingLogout] = useState(false);
+  // isSubmittingLogout state'i kaldırıldı
 
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
 
   useEffect(() => {
-    console.log("[Header initial prop] initialIsAuthenticated:", initialIsAuthenticated);
-    // Set initial state from prop, but allow onAuthStateChanged to override
-    setIsAuthenticated(initialIsAuthenticated);
-    if (initialIsAuthenticated && firebaseClientAuth.currentUser) {
-        setCurrentUser(firebaseClientAuth.currentUser);
-    } else if (!initialIsAuthenticated) {
-        setCurrentUser(null);
-    }
-
+    console.log("[Header] Initial prop for isAuthenticated:", initialIsAuthenticated);
+    // Firebase auth state listener
     const unsubscribe = onAuthStateChanged(firebaseClientAuth, (user) => {
       console.log("[Header onAuthStateChanged] Firebase user:", user ? user.uid : null);
       setCurrentUser(user);
-      setIsAuthenticated(!!user);
     });
     return () => unsubscribe();
-  }, [initialIsAuthenticated]);
+  }, []);
+
+  // currentUser null ise initialIsAuthenticated'ı kontrol et.
+  // Bu, sayfa ilk yüklendiğinde ve onAuthStateChanged henüz çalışmadığında sunucu tarafı bilgisini kullanır.
+  const isAuthenticated = currentUser !== null;
+  console.log("[Header] Rendering. currentUser:", currentUser ? currentUser.uid : null, "Calculated isAuthenticated:", isAuthenticated, "Prop initialIsAuthenticated:", initialIsAuthenticated);
 
 
   const NavLink = ({ href, children, onClick, className, disabled, iconName }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string, disabled?: boolean, iconName?: string }) => {
@@ -136,7 +132,6 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
     try {
       console.log("[Header handleLoginSubmit] Attempting client-side login...");
       const userCredential = await signInWithEmailAndPassword(firebaseClientAuth, email, password);
-      // onAuthStateChanged will set isAuthenticated to true and currentUser
       console.log("[Header handleLoginSubmit] Client-side login successful for UID:", userCredential.user.uid);
 
       const idToken = await userCredential.user.getIdToken();
@@ -145,13 +140,13 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
       if (sessionResult.success) {
         setIsLoginDialogOpen(false);
         toast({ title: "Giriş Başarılı!", description: "Admin paneline yönlendiriliyorsunuz..." });
-        // setIsAuthenticated(true); // Let onAuthStateChanged handle this for consistency
+        // onAuthStateChanged currentUser'ı güncelleyeceği için isAuthenticated dolaylı olarak güncellenecek
         router.push('/admin');
-        router.refresh(); // Refresh to ensure server components update
+        router.refresh(); 
       } else {
         setLoginError(sessionResult.error || "Giriş yapılamadı. Lütfen tekrar deneyin.");
         toast({ title: "Giriş Başarısız", description: sessionResult.error || "Bir hata oluştu.", variant: "destructive" });
-        await firebaseClientAuth.signOut();
+        await firebaseClientAuth.signOut(); // Client-side signOut if server session fails
       }
     } catch (error: any) {
       console.error("[Header handleLoginSubmit] Login error:", error);
@@ -166,35 +161,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
     }
   };
 
-  const handleHeaderLogout = async () => {
-    setIsSubmittingLogout(true);
-    console.log("[Header handleHeaderLogout] Attempting logout...");
-    try {
-      await firebaseClientAuth.signOut(); // Client-side sign out
-      // onAuthStateChanged will set isAuthenticated to false
-
-      const result = await serverLogout();
-      console.log("[Header handleHeaderLogout] serverLogout result:", result);
-      if (result.success) {
-        toast({ title: "Başarıyla çıkış yapıldı." });
-      } else {
-        toast({ title: "Çıkış Hatası", description: result.error || "Sunucu tarafında çıkış sırasında bir sorun oluştu.", variant: "destructive" });
-      }
-      
-      // setIsAuthenticated(false); // Let onAuthStateChanged handle this
-      if (pathname.startsWith('/admin')) {
-        router.push('/');
-      }
-      router.refresh();
-    } catch (error) {
-      console.error("[Header handleHeaderLogout] Logout error:", error);
-      toast({ title: "Çıkış Hatası", description: "Bir hata oluştu.", variant: "destructive" });
-    } finally {
-      setIsSubmittingLogout(false);
-    }
-  };
-  
-  console.log("[Header Actual Render] isAuthenticated state:", isAuthenticated, "currentUser:", currentUser ? currentUser.uid : null, "initialIsAuthenticated prop:", initialIsAuthenticated);
+  // handleHeaderLogout fonksiyonu kaldırıldı
 
   return (
     <>
@@ -209,15 +176,10 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
             {renderNavItems(staticNavItems, false)}
 
             {isAuthenticated ? (
-              <>
-                <NavLink key={`admin-panel-link-desktop-${isAuthenticated.toString()}`} href={adminNavItemData.href} iconName={adminNavItemData.iconName}>
-                  {adminNavItemData.label}
-                </NavLink>
-                <Button variant="outline" onClick={handleHeaderLogout} disabled={isSubmittingLogout}>
-                  {isSubmittingLogout ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOutIcon className="mr-2 h-5 w-5" />}
-                  Çıkış Yap
-                </Button>
-              </>
+              <NavLink key={`admin-panel-link-desktop-${isAuthenticated.toString()}`} href={adminNavItemData.href} iconName={adminNavItemData.iconName}>
+                {adminNavItemData.label}
+              </NavLink>
+              // Çıkış Yap butonu buradan kaldırıldı
             ) : (
               <Button variant="default" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin}>
                 {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-5 w-5" />}
@@ -246,19 +208,12 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
                   {renderNavItems(staticNavItems, true)}
 
                   {isAuthenticated ? (
-                    <>
-                      <SheetClose asChild>
-                        <NavLink key={`admin-panel-link-mobile-${isAuthenticated.toString()}`} href={adminNavItemData.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base" iconName={adminNavItemData.iconName}>
-                          {adminNavItemData.label}
-                        </NavLink>
-                      </SheetClose>
-                       <SheetClose asChild>
-                        <Button variant="outline" onClick={() => { handleHeaderLogout(); setIsMobileMenuOpen(false); }} className="text-base justify-start w-full mt-2" disabled={isSubmittingLogout}>
-                          {isSubmittingLogout ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <LogOutIcon className="mr-3 h-5 w-5" />}
-                          Çıkış Yap
-                        </Button>
-                      </SheetClose>
-                    </>
+                    <SheetClose asChild>
+                      <NavLink key={`admin-panel-link-mobile-${isAuthenticated.toString()}`} href={adminNavItemData.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base" iconName={adminNavItemData.iconName}>
+                        {adminNavItemData.label}
+                      </NavLink>
+                    </SheetClose>
+                    // Çıkış Yap butonu buradan kaldırıldı
                   ) : (
                      <SheetClose asChild>
                         <Button variant="default" onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }} className="text-base justify-start w-full mt-2" disabled={isSubmittingLogin}>
@@ -277,7 +232,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
       <Dialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle className="font-headline text-primary">Admin Girişi</DialogTitle> {/* Changed RadixDialogTitle back to DialogTitle */}
+            <DialogTitle className="font-headline text-primary">Admin Girişi</DialogTitle>
             <DialogDescription>
               Lütfen admin paneline erişmek için e-posta ve şifrenizi girin.
             </DialogDescription>
