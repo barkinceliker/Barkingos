@@ -5,9 +5,9 @@ import { Briefcase, Award, Users } from 'lucide-react';
 import { getHakkimdaContent, HakkimdaPageContent } from '@/lib/actions/page-content-actions';
 import { notFound } from 'next/navigation';
 
-export const dynamic = 'force-dynamic'; // İçerik her zaman güncel olsun
+export const dynamic = 'force-dynamic'; // Content should always be up-to-date
 
-export default async function HakkimdaPage() {
+export default async function AboutMePage() {
   const content = await getHakkimdaContent();
 
   if (!content) {
@@ -27,18 +27,18 @@ export default async function HakkimdaPage() {
         <div className="md:col-span-1 flex justify-center">
           <Image
             src={content.profileImageUrl || "https://placehold.co/400x400.png"}
-            alt="Benim Profil Fotoğrafım"
+            alt="My Profile Picture"
             width={300}
             height={300}
             className="rounded-full shadow-lg border-4 border-primary/50 object-cover"
             data-ai-hint={content.profileImageAiHint || "professional portrait"}
-            priority // Mark as priority if it's above the fold or LCP
+            priority 
           />
         </div>
         <div className="md:col-span-2">
           <Card className="shadow-xl">
             <CardHeader>
-              <CardTitle className="font-headline text-2xl text-gradient">Ben Kimim?</CardTitle>
+              <CardTitle className="font-headline text-2xl text-gradient">Who Am I?</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-lg text-foreground/90">
               {content.whoAmI_p1 && <p>{content.whoAmI_p1}</p>}
@@ -52,17 +52,17 @@ export default async function HakkimdaPage() {
       <section className="grid md:grid-cols-3 gap-8 text-center">
         <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow">
           <Briefcase className="h-12 w-12 text-accent mx-auto mb-4" />
-          <h3 className="text-xl font-headline font-semibold text-gradient mb-2">Deneyim</h3>
+          <h3 className="text-xl font-headline font-semibold text-gradient mb-2">Experience</h3>
           <p className="text-muted-foreground">{content.stat_experience_value}</p>
         </Card>
         <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow">
           <Award className="h-12 w-12 text-accent mx-auto mb-4" />
-          <h3 className="text-xl font-headline font-semibold text-gradient mb-2">Uzmanlık Alanları</h3>
+          <h3 className="text-xl font-headline font-semibold text-gradient mb-2">Areas of Expertise</h3>
           <p className="text-muted-foreground">{content.stat_expertise_value}</p>
         </Card>
         <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow">
           <Users className="h-12 w-12 text-accent mx-auto mb-4" />
-          <h3 className="text-xl font-headline font-semibold text-gradient mb-2">Takım Çalışması</h3>
+          <h3 className="text-xl font-headline font-semibold text-gradient mb-2">Teamwork</h3>
           <p className="text-muted-foreground">{content.stat_teamwork_value}</p>
         </Card>
       </section>
@@ -85,13 +85,11 @@ export async function generateMetadata() {
   const content = await getHakkimdaContent(); 
   if (!content) {
     return {
-      title: 'Hakkımda | Sayfa Bulunamadı',
+      title: 'About Me | Page Not Found',
     }
   }
   return {
-    title: `${content.pageTitle || 'Hakkımda'} | BenimSitem`,
-    description: content.pageSubtitle || 'Hakkımda sayfası açıklaması.',
+    title: `${content.pageTitle || 'About Me'} | MySite`, // Changed "BenimSitem"
+    description: content.pageSubtitle || 'About me page description.',
   }
 }
-    
-

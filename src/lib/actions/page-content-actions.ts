@@ -6,9 +6,9 @@ import { admin, getAdminInitializationError } from '@/lib/firebaseAdmin';
 import { cache } from 'react';
 import { revalidatePath } from 'next/cache';
 
-// Hakkımda Sayfası İçin Arayüz ve Şema
+// About Me Page Interface and Schema
 export interface HakkimdaPageContent {
-  id?: string; // Firestore document ID, should be 'hakkimda'
+  id?: string; 
   pageTitle: string;
   pageSubtitle: string;
   profileImageUrl: string;
@@ -25,38 +25,38 @@ export interface HakkimdaPageContent {
 }
 
 const hakkimdaPageContentSchema = z.object({
-  pageTitle: z.string().min(1, "Sayfa başlığı gereklidir."),
-  pageSubtitle: z.string().min(1, "Sayfa alt başlığı gereklidir."),
-  profileImageUrl: z.string().url("Geçerli bir profil resmi URL'si giriniz.").or(z.literal('')).optional(),
-  profileImageAiHint: z.string().max(50, "AI ipucu en fazla 50 karakter olabilir.").optional(),
-  whoAmI_p1: z.string().min(1, "Ben kimim? ilk paragraf gereklidir."),
+  pageTitle: z.string().min(1, "Page title is required."),
+  pageSubtitle: z.string().min(1, "Page subtitle is required."),
+  profileImageUrl: z.string().url("Please enter a valid profile image URL.").or(z.literal('')).optional(),
+  profileImageAiHint: z.string().max(50, "AI hint can be at most 50 characters.").optional(),
+  whoAmI_p1: z.string().min(1, "Who Am I? first paragraph is required."),
   whoAmI_p2: z.string().optional(),
   whoAmI_p3_hobbies: z.string().optional(),
-  stat_experience_value: z.string().min(1, "Deneyim süresi gereklidir."),
-  stat_expertise_value: z.string().min(1, "Uzmanlık alanları gereklidir."),
-  stat_teamwork_value: z.string().min(1, "Takım çalışması açıklaması gereklidir."),
-  mission_title: z.string().min(1, "Misyon başlığı gereklidir."),
-  mission_p1: z.string().min(1, "Misyon paragrafı gereklidir."),
+  stat_experience_value: z.string().min(1, "Experience duration is required."),
+  stat_expertise_value: z.string().min(1, "Expertise areas are required."),
+  stat_teamwork_value: z.string().min(1, "Teamwork description is required."),
+  mission_title: z.string().min(1, "Mission title is required."),
+  mission_p1: z.string().min(1, "Mission paragraph is required."),
 });
 
 const DEFAULT_HAKKIMDA_CONTENT: Omit<HakkimdaPageContent, 'id' | 'updatedAt'> = {
-  pageTitle: 'Hakkımda',
-  pageSubtitle: 'Benim hikayem, tutkularım ve profesyonel yolculuğum hakkında daha fazla bilgi edinin.',
+  pageTitle: 'About Me',
+  pageSubtitle: 'Learn more about my story, passions, and professional journey.',
   profileImageUrl: 'https://placehold.co/400x400.png',
   profileImageAiHint: 'professional portrait',
-  whoAmI_p1: 'Merhaba! Ben Barkın Çeliker. Teknolojiye ve tasarıma olan tutkumla, dijital dünyada fark yaratan projeler geliştirmek için buradayım. Yıllar içinde edindiğim bilgi ve deneyimle, kullanıcı odaklı ve estetik açıdan tatmin edici çözümler sunmayı hedefliyorum.', // Güncellendi
-  whoAmI_p2: 'Problem çözmeyi, yeni şeyler öğrenmeyi ve yaratıcı süreçlerin bir parçası olmayı seviyorum. Ekip çalışmasına inanıyor ve her projeye pozitif bir enerjiyle yaklaşıyorum.',
-  whoAmI_p3_hobbies: 'Boş zamanlarımda yeni teknolojileri araştırmak, fotoğraf çekmek, doğa yürüyüşleri yapmak gibi aktivitelerle ilgileniyorum.',
-  stat_experience_value: '5+ Yıl Sektör Deneyimi',
-  stat_expertise_value: 'Web Geliştirme, UI/UX Tasarımı, Mobil Uygulamalar',
-  stat_teamwork_value: 'İşbirlikçi ve Çevik Metodolojilere Hakim',
-  mission_title: 'Misyonum',
-  mission_p1: 'Teknolojinin gücünü kullanarak insanların hayatını kolaylaştıran, estetik ve işlevsel ürünler ortaya koymak. Her zaman en son trendleri takip ederek ve kendimi sürekli geliştirerek, projelerime değer katmayı amaçlıyorum.',
+  whoAmI_p1: 'Hello! I am Barkin Celiker. With my passion for technology and design, I am here to develop projects that make a difference in the digital world. With the knowledge and experience I have gained over the years, I aim to offer user-focused and aesthetically pleasing solutions.',
+  whoAmI_p2: 'I love solving problems, learning new things, and being part of creative processes. I believe in teamwork and approach every project with positive energy.',
+  whoAmI_p3_hobbies: 'In my spare time, I enjoy researching new technologies, photography, and nature walks.',
+  stat_experience_value: '5+ Years of Industry Experience',
+  stat_expertise_value: 'Web Development, UI/UX Design, Mobile Applications',
+  stat_teamwork_value: 'Collaborative and Proficient in Agile Methodologies',
+  mission_title: 'My Mission',
+  mission_p1: 'To create aesthetic and functional products that simplify people\'s lives using the power of technology. I always aim to add value to my projects by following the latest trends and continuously improving myself.',
 };
 
-// Anasayfa İçeriği İçin Arayüz ve Şema
+// Homepage Content Interface and Schema
 export interface HomepageContent {
-  id?: string; // Firestore document ID, should be 'anasayfa'
+  id?: string; 
   heroTitle: string;
   heroSubtitle: string;
   aboutSnippetTitle: string;
@@ -67,42 +67,42 @@ export interface HomepageContent {
 }
 
 const homepageContentSchema = z.object({
-  heroTitle: z.string().min(1, "Hero başlığı gereklidir."),
-  heroSubtitle: z.string().min(1, "Hero alt başlığı gereklidir."),
-  aboutSnippetTitle: z.string().min(1, "'Kısaca Ben' bölüm başlığı gereklidir."),
-  aboutSnippetDescription: z.string().min(1, "'Kısaca Ben' bölüm açıklaması gereklidir."),
-  recentProjectsTitle: z.string().min(1, "'Son Projelerim' bölüm başlığı gereklidir."),
-  recentBlogPostsTitle: z.string().min(1, "'Son Blog Yazıları' bölüm başlığı gereklidir."),
+  heroTitle: z.string().min(1, "Hero title is required."),
+  heroSubtitle: z.string().min(1, "Hero subtitle is required."),
+  aboutSnippetTitle: z.string().min(1, "'About Me Snippet' section title is required."),
+  aboutSnippetDescription: z.string().min(1, "'About Me Snippet' section description is required."),
+  recentProjectsTitle: z.string().min(1, "'Recent Projects' section title is required."),
+  recentBlogPostsTitle: z.string().min(1, "'Recent Blog Posts' section title is required."),
 });
 
 const DEFAULT_HOMEPAGE_CONTENT: Omit<HomepageContent, 'id' | 'updatedAt'> = {
-  heroTitle: "Merhaba, Ben Barkın Çeliker", // Güncellendi
-  heroSubtitle: "Tutkulu bir geliştirici ve tasarımcıyım. Web teknolojileriyle harika kullanıcı deneyimleri oluşturuyorum. Portfolyomu keşfedin ve projelerim hakkında daha fazla bilgi edinin.",
-  aboutSnippetTitle: "Kısaca Ben",
-  aboutSnippetDescription: "Yenilikçi çözümler üretmeye ve karmaşık problemleri çözmeye adanmış biriyim. Sürekli öğrenmeye ve kendimi geliştirmeye odaklanıyorum.",
-  recentProjectsTitle: "Son Projelerim",
-  recentBlogPostsTitle: "Son Blog Yazıları",
+  heroTitle: "Hello, I'm Barkin Celiker",
+  heroSubtitle: "I am a passionate developer and designer. I create amazing user experiences with web technologies. Explore my portfolio and learn more about my projects.",
+  aboutSnippetTitle: "Briefly About Me",
+  aboutSnippetDescription: "I am dedicated to creating innovative solutions and solving complex problems. I focus on continuous learning and self-improvement.",
+  recentProjectsTitle: "My Recent Projects",
+  recentBlogPostsTitle: "Latest Blog Posts",
 };
 
 
 async function getDb() {
   const adminInitError = getAdminInitializationError();
   if (adminInitError) {
-    throw new Error(`Sunucu yapılandırma hatası (Admin SDK): ${adminInitError}`);
+    throw new Error(`Server configuration error (Admin SDK): ${adminInitError}`);
   }
   if (!admin || !admin.firestore) {
-    throw new Error("Firebase Admin SDK (admin.firestore) düzgün başlatılamadı.");
+    throw new Error("Firebase Admin SDK (admin.firestore) not initialized correctly.");
   }
   return admin.firestore();
 }
 
 const SITE_PAGES_COLLECTION = 'sitePages';
 
-// Hakkımda Sayfası Fonksiyonları
+// About Me Page Functions
 export const getHakkimdaContent = cache(async (): Promise<HakkimdaPageContent> => {
   try {
     const db = await getDb();
-    const docRef = db.collection(SITE_PAGES_COLLECTION).doc('hakkimda');
+    const docRef = db.collection(SITE_PAGES_COLLECTION).doc('hakkimda'); // 'hakkimda' is the document ID for About Me
     const docSnap = await docRef.get();
 
     if (docSnap.exists) {
@@ -139,7 +139,7 @@ export const getHakkimdaContent = cache(async (): Promise<HakkimdaPageContent> =
       };
     }
   } catch (error) {
-    console.error("Error fetching/creating Hakkimda page content:", error);
+    console.error("Error fetching/creating About Me page content:", error);
     return { 
       ...DEFAULT_HAKKIMDA_CONTENT, 
       id: 'hakkimda', 
@@ -151,7 +151,7 @@ export const getHakkimdaContent = cache(async (): Promise<HakkimdaPageContent> =
 export async function updateHakkimdaContent(data: Omit<HakkimdaPageContent, 'id' | 'updatedAt'>) {
   const validation = hakkimdaPageContentSchema.safeParse(data);
   if (!validation.success) {
-    return { success: false, message: "Doğrulama hatası.", errors: validation.error.flatten().fieldErrors };
+    return { success: false, message: "Validation error.", errors: validation.error.flatten().fieldErrors };
   }
   const dataToSave = { ...validation.data };
   if (dataToSave.profileImageUrl === '') {
@@ -169,20 +169,20 @@ export async function updateHakkimdaContent(data: Omit<HakkimdaPageContent, 'id'
       updatedAt: admin.firestore.FieldValue.serverTimestamp() 
     }, { merge: true });
     
-    revalidatePath('/hakkimda');
-    revalidatePath('/admin/manage-content/hakkimda');
-    return { success: true, message: 'Hakkımda sayfası başarıyla güncellendi.' };
+    revalidatePath('/hakkimda'); // Public about me page
+    revalidatePath('/admin'); // Admin panel accordion
+    return { success: true, message: 'About Me page successfully updated.' };
   } catch (error: any) {
-    console.error("Error updating Hakkimda page content:", error);
-    return { success: false, message: `Bir hata oluştu: ${error.message}` };
+    console.error("Error updating About Me page content:", error);
+    return { success: false, message: `An error occurred: ${error.message}` };
   }
 }
 
-// Anasayfa Fonksiyonları
+// Homepage Functions
 export const getHomepageContent = cache(async (): Promise<HomepageContent> => {
   try {
     const db = await getDb();
-    const docRef = db.collection(SITE_PAGES_COLLECTION).doc('anasayfa');
+    const docRef = db.collection(SITE_PAGES_COLLECTION).doc('anasayfa'); // 'anasayfa' is the document ID for Homepage
     const docSnap = await docRef.get();
 
     if (docSnap.exists) {
@@ -225,7 +225,7 @@ export const getHomepageContent = cache(async (): Promise<HomepageContent> => {
 export async function updateHomepageContent(data: Omit<HomepageContent, 'id' | 'updatedAt'>) {
   const validation = homepageContentSchema.safeParse(data);
   if (!validation.success) {
-    return { success: false, message: "Doğrulama hatası.", errors: validation.error.flatten().fieldErrors };
+    return { success: false, message: "Validation error.", errors: validation.error.flatten().fieldErrors };
   }
 
   try {
@@ -236,12 +236,11 @@ export async function updateHomepageContent(data: Omit<HomepageContent, 'id' | '
       updatedAt: admin.firestore.FieldValue.serverTimestamp() 
     }, { merge: true });
     
-    revalidatePath('/'); // Anasayfayı revalidate et
-    revalidatePath('/admin/manage-content/anasayfa');
-    return { success: true, message: 'Anasayfa içeriği başarıyla güncellendi.' };
+    revalidatePath('/'); // Revalidate homepage
+    revalidatePath('/admin'); // Admin panel accordion
+    return { success: true, message: 'Homepage content successfully updated.' };
   } catch (error: any) {
     console.error("Error updating Homepage content:", error);
-    return { success: false, message: `Bir hata oluştu: ${error.message}` };
+    return { success: false, message: `An error occurred: ${error.message}` };
   }
 }
-    

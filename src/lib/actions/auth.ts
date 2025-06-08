@@ -1,8 +1,7 @@
 
 "use server";
 
-import { cookies } from 'next/headers'; // Ensure this import is present
-// Using relative path from src/lib/actions/auth.ts to src/lib/firebaseAdmin.ts
+import { cookies } from 'next/headers';
 import { admin, getAdminInitializationError } from '../firebaseAdmin'; 
 
 const COOKIE_NAME = 'adminAuthToken';
@@ -13,13 +12,13 @@ export async function createSession(idToken: string) {
   
   const adminInitError = getAdminInitializationError();
   if (adminInitError) {
-    const adminInitErrorMsg = `Sunucu yapılandırma hatası (Admin SDK): ${adminInitError}`;
+    const adminInitErrorMsg = `Server configuration error (Admin SDK): ${adminInitError}`;
     console.error("[AuthActions createSession] Critical Error (Admin SDK Init):", adminInitErrorMsg);
     return { success: false, error: adminInitErrorMsg };
   }
 
   if (!admin || typeof admin.auth !== 'function') {
-    const adminStructureErrorMsg = "Sunucu yapılandırma hatası: Firebase Admin SDK beklenen yapıda değil (admin.auth fonksiyonu eksik).";
+    const adminStructureErrorMsg = "Server configuration error: Firebase Admin SDK not as expected (admin.auth function missing).";
     console.error("[AuthActions createSession] Critical Error: Firebase Admin SDK not as expected.", admin);
     return { success: false, error: adminStructureErrorMsg };
   }
@@ -41,14 +40,14 @@ export async function createSession(idToken: string) {
       return { success: true, uid: decodedToken.uid };
     }
     console.warn("[AuthActions createSession] ID token verification failed or user ID (UID) not found in decoded token:", decodedToken);
-    return { success: false, error: "Token doğrulaması başarısız oldu veya kullanıcı kimliği bulunamadı." };
+    return { success: false, error: "Token verification failed or user ID not found." };
   } catch (error: any) {
     console.error("[AuthActions createSession] Error during verifyIdToken or setting cookie:", error);
-    let errorMessage = "Token doğrulama hatası.";
+    let errorMessage = "Token verification error.";
     if (error.code && error.message) { 
-        errorMessage = `Token doğrulama hatası (createSession): Code ${error.code} - ${error.message}`;
+        errorMessage = `Token verification error (createSession): Code ${error.code} - ${error.message}`;
     } else if (error.message) {
-        errorMessage = `Token doğrulama hatası (createSession): ${error.message}`;
+        errorMessage = `Token verification error (createSession): ${error.message}`;
     }
     console.error("[AuthActions createSession] Specific error for verifyIdToken:", errorMessage, "Full error object:", error);
     return { success: false, error: errorMessage };
@@ -63,13 +62,12 @@ export async function logout() {
     return { success: true };
   } catch (error) {
     console.error("[AuthActions logout] Error deleting cookie during logout:", error);
-    return { success: false, error: "Çıkış yapılırken çerez silinemedi."};
+    return { success: false, error: "Could not delete cookie during logout."};
   }
 }
 
 export async function checkAuthStatus() {
   console.log("[AuthActions checkAuthStatus] Called.");
-  // Modify this line based on the error message
   const cookieStore = await cookies(); 
   const token = cookieStore.get(COOKIE_NAME)?.value;
   console.log(`[AuthActions checkAuthStatus] Cookie token found: ${token ? token.substring(0,20)+'...' : 'null'}`);
@@ -92,9 +90,9 @@ export async function checkAuthStatus() {
   }
 
   try {
-    console.time("verifyIdToken"); // Zamanlayıcıyı başlat
+    console.time("verifyIdToken"); 
     const decodedToken = await admin.auth().verifyIdToken(token);
-    console.timeEnd("verifyIdToken"); // Zamanlayıcıyı bitir ve süreyi logla
+    console.timeEnd("verifyIdToken"); 
 
     if (decodedToken && decodedToken.uid) {
        console.log(`[AuthActions checkAuthStatus] Auth token cookie is valid for UID: ${decodedToken.uid}.`);
@@ -104,12 +102,11 @@ export async function checkAuthStatus() {
     cookies().delete(COOKIE_NAME);
     return { isAuthenticated: false };
   } catch (error: any) {
-    console.timeEnd("verifyIdToken"); // Hata durumunda da zamanlayıcıyı bitir
+    console.timeEnd("verifyIdToken"); 
     let detailedErrorMessage = (error as Error).message;
     if (error.code) {
       detailedErrorMessage = `Code: ${error.code}, Message: ${detailedErrorMessage}`;
     }
-    // Log the detailed error message and the full error object for more context
     console.warn(`[AuthActions checkAuthStatus] Error during auth token check: ${detailedErrorMessage}. Invalidating session. Full error object:`, JSON.stringify(error, Object.getOwnPropertyNames(error).concat(['cause'])));
     cookies().delete(COOKIE_NAME);
     return { isAuthenticated: false };

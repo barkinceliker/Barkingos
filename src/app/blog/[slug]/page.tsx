@@ -5,6 +5,8 @@ import { notFound } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { getBlogPostBySlug, getAllPostSlugs, type BlogPostInput } from '@/lib/actions/blog-actions';
+// import { format } from 'date-fns'; // If specific date formatting is needed with locale
+// import { enUS } from 'date-fns/locale'; // For English date formatting
 
 export async function generateStaticParams() {
   const slugs = await getAllPostSlugs();
@@ -37,6 +39,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound();
   }
 
+  // Example for specific date formatting:
+  // const displayDate = post.date ? format(new Date(post.date), "MMMM dd, yyyy", { locale: enUS }) : "Date not available";
+
   return (
     <article className="max-w-4xl mx-auto space-y-8 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))] p-4 md:p-8">
       <header className="space-y-4">
@@ -49,11 +54,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           data-ai-hint={post.dataAiHint || "blog header"}
           priority
         />
-        <h1 className="text-4xl md:text-5xl font-headline font-bold">{post.title}</h1> {/* text-gradient will be applied globally */}
+        <h1 className="text-4xl md:text-5xl font-headline font-bold">{post.title}</h1>
         <div className="flex flex-wrap items-center space-x-4 text-muted-foreground">
           <div className="flex items-center">
             <CalendarDays className="mr-2 h-5 w-5 text-accent" />
-            <span>{post.date}</span>
+            <span>{post.date}</span> {/* Or use displayDate for formatted date */}
           </div>
           <div className="flex items-center">
             <Tag className="mr-2 h-5 w-5 text-accent" />
@@ -81,7 +86,7 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
   if (typeof currentSlug !== 'string' || !currentSlug) {
     console.error(`[Blog generateMetadata] Invalid or missing slug: "${currentSlug}"`);
     return {
-      title: 'Geçersiz Yazı Adresi',
+      title: 'Invalid Post Address',
     };
   }
 
@@ -91,12 +96,11 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
   if (!post) {
     console.warn(`[Blog generateMetadata] Post with slug "${currentSlug}" not found for metadata.`);
     return {
-      title: 'Yazı Bulunamadı',
+      title: 'Post Not Found',
     };
   }
   return {
-    title: `${post.title} | BenimSitem Blog`,
+    title: `${post.title} | MySite Blog`, // Changed "BenimSitem"
     description: post.summary || post.content.substring(0, 160).replace(/<[^>]*>?/gm, ''),
   };
 }
-

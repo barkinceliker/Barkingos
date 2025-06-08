@@ -7,10 +7,9 @@ import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
-export default async function YeteneklerPage() {
+export default async function SkillsPage() {
   const skillsFromDb = await getAllSkills();
 
-  // Group skills by category
   const skillsByCategory: { [key: string]: (SkillInput & { id: string })[] } = {};
   skillsFromDb.forEach(skill => {
     if (!skillsByCategory[skill.category]) {
@@ -19,22 +18,22 @@ export default async function YeteneklerPage() {
     skillsByCategory[skill.category].push(skill);
   });
 
-  const skillCategories = Object.keys(skillsByCategory).sort(); // Sort categories alphabetically
+  const skillCategories = Object.keys(skillsByCategory).sort(); 
 
   return (
     <div className="space-y-12 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))] p-4 md:p-8">
       <section className="text-center">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold text-gradient mb-4">Yeteneklerim</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold text-gradient mb-4">My Skills</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Sahip olduğum teknik ve sosyal beceriler, uzmanlık alanlarım ve yetkinlik seviyelerim.
+          My technical and soft skills, areas of expertise, and proficiency levels.
         </p>
       </section>
 
       {skillsFromDb.length === 0 ? (
         <div className="col-span-full text-center py-10">
-          <p className="text-muted-foreground text-lg">Henüz tanımlanmış bir yetenek bulunmuyor.</p>
+          <p className="text-muted-foreground text-lg">No skills defined yet.</p>
           <Link href="/" passHref>
-            <Button variant="link" className="mt-4">Anasayfaya Dön</Button>
+            <Button variant="link" className="mt-4">Return to Homepage</Button>
           </Link>
         </div>
       ) : (
@@ -50,7 +49,7 @@ export default async function YeteneklerPage() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {categorySkills.map((skill) => {
-                    const IconComponent = getLucideIcon(skill.iconName || 'Brain'); // Use Brain as default
+                    const IconComponent = getLucideIcon(skill.iconName || 'Brain'); 
                     return (
                       <div key={skill.id}>
                         <div className="flex justify-between items-center mb-1">
@@ -60,7 +59,7 @@ export default async function YeteneklerPage() {
                           </div>
                           <span className="text-sm text-muted-foreground">{skill.proficiency}%</span>
                         </div>
-                        <Progress value={skill.proficiency} aria-label={`${skill.name} yetkinlik seviyesi ${skill.proficiency}%`} className="h-3 [&>div]:bg-accent" />
+                        <Progress value={skill.proficiency} aria-label={`${skill.name} proficiency ${skill.proficiency}%`} className="h-3 [&>div]:bg-accent" />
                       </div>
                     );
                   })}
@@ -73,4 +72,3 @@ export default async function YeteneklerPage() {
     </div>
   );
 }
-

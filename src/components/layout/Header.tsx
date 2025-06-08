@@ -41,18 +41,18 @@ import { createSession, logout as serverLogout } from '@/lib/actions/auth';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 
 const staticNavItems = [
-  { id: 'about', label: 'Hakkımda', href: '/#hakkimda-section', iconName: 'User' },
-  { id: 'services', label: 'Hizmetler', href: '/#hizmetler-section', iconName: 'Sparkles' },
-  { id: 'projects', label: 'Projeler', href: '/#projeler-section', iconName: 'Briefcase' },
-  { id: 'skills', label: 'Yetenekler', href: '/#yetenekler-section', iconName: 'Lightbulb' },
-  { id: 'experience', label: 'Deneyimler', href: '/#deneyim-section', iconName: 'Award' },
-  { id: 'resume', label: 'Özgeçmiş', href: '/#ozgecmis-section', iconName: 'FileText' },
+  { id: 'about', label: 'About Me', href: '/#hakkimda-section', iconName: 'User' },
+  { id: 'services', label: 'Services', href: '/#hizmetler-section', iconName: 'Sparkles' },
+  { id: 'projects', label: 'Projects', href: '/#projeler-section', iconName: 'Briefcase' },
+  { id: 'skills', label: 'Skills', href: '/#yetenekler-section', iconName: 'Lightbulb' },
+  { id: 'experience', label: 'Experience', href: '/#deneyim-section', iconName: 'Award' },
+  { id: 'resume', label: 'Resume', href: '/#ozgecmis-section', iconName: 'FileText' },
   { id: 'blog', label: 'Blog', href: '/#blog-section', iconName: 'BookOpenText' },
-  { id: 'contact', label: 'İletişim', href: '/#iletisim-section', iconName: 'MessageSquare' },
+  { id: 'contact', label: 'Contact', href: '/#iletisim-section', iconName: 'MessageSquare' },
 ];
 
-const adminNavItemData = { label: 'Admin', href: '/admin', iconName: 'Shield' };
-const logoutNavItemData = { label: 'Çıkış Yap', action: 'logout', iconName: 'LogOut' };
+const adminNavItemData = { label: 'Admin Panel', href: '/admin', iconName: 'Shield' };
+const logoutNavItemData = { label: 'Logout', action: 'logout', iconName: 'LogOut' };
 
 
 interface HeaderProps {
@@ -99,9 +99,9 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       await firebaseSignOut(firebaseClientAuth);
       const result = await serverLogout();
       if (result.success) {
-        toast({ title: "Başarıyla çıkış yapıldı." });
+        toast({ title: "Successfully logged out." });
       } else {
-        toast({ title: "Çıkış Hatası", description: result.error || "Sunucu tarafında çıkış sırasında bir sorun oluştu.", variant: "destructive" });
+        toast({ title: "Logout Error", description: result.error || "An issue occurred during server-side logout.", variant: "destructive" });
       }
       if (pathname.startsWith('/admin')) {
         router.push('/');
@@ -109,7 +109,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       setIsMobileMenuOpen(false);
       router.refresh();
     } catch (error) {
-      toast({ title: "Çıkış Hatası", description: "Bir hata oluştu.", variant: "destructive" });
+      toast({ title: "Logout Error", description: "An error occurred.", variant: "destructive" });
     } finally {
       setIsSubmittingLogout(false);
     }
@@ -179,13 +179,15 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     }, [href, router, onClick]);
 
     const commonClasses = cn(
-      // "text-foreground hover:bg-accent/10 hover:text-accent-foreground", // Original text color and hover
-      "hover:bg-accent/10", // Keep hover background, text color will be gradient
+      "hover:bg-accent/10",
       "justify-start py-2 rounded-md",
-      isActiveClient && !isAction && "bg-accent/20", // Active state background
+      isActiveClient && !isAction && "bg-accent/20", 
       className,
       disabled && "opacity-50 cursor-not-allowed"
     );
+    
+    const isServicesLink = href === '/#hizmetler-section';
+
 
     if (isAction) {
       return (
@@ -193,7 +195,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           variant="ghost"
           size="sm"
           onClick={handleLinkClick}
-          className={cn(commonClasses)}
+          className={cn(commonClasses, isServicesLink ? "text-gradient font-bold" : "text-gradient font-bold" )}
           disabled={disabled}
         >
           {IconComponent && <IconComponent className="h-4 w-4 mr-2" />}
@@ -207,7 +209,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         asChild
         variant="ghost"
         size="sm"
-        className={cn(commonClasses, "text-sm px-3")}
+        className={cn(commonClasses, "text-sm px-3", isServicesLink ? "text-gradient font-bold" : "text-gradient font-bold" )}
         disabled={disabled}
       >
         <LinkFromNext href={href || '#'} onClick={handleLinkClick}>
@@ -228,7 +230,8 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
               href={item.href}
               iconName={item.iconName}
               className={cn(
-                "text-base py-2.5 px-4 w-full text-gradient font-bold"
+                "text-base py-2.5 px-4 w-full font-bold",
+                item.href === '/#hizmetler-section' ? "text-gradient" : "text-gradient"
               )}
             >
               {item.label}
@@ -239,7 +242,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           <>
             <div className="my-2 border-t border-border" />
             <SheetClose asChild>
-              <NavLink href={adminNavItemData.href} iconName={adminNavItemData.iconName} className="text-base py-2.5 px-4 w-full">
+              <NavLink href={adminNavItemData.href} iconName={adminNavItemData.iconName} className="text-base py-2.5 px-4 w-full text-gradient font-bold">
                 {adminNavItemData.label}
               </NavLink>
             </SheetClose>
@@ -260,10 +263,10 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                 onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }}
                 className="w-full mt-2 py-2.5 px-4 text-base"
                 disabled={isSubmittingLogin}
-                aria-label="Giriş Yap"
+                aria-label="Login"
               >
                 {isSubmittingLogin ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <LogIn className="h-5 w-5 mr-2" />}
-                Giriş Yap
+                Login
               </Button>
             </SheetClose>
         )}
@@ -286,21 +289,21 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
 
       if (sessionResult.success) {
         setIsLoginDialogOpen(false);
-        toast({ title: "Giriş Başarılı!", description: "Admin paneline yönlendiriliyorsunuz..." });
+        toast({ title: "Login Successful!", description: "Redirecting to admin panel..." });
         router.push('/admin');
         router.refresh();
       } else {
-        setLoginError(sessionResult.error || "Giriş yapılamadı. Lütfen tekrar deneyin.");
-        toast({ title: "Giriş Başarısız", description: sessionResult.error || "Bir hata oluştu.", variant: "destructive" });
+        setLoginError(sessionResult.error || "Login failed. Please try again.");
+        toast({ title: "Login Failed", description: sessionResult.error || "An error occurred.", variant: "destructive" });
         await firebaseSignOut(firebaseClientAuth);
       }
     } catch (error: any) {
-      let message = "Giriş sırasında bir hata oluştu.";
+      let message = "An error occurred during login.";
       if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-        message = "E-posta veya şifre hatalı.";
+        message = "Incorrect email or password.";
       }
       setLoginError(message);
-      toast({ title: "Giriş Hatası", description: message, variant: "destructive" });
+      toast({ title: "Login Error", description: message, variant: "destructive" });
     } finally {
       setIsSubmittingLogin(false);
     }
@@ -337,7 +340,8 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                 href={item.href}
                 iconName={item.iconName}
                 className={cn(
-                  "text-sm px-3 text-gradient font-bold" 
+                  "text-sm px-3 font-bold", 
+                  item.href === '/#hizmetler-section' ? "text-gradient" : "text-gradient"
                 )}
               >
                 {item.label}
@@ -370,7 +374,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                       className="text-destructive focus:bg-destructive focus:text-destructive-foreground cursor-pointer flex items-center"
                     >
                       {isSubmittingLogout ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <LogOutIcon className="h-4 w-4 mr-2" />}
-                      <span>Çıkış Yap</span>
+                      <span>Logout</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -381,7 +385,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                   onClick={() => setIsLoginDialogOpen(true)}
                   disabled={isSubmittingLogin}
                   className="p-2 text-foreground hover:bg-accent/10 hover:text-accent-foreground"
-                  aria-label="Giriş Yap"
+                  aria-label="Login"
                 >
                   {isSubmittingLogin ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="h-5 w-5" />}
                 </Button>
@@ -391,7 +395,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             <div className="lg:hidden">
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(true)} aria-label="Menüyü Aç" className="text-foreground hover:bg-accent/10 hover:text-accent-foreground">
+                  <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(true)} aria-label="Open Menu" className="text-foreground hover:bg-accent/10 hover:text-accent-foreground">
                     <MenuIcon className="h-6 w-6" />
                   </Button>
                 </SheetTrigger>
@@ -419,7 +423,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                         </LinkFromNext>
                       </SheetTitle>
                        <SheetClose asChild>
-                          <Button variant="ghost" size="icon" aria-label="Menüyü Kapat" className="text-foreground hover:bg-accent/10 hover:text-accent-foreground">
+                          <Button variant="ghost" size="icon" aria-label="Close Menu" className="text-foreground hover:bg-accent/10 hover:text-accent-foreground">
                             <X className="h-5 w-5" />
                           </Button>
                       </SheetClose>
@@ -437,22 +441,22 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       <Dialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle className="font-headline text-primary text-gradient">Admin Girişi</DialogTitle>
+            <DialogTitle className="font-headline text-primary text-gradient">Admin Login</DialogTitle>
             <DialogDescription>
-              Lütfen admin paneline erişmek için e-posta ve şifrenizi girin.
+              Please enter your email and password to access the admin panel.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleLoginSubmit}>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="email-login" className="text-right">
-                  E-posta
+                  Email
                 </Label>
                 <Input id="email-login" name="email" type="email" required className="col-span-3" />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="password-login" className="text-right">
-                  Şifre
+                  Password
                 </Label>
                 <Input id="password-login" name="password" type="password" required className="col-span-3" />
               </div>
@@ -463,7 +467,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             <DialogFooter>
               <Button type="submit" disabled={isSubmittingLogin}>
                 {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Giriş Yap
+                Login
               </Button>
             </DialogFooter>
           </form>

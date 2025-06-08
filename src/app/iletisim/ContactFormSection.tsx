@@ -17,14 +17,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, MapPin, Send, Loader2, Github, Linkedin } from 'lucide-react'; // Phone ikonu kaldırıldı
+import { Mail, MapPin, Send, Loader2, Github, Linkedin } from 'lucide-react';
 import { submitContactForm } from "@/lib/actions/contact"; 
 
 const formSchema = z.object({
-  name: z.string().min(2, "İsim en az 2 karakter olmalıdır.").max(50, "İsim en fazla 50 karakter olabilir."),
-  email: z.string().email("Geçerli bir e-posta adresi giriniz."),
-  subject: z.string().min(5, "Konu en az 5 karakter olmalıdır.").max(100, "Konu en fazla 100 karakter olabilir."),
-  message: z.string().min(10, "Mesaj en az 10 karakter olmalıdır.").max(1000, "Mesaj en fazla 1000 karakter olabilir."),
+  name: z.string().min(2, "Name must be at least 2 characters.").max(50, "Name can be at most 50 characters."),
+  email: z.string().email("Please enter a valid email address."),
+  subject: z.string().min(5, "Subject must be at least 5 characters.").max(100, "Subject can be at most 100 characters."),
+  message: z.string().min(10, "Message must be at least 10 characters.").max(1000, "Message can be at most 1000 characters."),
 });
 
 export default function ContactFormSection() {
@@ -48,21 +48,21 @@ export default function ContactFormSection() {
 
       if (result.success) {
         toast({
-          title: "Başarılı!",
+          title: "Success!",
           description: result.message,
         });
         form.reset();
       } else {
         toast({
-          title: "Hata!",
-          description: result.message || "Mesaj gönderilirken bir hata oluştu.",
+          title: "Error!",
+          description: result.message || "An error occurred while sending the message.",
           variant: "destructive",
         });
       }
     } catch (error) {
       toast({
-        title: "Sunucu Hatası!",
-        description: "Mesaj gönderilemedi. Lütfen daha sonra tekrar deneyin.",
+        title: "Server Error!",
+        description: "Could not send message. Please try again later.",
         variant: "destructive",
       });
     }
@@ -73,29 +73,28 @@ export default function ContactFormSection() {
         <div className="lg:col-span-2 space-y-6">
           <Card className="shadow-xl">
             <CardHeader>
-              <CardTitle className="font-headline text-2xl text-primary">İletişim Bilgilerim</CardTitle>
+              <CardTitle className="font-headline text-2xl text-primary">My Contact Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start">
                 <Mail className="h-6 w-6 mr-3 text-accent flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className="font-semibold">E-posta</h3>
+                  <h3 className="font-semibold">Email</h3>
                   <a href="mailto:mail.barkinclkr@gmail.com" className="text-foreground hover:text-primary">mail.barkinclkr@gmail.com</a>
                 </div>
               </div>
-              {/* Telefon bölümü kaldırıldı */}
               <div className="flex items-start">
                 <MapPin className="h-6 w-6 mr-3 text-accent flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className="font-semibold">Adres</h3>
-                  <p className="text-foreground">İzmir, Türkiye</p>
+                  <h3 className="font-semibold">Address</h3>
+                  <p className="text-foreground">Izmir, Turkey</p>
                 </div>
               </div>
             </CardContent>
           </Card>
            <Card className="shadow-xl">
             <CardHeader>
-              <CardTitle className="font-headline text-2xl text-primary">Sosyal Medya</CardTitle>
+              <CardTitle className="font-headline text-2xl text-primary">Social Media</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center">
@@ -106,7 +105,7 @@ export default function ContactFormSection() {
                   rel="noopener noreferrer"
                   className="text-foreground hover:text-primary transition-colors"
                 >
-                  GitHub Profilim
+                  My GitHub Profile
                 </a>
               </div>
               <div className="flex items-center">
@@ -117,7 +116,7 @@ export default function ContactFormSection() {
                   rel="noopener noreferrer"
                   className="text-foreground hover:text-primary transition-colors"
                 >
-                  LinkedIn Profilim
+                  My LinkedIn Profile
                 </a>
               </div>
             </CardContent>
@@ -127,8 +126,8 @@ export default function ContactFormSection() {
         <div className="lg:col-span-3">
           <Card className="shadow-xl">
             <CardHeader>
-              <CardTitle className="font-headline text-2xl text-primary">Mesaj Gönderin</CardTitle>
-              <CardDescription>Sorularınız veya önerileriniz için formu doldurun.</CardDescription>
+              <CardTitle className="font-headline text-2xl text-primary">Send a Message</CardTitle>
+              <CardDescription>Fill out the form for your questions or suggestions.</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -138,9 +137,9 @@ export default function ContactFormSection() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Adınız Soyadınız</FormLabel>
+                        <FormLabel>Your Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="İsim Soyisim" {...field} />
+                          <Input placeholder="Name Surname" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -151,9 +150,9 @@ export default function ContactFormSection() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>E-posta Adresiniz</FormLabel>
+                        <FormLabel>Your Email Address</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="ornek@mail.com" {...field} />
+                          <Input type="email" placeholder="example@mail.com" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -164,9 +163,9 @@ export default function ContactFormSection() {
                     name="subject"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Konu</FormLabel>
+                        <FormLabel>Subject</FormLabel>
                         <FormControl>
-                          <Input placeholder="Mesajınızın konusu" {...field} />
+                          <Input placeholder="Subject of your message" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -177,16 +176,16 @@ export default function ContactFormSection() {
                     name="message"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Mesajınız</FormLabel>
+                        <FormLabel>Your Message</FormLabel>
                         <FormControl>
-                          <Textarea placeholder="Mesajınızı buraya yazın..." rows={6} {...field} />
+                          <Textarea placeholder="Write your message here..." rows={6} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isSubmitting}>
-                    {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Gönderiliyor...</> : <><Send className="mr-2 h-4 w-4" /> Mesajı Gönder</>}
+                    {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...</> : <><Send className="mr-2 h-4 w-4" /> Send Message</>}
                   </Button>
                 </form>
               </Form>

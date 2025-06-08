@@ -33,52 +33,59 @@ import { getAllExperiences, type ExperienceInput as ExperienceType } from '@/lib
 import { getAllBlogPosts, type BlogPostInput as BlogPostType } from '@/lib/actions/blog-actions';
 import ContactFormSection from '@/app/iletisim/ContactFormSection'; // Client component for the form
 
-// Özgeçmiş sayfası için statik veriler (normalde bu da bir action'dan gelebilir)
+// Static data for the resume section (normally this might also come from an action)
+// This static data needs to be translated if it's the primary source.
+// Assuming resume content will primarily come from Firestore via `getResumeContent` for dynamic display.
+// The resumePageData here is mostly a fallback or for when `getResumeContent` might not be fully populated
+// or for a different resume display style if needed.
+// For consistency, the main resume page /app/resume/page.tsx uses getResumeContent.
+// This section on the homepage could show a condensed version or different static data.
+// For this translation task, I will translate this static data as well.
 const resumePageData = {
-  name: "Adınız Soyadınız",
-  title: "Unvanınız, örn: Kıdemli Yazılım Geliştirici",
+  name: "Barkin Celiker",
+  title: "Senior Software Developer",
   profileImage: "https://placehold.co/150x150.png",
   profileImageAiHint: "professional headshot",
   experiences: [
     {
-      role: "Kıdemli Yazılım Geliştirici",
-      company: "Teknoloji Çözümleri A.Ş.",
-      period: "Ocak 2021 - Günümüz",
+      role: "Senior Software Developer",
+      company: "Tech Solutions Inc.",
+      period: "January 2021 - Present",
       tasks: [
-        "Ölçeklenebilir web uygulamaları geliştirdim.",
-        "Yeni özelliklerin tasarım ve dağıtım süreçlerinde rol aldım.",
+        "Developed scalable web applications.",
+        "Played a key role in the design and deployment of new features.",
       ],
     },
     {
-      role: "Yazılım Geliştirici",
+      role: "Software Developer",
       company: "Startup X",
-      period: "Haziran 2018 - Aralık 2020",
+      period: "June 2018 - December 2020",
       tasks: [
-        "Çevik metodolojilerle ürün geliştirme süreçlerine katıldım.",
-        "Kullanıcı arayüzleri ve API entegrasyonları üzerinde çalıştım.",
+        "Participated in product development processes using Agile methodologies.",
+        "Worked on user interfaces and API integrations.",
       ],
     },
   ],
   education: [
     {
-      degree: "Bilgisayar Mühendisliği Lisans Derecesi",
-      university: "Örnek Üniversite",
-      period: "Eylül 2014 - Haziran 2018",
+      degree: "B.Sc. in Computer Engineering",
+      university: "Sample University",
+      period: "September 2014 - June 2018",
     },
   ],
-  skills: ['React', 'Next.js', 'TypeScript', 'Node.js', 'Python', 'SQL', 'UI/UX Tasarımı', 'Problem Çözme'],
-  resumePdfUrl: "/resume-placeholder.pdf",
+  skills: ['React', 'Next.js', 'TypeScript', 'Node.js', 'Python', 'SQL', 'UI/UX Design', 'Problem Solving'],
+  resumePdfUrl: "/resume-placeholder.pdf", // This should point to an actual English resume if available
 };
 
 
 export default async function SinglePageApp() {
-  const homepageContent = await getHomepageContent();
-  const hakkimdaContent = await getHakkimdaContent();
-  const services = await getAllServices();
-  const projects = await getAllProjectsFromDb();
-  const skillsFromDb = await getAllSkills();
-  const experiences = await getAllExperiences();
-  const blogPosts = await getAllBlogPosts();
+  const homepageContent = await getHomepageContent(); // Fetches default English content if DB is empty
+  const hakkimdaContent = await getHakkimdaContent(); // Fetches default English content if DB is empty
+  const services = await getAllServices(); // Assumes service data in DB is in English or needs manual translation
+  const projects = await getAllProjectsFromDb(); // Assumes project data in DB is in English or needs manual translation
+  const skillsFromDb = await getAllSkills(); // Assumes skill data in DB is in English or needs manual translation
+  const experiences = await getAllExperiences(); // Assumes experience data in DB is in English or needs manual translation
+  const blogPosts = await getAllBlogPosts(); // Assumes blog post data in DB is in English or needs manual translation
 
   const skillsByCategory: { [key: string]: (SkillType & { id: string })[] } = {};
   skillsFromDb.forEach(skill => {
@@ -93,40 +100,40 @@ export default async function SinglePageApp() {
 
   return (
     <div className="space-y-16 md:space-y-24 lg:space-y-32">
-      {/* Hero Section - Full Width Background, Contained Content */}
+      {/* Hero Section */}
       <section
-        id="anasayfa-section"
+        id="anasayfa-section" // ID can remain as is for anchor linking
         className="w-full bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))] shadow-xl bg-opacity-75 rounded-xl"
       >
         <div className="container mx-auto px-4 py-24 md:py-36 lg:py-48 text-center">
           <h1 className="text-4xl md:text-6xl font-headline font-bold text-gradient mb-6">
-            {homepageContent.heroTitle}
+            {homepageContent.heroTitle} {/* DB or Default English */}
           </h1>
           <p className="text-lg md:text-xl text-foreground mb-10 max-w-2xl mx-auto">
-            {homepageContent.heroSubtitle}
+            {homepageContent.heroSubtitle} {/* DB or Default English */}
           </p>
           <div className="space-x-4">
             <Link href="/#projeler-section" passHref>
               <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
-                Projelerim <Briefcase className="ml-2 h-5 w-5" />
+                My Projects <Briefcase className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <Link href="/#iletisim-section" passHref>
               <Button size="lg" variant="secondary" className="font-bold">
-                İletişime Geç <MessageSquare className="ml-2 h-5 w-5" />
+                Contact Me <MessageSquare className="ml-2 h-5 w-5" />
               </Button>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Hakkımda Section */}
+      {/* About Me Section */}
       <section id="hakkimda-section" className="py-16 md:py-20 lg:py-24 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))]">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">{hakkimdaContent.pageTitle}</h2>
+            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">{hakkimdaContent.pageTitle}</h2> {/* DB or Default English */}
             <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto">
-              {hakkimdaContent.pageSubtitle}
+              {hakkimdaContent.pageSubtitle} {/* DB or Default English */}
             </p>
           </header>
 
@@ -134,7 +141,7 @@ export default async function SinglePageApp() {
             <div className="md:col-span-1 flex justify-center">
               <Image
                 src={hakkimdaContent.profileImageUrl || "https://placehold.co/300x300.png"}
-                alt="Profil Fotoğrafı"
+                alt="Profile Picture"
                 width={300}
                 height={300}
                 className="rounded-full shadow-lg border-4 border-primary/50 object-cover aspect-square"
@@ -146,12 +153,12 @@ export default async function SinglePageApp() {
             <div className="md:col-span-2">
               <Card className="shadow-xl">
                 <CardHeader>
-                  <CardTitle className="font-headline text-2xl text-gradient">Ben Kimim?</CardTitle>
+                  <CardTitle className="font-headline text-2xl text-gradient">Who Am I?</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 text-lg text-foreground/90">
-                  {hakkimdaContent.whoAmI_p1 && <p>{hakkimdaContent.whoAmI_p1}</p>}
-                  {hakkimdaContent.whoAmI_p2 && <p>{hakkimdaContent.whoAmI_p2}</p>}
-                  {hakkimdaContent.whoAmI_p3_hobbies && <p>{hakkimdaContent.whoAmI_p3_hobbies}</p>}
+                  {hakkimdaContent.whoAmI_p1 && <p>{hakkimdaContent.whoAmI_p1}</p>} {/* DB or Default English */}
+                  {hakkimdaContent.whoAmI_p2 && <p>{hakkimdaContent.whoAmI_p2}</p>} {/* DB or Default English */}
+                  {hakkimdaContent.whoAmI_p3_hobbies && <p>{hakkimdaContent.whoAmI_p3_hobbies}</p>} {/* DB or Default English */}
                 </CardContent>
               </Card>
             </div>
@@ -160,43 +167,43 @@ export default async function SinglePageApp() {
           <div className="grid sm:grid-cols-1 md:grid-cols-3 gap-8 text-center pt-8 md:pt-12">
             <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow">
               <Briefcase className="h-10 w-10 md:h-12 md:w-12 text-accent mx-auto mb-4" />
-              <h3 className="text-xl font-headline font-semibold text-gradient mb-2">Deneyim</h3>
-              <p className="text-muted-foreground">{hakkimdaContent.stat_experience_value}</p>
+              <h3 className="text-xl font-headline font-semibold text-gradient mb-2">Experience</h3>
+              <p className="text-muted-foreground">{hakkimdaContent.stat_experience_value}</p> {/* DB or Default English */}
             </Card>
             <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow">
               <Award className="h-10 w-10 md:h-12 md:w-12 text-accent mx-auto mb-4" />
-              <h3 className="text-xl font-headline font-semibold text-gradient mb-2">Uzmanlık Alanları</h3>
-              <p className="text-muted-foreground">{hakkimdaContent.stat_expertise_value}</p>
+              <h3 className="text-xl font-headline font-semibold text-gradient mb-2">Expertise Areas</h3>
+              <p className="text-muted-foreground">{hakkimdaContent.stat_expertise_value}</p> {/* DB or Default English */}
             </Card>
             <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow">
               <Users className="h-10 w-10 md:h-12 md:w-12 text-accent mx-auto mb-4" />
-              <h3 className="text-xl font-headline font-semibold text-gradient mb-2">Takım Çalışması</h3>
-              <p className="text-muted-foreground">{hakkimdaContent.stat_teamwork_value}</p>
+              <h3 className="text-xl font-headline font-semibold text-gradient mb-2">Teamwork</h3>
+              <p className="text-muted-foreground">{hakkimdaContent.stat_teamwork_value}</p> {/* DB or Default English */}
             </Card>
           </div>
 
           <Card className="shadow-xl mt-8 md:mt-12">
             <CardHeader>
-              <CardTitle className="font-headline text-2xl text-gradient">{hakkimdaContent.mission_title}</CardTitle>
+              <CardTitle className="font-headline text-2xl text-gradient">{hakkimdaContent.mission_title}</CardTitle> {/* DB or Default English */}
             </CardHeader>
             <CardContent className="space-y-4 text-lg text-foreground/90">
-              {hakkimdaContent.mission_p1 && <p>{hakkimdaContent.mission_p1}</p>}
+              {hakkimdaContent.mission_p1 && <p>{hakkimdaContent.mission_p1}</p>} {/* DB or Default English */}
             </CardContent>
           </Card>
         </div>
       </section>
 
-      {/* Hizmetler Section */}
+      {/* Services Section */}
       <section id="hizmetler-section" className="py-16 md:py-20 lg:py-24 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))]">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Hizmetlerim</h2>
+            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">My Services</h2>
             <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto">
-              Sunduğum profesyonel hizmetler ve uzmanlık alanlarım hakkında detaylı bilgi.
+              Detailed information about the professional services I offer and my areas of expertise.
             </p>
           </header>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service) => {
+            {services.map((service) => { // Service data from DB
               const IconComponent = getLucideIcon(service.iconName);
               return (
                 <Card key={service.id} className="flex flex-col shadow-xl hover:shadow-2xl transition-shadow duration-300">
@@ -219,24 +226,24 @@ export default async function SinglePageApp() {
             })}
             {services.length === 0 && (
               <div className="col-span-full text-center py-10">
-                <p className="text-muted-foreground text-lg">Henüz tanımlanmış bir hizmet bulunmuyor.</p>
+                <p className="text-muted-foreground text-lg">No services defined yet.</p>
               </div>
             )}
           </div>
         </div>
       </section>
 
-      {/* Projeler Section */}
+      {/* Projects Section */}
       <section id="projeler-section" className="py-16 md:py-20 lg:py-24 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))]">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Projelerim</h2>
+            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">My Projects</h2>
             <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto">
-              Üzerinde çalıştığım veya tamamladığım daha kapsamlı projeler ve teknik detayları.
+              More comprehensive projects I have worked on or completed, along with their technical details.
             </p>
           </header>
           <div className="space-y-16">
-            {projects.map((item) => (
+            {projects.map((item) => ( // Project data from DB
               <Card key={item.id} id={`project-${item.id}`} className="overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300">
                 <div className="md:flex">
                   <div className="md:w-1/3">
@@ -258,10 +265,10 @@ export default async function SinglePageApp() {
                           {item.subtitle && <p className="text-md text-accent font-semibold mb-2">{item.subtitle}</p>}
                         </div>
                         <span className={`px-3 py-1 rounded-full text-sm font-medium
-                          ${item.status === 'Tamamlandı' ? 'bg-green-500 text-white' :
-                            item.status === 'Devam Ediyor' ? 'bg-yellow-500 text-white' :
+                          ${item.status === 'Tamamlandı' || item.status === 'Completed' ? 'bg-green-500 text-white' : // Handle both Turkish and potential English status from DB
+                            item.status === 'Devam Ediyor' || item.status === 'In Progress' ? 'bg-yellow-500 text-white' :
                             'bg-blue-500 text-white'}`}>
-                          {item.status}
+                          {item.status} {/* Display status as is from DB */}
                         </span>
                       </div>
                       <CardDescription className="mt-2 text-base">{item.description}</CardDescription>
@@ -269,7 +276,7 @@ export default async function SinglePageApp() {
                     <CardContent className="p-6 flex-grow">
                       {item.longDescription && <p className="mb-4 text-foreground/90">{item.longDescription}</p>}
                       <div>
-                        <h4 className="font-semibold text-gradient mb-2">Kullanılan Teknolojiler:</h4>
+                        <h4 className="font-semibold text-gradient mb-2">Technologies Used:</h4>
                         <div className="flex flex-wrap gap-2">
                           {item.technologies.map(tech => (
                             <span key={tech} className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-md">{tech}</span>
@@ -281,14 +288,14 @@ export default async function SinglePageApp() {
                       {item.liveDemoUrl && (
                         <Link href={item.liveDemoUrl} target="_blank" rel="noopener noreferrer" passHref>
                           <Button variant="default" size="sm">
-                            <Zap className="mr-2 h-4 w-4" /> Canlı Demo
+                            <Zap className="mr-2 h-4 w-4" /> Live Demo
                           </Button>
                         </Link>
                       )}
                       {item.sourceCodeUrl && (
                         <Link href={item.sourceCodeUrl} target="_blank" rel="noopener noreferrer" passHref>
                           <Button variant="outline" size="sm">
-                            <Github className="mr-2 h-4 w-4" /> Kaynak Kodları
+                            <Github className="mr-2 h-4 w-4" /> Source Code
                           </Button>
                         </Link>
                       )}
@@ -299,25 +306,25 @@ export default async function SinglePageApp() {
             ))}
             {projects.length === 0 && (
               <div className="col-span-full text-center py-10">
-                <p className="text-muted-foreground text-lg">Henüz yayınlanmış bir proje bulunmuyor.</p>
+                <p className="text-muted-foreground text-lg">No projects published yet.</p>
               </div>
             )}
           </div>
         </div>
       </section>
 
-      {/* Yetenekler Section */}
+      {/* Skills Section */}
       <section id="yetenekler-section" className="py-16 md:py-20 lg:py-24 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))]">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Yeteneklerim</h2>
+            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">My Skills</h2>
             <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto">
-              Sahip olduğum teknik ve sosyal beceriler, uzmanlık alanlarım ve yetkinlik seviyelerim.
+              My technical and soft skills, areas of expertise, and proficiency levels.
             </p>
           </header>
-          {skillsFromDb.length === 0 ? (
+          {skillsFromDb.length === 0 ? ( // Skill data from DB
             <div className="text-center py-10">
-              <p className="text-muted-foreground text-lg">Henüz tanımlanmış bir yetenek bulunmuyor.</p>
+              <p className="text-muted-foreground text-lg">No skills defined yet.</p>
             </div>
           ) : (
             <div className="grid lg:grid-cols-2 gap-8">
@@ -346,7 +353,7 @@ export default async function SinglePageApp() {
                               </div>
                               <span className="text-sm text-muted-foreground">{skill.proficiency}%</span>
                             </div>
-                            <Progress value={skill.proficiency} aria-label={`${skill.name} yetkinlik seviyesi ${skill.proficiency}%`} className="h-2.5 [&>div]:bg-accent" />
+                            <Progress value={skill.proficiency} aria-label={`${skill.name} proficiency level ${skill.proficiency}%`} className="h-2.5 [&>div]:bg-accent" />
                           </div>
                         );
                       })}
@@ -359,18 +366,18 @@ export default async function SinglePageApp() {
         </div>
       </section>
 
-      {/* Deneyim Section */}
+      {/* Experience Section */}
       <section id="deneyim-section" className="py-16 md:py-20 lg:py-24 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))]">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Deneyimlerim</h2>
+            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">My Experience</h2>
             <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto">
-              Profesyonel kariyerim boyunca edindiğim tecrübeler, üstlendiğim roller ve katkıda bulunduğum projeler.
+              Experiences gained throughout my professional career, roles undertaken, and projects contributed to.
             </p>
           </header>
-          {experiences.length === 0 ? (
+          {experiences.length === 0 ? ( // Experience data from DB
             <div className="text-center py-10">
-              <p className="text-muted-foreground text-lg">Henüz tanımlanmış bir deneyim bulunmuyor.</p>
+              <p className="text-muted-foreground text-lg">No experience defined yet.</p>
             </div>
           ) : (
             <div className="space-y-10 max-w-4xl mx-auto">
@@ -417,20 +424,20 @@ export default async function SinglePageApp() {
         </div>
       </section>
 
-      {/* Özgeçmiş Section */}
+      {/* Resume Section (Static Fallback/Condensed Version) */}
       <section id="ozgecmis-section" className="py-16 md:py-20 lg:py-24 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))]">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Özgeçmişim</h2>
+            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">My Resume</h2>
             <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto">
-              Profesyonel deneyimlerimi, eğitim bilgilerimi ve yeteneklerimi içeren detaylı özgeçmişim.
+              My detailed resume including professional experiences, education, and skills.
             </p>
           </header>
           <Card className="max-w-3xl mx-auto shadow-xl p-6 md:p-8">
             <CardHeader className="text-center mb-6">
               <Image
                 src={resumePageData.profileImage}
-                alt="Profil Fotoğrafı"
+                alt="Profile Picture"
                 width={120}
                 height={120}
                 className="rounded-full mx-auto mb-4 border-4 border-primary/30 object-cover aspect-square"
@@ -443,7 +450,7 @@ export default async function SinglePageApp() {
             <CardContent className="space-y-8">
               <section>
                 <h3 className="text-xl md:text-2xl font-headline font-semibold text-gradient mb-4 flex items-center">
-                  <Briefcase className="mr-3 h-5 w-5 md:h-6 md:w-6 text-accent" /> Deneyimlerim
+                  <Briefcase className="mr-3 h-5 w-5 md:h-6 md:w-6 text-accent" /> Experience
                 </h3>
                 <div className="space-y-5 border-l-2 border-accent/50 pl-4 ml-3">
                   {resumePageData.experiences.map((exp, index) => (
@@ -460,7 +467,7 @@ export default async function SinglePageApp() {
               </section>
               <section>
                 <h3 className="text-xl md:text-2xl font-headline font-semibold text-gradient mb-4 flex items-center">
-                  <GraduationCap className="mr-3 h-5 w-5 md:h-6 md:w-6 text-accent" /> Eğitimim
+                  <GraduationCap className="mr-3 h-5 w-5 md:h-6 md:w-6 text-accent" /> Education
                 </h3>
                 <div className="space-y-5 border-l-2 border-accent/50 pl-4 ml-3">
                   {resumePageData.education.map((edu, index) => (
@@ -474,7 +481,7 @@ export default async function SinglePageApp() {
               </section>
               <section>
                 <h3 className="text-xl md:text-2xl font-headline font-semibold text-gradient mb-4 flex items-center">
-                  <Award className="mr-3 h-5 w-5 md:h-6 md:w-6 text-accent" /> Yetenekler
+                  <Award className="mr-3 h-5 w-5 md:h-6 md:w-6 text-accent" /> Skills
                 </h3>
                 <div className="flex flex-wrap gap-2.5">
                   {resumePageData.skills.map(skill => (
@@ -485,10 +492,10 @@ export default async function SinglePageApp() {
               <div className="text-center pt-8">
                 <a href={resumePageData.resumePdfUrl} download={`${resumePageData.name.replace(" ", "_")}_CV.pdf`}>
                   <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md">
-                    <Download className="mr-2 h-5 w-5" /> Özgeçmişi İndir (PDF)
+                    <Download className="mr-2 h-5 w-5" /> Download Resume (PDF)
                   </Button>
                 </a>
-                <p className="text-xs text-muted-foreground mt-2">(Bu bir placeholder linkidir.)</p>
+                <p className="text-xs text-muted-foreground mt-2">(This is a placeholder link.)</p>
               </div>
             </CardContent>
           </Card>
@@ -499,13 +506,13 @@ export default async function SinglePageApp() {
       <section id="blog-section" className="py-16 md:py-20 lg:py-24 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))]">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Blog Yazılarım</h2>
+            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">My Blog Posts</h2>
             <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto">
-              Teknoloji, tasarım ve geliştirme üzerine düşüncelerimi, deneyimlerimi ve güncel haberleri paylaştığım alan.
+              My thoughts, experiences, and news on technology, design, and development.
             </p>
           </header>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogPosts.map((post) => (
+            {blogPosts.map((post) => ( // Blog post data from DB
               <Card key={post.slug} className="flex flex-col overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 group">
                 <Link href={`/blog/${post.slug}`} passHref className="block overflow-hidden">
                   <Image
@@ -534,7 +541,7 @@ export default async function SinglePageApp() {
                 <CardFooter className="p-5 bg-card/50 border-t">
                   <Link href={`/blog/${post.slug}`} passHref className="w-full">
                     <Button variant="outline" className="w-full hover:bg-accent/10">
-                      Devamını Oku <ArrowRight className="ml-2 h-4 w-4" />
+                      Read More <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </Link>
                 </CardFooter>
@@ -542,20 +549,20 @@ export default async function SinglePageApp() {
             ))}
             {blogPosts.length === 0 && (
               <div className="col-span-full text-center py-10">
-                <p className="text-muted-foreground text-lg">Henüz yayınlanmış bir blog yazısı bulunmuyor.</p>
+                <p className="text-muted-foreground text-lg">No blog posts published yet.</p>
               </div>
             )}
           </div>
         </div>
       </section>
 
-      {/* İletişim Section */}
+      {/* Contact Section */}
       <section id="iletisim-section" className="py-16 md:py-20 lg:py-24 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))]">
         <div className="container mx-auto px-4 space-y-12">
           <header className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">İletişim</h2>
+            <h2 className="text-3xl md:text-4xl font-headline font-bold text-gradient mb-4">Contact</h2>
             <p className="text-md md:text-lg text-muted-foreground max-w-2xl mx-auto">
-              Benimle iletişime geçmek, projeler hakkında konuşmak veya işbirliği yapmak için aşağıdaki formu kullanabilirsiniz.
+              Use the form below to contact me, discuss projects, or collaborate.
             </p>
           </header>
           <ContactFormSection />

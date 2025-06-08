@@ -13,23 +13,23 @@ export interface SiteGeneralSettings {
 }
 
 const siteGeneralSettingsSchema = z.object({
-  siteTitle: z.string().min(1, "Site başlığı gereklidir."),
+  siteTitle: z.string().min(1, "Site title is required."),
 });
 
 const DEFAULT_SITE_GENERAL_SETTINGS: SiteGeneralSettings = {
-  siteTitle: 'Barkın', // Güncellendi
+  siteTitle: 'Barkin Celiker', 
 };
 
 
 async function getDb() {
   const adminInitError = getAdminInitializationError();
   if (adminInitError) {
-    console.error(`[settings-actions getDb] Admin SDK başlatma hatası: ${adminInitError}`);
-    throw new Error(`Sunucu yapılandırma hatası (Admin SDK): ${adminInitError}`);
+    console.error(`[settings-actions getDb] Admin SDK initialization error: ${adminInitError}`);
+    throw new Error(`Server configuration error (Admin SDK): ${adminInitError}`);
   }
   if (!admin || !admin.firestore) {
-    console.error("[settings-actions getDb] Firebase Admin SDK (admin.firestore) düzgün başlatılamadı.");
-    throw new Error("Firebase Admin SDK (admin.firestore) düzgün başlatılamadı.");
+    console.error("[settings-actions getDb] Firebase Admin SDK (admin.firestore) not initialized correctly.");
+    throw new Error("Firebase Admin SDK (admin.firestore) not initialized correctly.");
   }
   return admin.firestore();
 }
@@ -40,8 +40,8 @@ const GENERAL_SETTINGS_DOCUMENT_ID = 'general';
 
 // --- Site General Settings Actions ---
 export const getSiteGeneralSettings = cache(async (): Promise<SiteGeneralSettings> => {
-  const logPrefix = "[settings-actions getSiteGeneralSettings] SUNUCU EYLEMİ (cache'li):";
-  console.log(`${logPrefix} Veritabanından genel site ayarları çekiliyor... YOL: ${SITE_SETTINGS_COLLECTION}/${GENERAL_SETTINGS_DOCUMENT_ID}`);
+  const logPrefix = "[settings-actions getSiteGeneralSettings] SERVER ACTION (cached):";
+  console.log(`${logPrefix} Fetching general site settings from DB... PATH: ${SITE_SETTINGS_COLLECTION}/${GENERAL_SETTINGS_DOCUMENT_ID}`);
   try {
     const db = await getDb();
     const docRef = db.collection(SITE_SETTINGS_COLLECTION).doc(GENERAL_SETTINGS_DOCUMENT_ID);
@@ -53,40 +53,40 @@ export const getSiteGeneralSettings = cache(async (): Promise<SiteGeneralSetting
       const updatedAt = (data?.updatedAt && typeof (data.updatedAt as admin.firestore.Timestamp).toDate === 'function')
                         ? (data.updatedAt as admin.firestore.Timestamp).toDate().toISOString()
                         : new Date().toISOString();
-      console.log(`${logPrefix} Genel ayarlar bulundu. Başlık: '${siteTitle}', Güncellenme: ${updatedAt}`);
+      console.log(`${logPrefix} General settings found. Title: '${siteTitle}', Updated: ${updatedAt}`);
       return {
         siteTitle: siteTitle,
         updatedAt: updatedAt,
       };
     } else {
-      console.log(`${logPrefix} VERİTABANINDA '${SITE_SETTINGS_COLLECTION}/${GENERAL_SETTINGS_DOCUMENT_ID}' dokümanı bulunamadı. Varsayılan genel ayarlar oluşturuluyor...`);
+      console.log(`${logPrefix} Document '${SITE_SETTINGS_COLLECTION}/${GENERAL_SETTINGS_DOCUMENT_ID}' NOT FOUND in DB. Creating default general settings...`);
       const defaultDataToSave = {
         ...DEFAULT_SITE_GENERAL_SETTINGS,
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       };
       await docRef.set(defaultDataToSave);
       const newUpdatedAt = new Date().toISOString();
-      console.log(`${logPrefix} '${SITE_SETTINGS_COLLECTION}/${GENERAL_SETTINGS_DOCUMENT_ID}' için varsayılan oluşturuldu. Başlık: '${DEFAULT_SITE_GENERAL_SETTINGS.siteTitle}', Güncellenme: ${newUpdatedAt}`);
+      console.log(`${logPrefix} Default created for '${SITE_SETTINGS_COLLECTION}/${GENERAL_SETTINGS_DOCUMENT_ID}'. Title: '${DEFAULT_SITE_GENERAL_SETTINGS.siteTitle}', Updated: ${newUpdatedAt}`);
       return { ...DEFAULT_SITE_GENERAL_SETTINGS, updatedAt: newUpdatedAt };
     }
   } catch (error) {
-    console.error(`${logPrefix} Genel site ayarları çekilirken HATA:`, error);
+    console.error(`${logPrefix} ERROR fetching general site settings:`, error);
     const errorUpdatedAt = new Date().toISOString();
-    console.log(`${logPrefix} Hata nedeniyle varsayılan genel ayarlar döndürülüyor. Başlık: '${DEFAULT_SITE_GENERAL_SETTINGS.siteTitle}', Sahte Güncellenme: ${errorUpdatedAt}`);
+    console.log(`${logPrefix} Returning default general settings due to error. Title: '${DEFAULT_SITE_GENERAL_SETTINGS.siteTitle}', Mock Updated: ${errorUpdatedAt}`);
     return { ...DEFAULT_SITE_GENERAL_SETTINGS, updatedAt: errorUpdatedAt };
   }
 });
 
 export async function updateSiteGeneralSettings(data: Partial<Omit<SiteGeneralSettings, 'updatedAt'>>) {
-  const logPrefix = "[settings-actions updateSiteGeneralSettings] SUNUCU EYLEMİ:";
-  console.log(`${logPrefix} BAŞLADI: Genel site ayarları güncelleniyor... YOL: ${SITE_SETTINGS_COLLECTION}/${GENERAL_SETTINGS_DOCUMENT_ID}`, data);
+  const logPrefix = "[settings-actions updateSiteGeneralSettings] SERVER ACTION:";
+  console.log(`${logPrefix} STARTED: Updating general site settings... PATH: ${SITE_SETTINGS_COLLECTION}/${GENERAL_SETTINGS_DOCUMENT_ID}`, data);
   const { ...restData } = data;
   const validation = siteGeneralSettingsSchema.partial().safeParse(restData);
   if (!validation.success) {
-    console.error(`${logPrefix} Doğrulama BAŞARISIZ:`, validation.error.flatten().fieldErrors);
-    return { success: false, message: "Doğrulama hatası.", errors: validation.error.flatten().fieldErrors };
+    console.error(`${logPrefix} Validation FAILED:`, validation.error.flatten().fieldErrors);
+    return { success: false, message: "Validation error.", errors: validation.error.flatten().fieldErrors };
   }
-  console.log(`${logPrefix} Doğrulama başarılı.`);
+  console.log(`${logPrefix} Validation successful.`);
 
   try {
     const db = await getDb();
@@ -95,18 +95,18 @@ export async function updateSiteGeneralSettings(data: Partial<Omit<SiteGeneralSe
       ...validation.data,
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     };
-    console.log(`${logPrefix} Firestore'a YAZILACAK VERİ ('${docRef.path}'):`, JSON.stringify(dataToSave));
+    console.log(`${logPrefix} DATA TO WRITE to Firestore ('${docRef.path}'):`, JSON.stringify(dataToSave));
     await docRef.set(dataToSave, { merge: true });
-    console.log(`${logPrefix} VERİTABANI GÜNCELLEME BAŞARILI.`);
+    console.log(`${logPrefix} DATABASE UPDATE SUCCESSFUL.`);
 
-    console.log(`${logPrefix} Yollar yeniden doğrulanmaya çalışılıyor: revalidatePath('/', 'layout') ve revalidatePath('/admin')...`);
-    revalidatePath('/', 'layout'); // Update site title in header
-    revalidatePath('/admin'); // Update admin panel if necessary
-    console.log(`${logPrefix} Yollar başarıyla yeniden doğrulandı.`);
+    console.log(`${logPrefix} Attempting to revalidate paths: revalidatePath('/', 'layout') and revalidatePath('/admin')...`);
+    revalidatePath('/', 'layout'); 
+    revalidatePath('/admin'); 
+    console.log(`${logPrefix} Paths revalidated successfully.`);
 
-    return { success: true, message: 'Genel site ayarları başarıyla güncellendi.' };
+    return { success: true, message: 'General site settings successfully updated.' };
   } catch (error: any) {
-    console.error(`${logPrefix} Genel site ayarları güncellenirken HATA:`, error);
-    return { success: false, message: `Bir hata oluştu: ${error.message}` };
+    console.error(`${logPrefix} ERROR updating general site settings:`, error);
+    return { success: false, message: `An error occurred: ${error.message}` };
   }
 }

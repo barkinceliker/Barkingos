@@ -6,23 +6,23 @@ import { getAllExperiences, type ExperienceInput } from '@/lib/actions/experienc
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
-export default async function DeneyimPage() {
+export default async function ExperiencePage() {
   const experienceItems: Array<ExperienceInput & { id: string }> = await getAllExperiences();
 
   return (
     <div className="space-y-12 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))] p-4 md:p-8">
       <section className="text-center">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold text-gradient mb-4">Deneyimlerim</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold text-gradient mb-4">My Experience</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Profesyonel kariyerim boyunca edindiğim tecrübeler, üstlendiğim roller ve katkıda bulunduğum projeler.
+          Experiences gained throughout my professional career, roles undertaken, and projects I contributed to.
         </p>
       </section>
 
       {experienceItems.length === 0 ? (
         <div className="col-span-full text-center py-10">
-          <p className="text-muted-foreground text-lg">Henüz tanımlanmış bir deneyim bulunmuyor.</p>
+          <p className="text-muted-foreground text-lg">No experience defined yet.</p>
           <Link href="/" passHref>
-            <Button variant="link" className="mt-4">Anasayfaya Dön</Button>
+            <Button variant="link" className="mt-4">Return to Homepage</Button>
           </Link>
         </div>
       ) : (
@@ -69,4 +69,3 @@ export default async function DeneyimPage() {
     </div>
   );
 }
-

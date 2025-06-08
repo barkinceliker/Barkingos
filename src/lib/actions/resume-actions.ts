@@ -6,9 +6,9 @@ import { admin, getAdminInitializationError } from '@/lib/firebaseAdmin';
 import { cache } from 'react';
 import { revalidatePath } from 'next/cache';
 
-// Resume Sayfası İçin Arayüz ve Şema
+// Resume Page Interface and Schema
 export interface ResumePageContent {
-  id?: string; // Firestore document ID, should be 'resume'
+  id?: string; 
   name: string;
   title: string;
   profileImageUrl: string;
@@ -18,60 +18,60 @@ export interface ResumePageContent {
   linkedinUrl?: string;
   githubUrl?: string;
   location?: string;
-  summary: string; // Kısa bir özet veya giriş paragrafı
-  experiencesString: string; // Her deneyim bloğu '---' ile ayrılmış, her satır bir özelliği belirtir
-  educationString: string; // Her eğitim bloğu '---' ile ayrılmış
-  skillsString: string; // Virgülle ayrılmış beceriler
+  summary: string; 
+  experiencesString: string; 
+  educationString: string; 
+  skillsString: string; 
   resumePdfUrl: string;
   updatedAt?: string;
 }
 
 const resumePageContentSchema = z.object({
-  name: z.string().min(1, "Ad Soyad gereklidir."),
-  title: z.string().min(1, "Unvan gereklidir."),
-  profileImageUrl: z.string().url("Geçerli bir profil resmi URL'si giriniz.").or(z.literal('')).optional(),
-  profileImageAiHint: z.string().max(50, "AI ipucu en fazla 50 karakter olabilir.").optional(),
-  email: z.string().email("Geçerli bir e-posta adresi giriniz."),
+  name: z.string().min(1, "Name is required."),
+  title: z.string().min(1, "Title is required."),
+  profileImageUrl: z.string().url("Please enter a valid profile image URL.").or(z.literal('')).optional(),
+  profileImageAiHint: z.string().max(50, "AI hint can be at most 50 characters.").optional(),
+  email: z.string().email("Please enter a valid email address."),
   phone: z.string().optional(),
-  linkedinUrl: z.string().url("Geçerli bir LinkedIn URL'si giriniz.").optional().or(z.literal('')),
-  githubUrl: z.string().url("Geçerli bir GitHub URL'si giriniz.").optional().or(z.literal('')),
+  linkedinUrl: z.string().url("Please enter a valid LinkedIn URL.").optional().or(z.literal('')),
+  githubUrl: z.string().url("Please enter a valid GitHub URL.").optional().or(z.literal('')),
   location: z.string().optional(),
-  summary: z.string().min(1, "Özet gereklidir."),
-  experiencesString: z.string().min(1, "Deneyimler gereklidir. Her bir deneyim bloğunu '---' ile ayırın."),
-  educationString: z.string().min(1, "Eğitim bilgileri gereklidir. Her bir eğitim bloğunu '---' ile ayırın."),
-  skillsString: z.string().min(1, "Beceriler gereklidir (virgülle ayrılmış)."),
-  resumePdfUrl: z.string().url("Geçerli bir PDF URL'si giriniz.").or(z.literal('')).optional(),
+  summary: z.string().min(1, "Summary is required."),
+  experiencesString: z.string().min(1, "Experiences are required. Separate each experience block with '---'."),
+  educationString: z.string().min(1, "Education information is required. Separate each education block with '---'."),
+  skillsString: z.string().min(1, "Skills are required (comma-separated)."),
+  resumePdfUrl: z.string().url("Please enter a valid PDF URL.").or(z.literal('')).optional(),
 });
 
 const DEFAULT_RESUME_CONTENT: Omit<ResumePageContent, 'id' | 'updatedAt'> = {
-  name: 'Barkın Çeliker', // Güncellendi
-  title: 'Kıdemli Yazılım Geliştirici', // Örnek unvan güncellendi
+  name: 'Barkin Celiker', 
+  title: 'Senior Software Developer', 
   profileImageUrl: 'https://placehold.co/150x150.png',
   profileImageAiHint: 'professional headshot',
-  email: 'mail.barkinclkr@gmail.com', // Örnek e-posta güncellendi
-  phone: '05XX XXX XX XX', // Örnek telefon
-  linkedinUrl: 'https://linkedin.com/in/celikerbarkin', // Örnek LinkedIn
-  githubUrl: 'https://github.com/barkinceliker', // Örnek GitHub
-  location: 'İzmir, Türkiye', // Örnek konum
-  summary: 'Yazılım geliştirme alanında 5+ yıllık deneyime sahip, yenilikçi çözümler üretmeye odaklı bir profesyonelim. Özellikle web teknolojileri, bulut sistemleri ve yapay zeka konularında projeler geliştirmekteyim.',
-  experiencesString: `Rol: Kıdemli Yazılım Geliştirici\nŞirket: Teknoloji Çözümleri A.Ş.\nDönem: Ocak 2021 - Günümüz\n- Ölçeklenebilir web uygulamaları geliştirdim.\n- Yeni özelliklerin tasarım ve dağıtım süreçlerinde rol aldım.\n---\nRol: Yazılım Geliştirici\nŞirket: Startup X\nDönem: Haziran 2018 - Aralık 2020\n- Çevik metodolojilerle ürün geliştirme süreçlerine katıldım.`,
-  educationString: `Derece: Bilgisayar Mühendisliği Lisans Derecesi\nÜniversite: Örnek Üniversite\nDönem: Eylül 2014 - Haziran 2018`,
-  skillsString: 'React, Next.js, TypeScript, Node.js, Python, SQL, Firebase, Google Cloud, Docker, Problem Çözme',
-  resumePdfUrl: '/barkin_celiker_cv.pdf', // Örnek PDF URL
+  email: 'mail.barkinclkr@gmail.com', 
+  phone: '+90 5XX XXX XX XX', 
+  linkedinUrl: 'https://linkedin.com/in/celikerbarkin', 
+  githubUrl: 'https://github.com/barkinceliker', 
+  location: 'Izmir, Turkey', 
+  summary: 'A dedicated professional with 5+ years of experience in software development, focused on creating innovative solutions. Specialized in web technologies, cloud systems, and AI projects.',
+  experiencesString: `Role: Senior Software Developer\nCompany: Tech Solutions Inc.\nPeriod: January 2021 - Present\n- Developed scalable web applications.\n- Played a key role in the design and deployment of new features.\n---\nRole: Software Developer\nCompany: Startup X\nPeriod: June 2018 - December 2020\n- Participated in product development processes using Agile methodologies.`,
+  educationString: `Degree: B.Sc. in Computer Engineering\nUniversity: Sample University\nPeriod: September 2014 - June 2018`,
+  skillsString: 'React, Next.js, TypeScript, Node.js, Python, SQL, Firebase, Google Cloud, Docker, Problem Solving',
+  resumePdfUrl: '/barkin_celiker_cv.pdf', 
 };
 
 async function getDb() {
   const adminInitError = getAdminInitializationError();
   if (adminInitError) {
-    throw new Error(`Sunucu yapılandırma hatası (Admin SDK): ${adminInitError}`);
+    throw new Error(`Server configuration error (Admin SDK): ${adminInitError}`);
   }
   if (!admin || !admin.firestore) {
-    throw new Error("Firebase Admin SDK (admin.firestore) düzgün başlatılamadı.");
+    throw new Error("Firebase Admin SDK (admin.firestore) not initialized correctly.");
   }
   return admin.firestore();
 }
 
-const SITE_PAGES_COLLECTION = 'sitePages'; // `hakkimda` ve `anasayfa` ile aynı koleksiyonda
+const SITE_PAGES_COLLECTION = 'sitePages'; 
 const RESUME_DOCUMENT_ID = 'resume';
 
 export const getResumeContent = cache(async (): Promise<ResumePageContent> => {
@@ -81,7 +81,7 @@ export const getResumeContent = cache(async (): Promise<ResumePageContent> => {
     const docSnap = await docRef.get();
 
     if (docSnap.exists) {
-      const dataFromDb = docSnap.data() as Partial<ResumePageContent>; // Type assertion
+      const dataFromDb = docSnap.data() as Partial<ResumePageContent>; 
       return {
         id: docSnap.id,
         name: dataFromDb.name || DEFAULT_RESUME_CONTENT.name,
@@ -126,7 +126,7 @@ export const getResumeContent = cache(async (): Promise<ResumePageContent> => {
 export async function updateResumeContent(data: Omit<ResumePageContent, 'id' | 'updatedAt'>) {
   const validation = resumePageContentSchema.safeParse(data);
   if (!validation.success) {
-    return { success: false, message: "Doğrulama hatası.", errors: validation.error.flatten().fieldErrors };
+    return { success: false, message: "Validation error.", errors: validation.error.flatten().fieldErrors };
   }
   
   const dataToSave = { ...validation.data };
@@ -149,13 +149,11 @@ export async function updateResumeContent(data: Omit<ResumePageContent, 'id' | '
       updatedAt: admin.firestore.FieldValue.serverTimestamp() 
     }, { merge: true });
     
-    revalidatePath('/resume'); // Public resume page
-    revalidatePath('/admin');    // Admin page accordion
-    return { success: true, message: 'Özgeçmiş başarıyla güncellendi.' };
+    revalidatePath('/resume'); 
+    revalidatePath('/admin');    
+    return { success: true, message: 'Resume successfully updated.' };
   } catch (error: any) {
     console.error("Error updating Resume page content:", error);
-    return { success: false, message: `Bir hata oluştu: ${error.message}` };
+    return { success: false, message: `An error occurred: ${error.message}` };
   }
 }
-
-    

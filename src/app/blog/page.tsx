@@ -4,17 +4,17 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button';
 import { ArrowRight, CalendarDays } from 'lucide-react';
 import Image from 'next/image';
-import { getAllBlogPosts } from '@/lib/actions/blog-actions'; // Firestore'dan çeken action
+import { getAllBlogPosts } from '@/lib/actions/blog-actions'; 
 
 export default async function BlogPage() {
-  const posts = await getAllBlogPosts(); // Artık Firestore'dan geliyor
+  const posts = await getAllBlogPosts();
 
   return (
     <div className="space-y-12 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))] p-4 md:p-8">
       <section className="text-center">
         <h1 className="text-4xl md:text-5xl font-headline font-bold text-gradient mb-4">Blog</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Teknoloji, tasarım ve geliştirme üzerine düşüncelerimi, deneyimlerimi ve güncel haberleri paylaştığım alan.
+          My thoughts, experiences, and current news on technology, design, and development.
         </p>
       </section>
 
@@ -39,7 +39,7 @@ export default async function BlogPage() {
               </Link>
               <div className="flex items-center text-sm text-muted-foreground mt-1">
                 <CalendarDays className="mr-2 h-4 w-4" />
-                {post.date}
+                {post.date} {/* Date format will be based on data; if using date-fns, ensure locale is en for month names */}
               </div>
             </CardHeader>
             <CardContent className="flex-grow">
@@ -48,7 +48,7 @@ export default async function BlogPage() {
             <CardFooter className="p-4 bg-secondary/30">
               <Link href={`/blog/${post.slug}`} passHref>
                 <Button variant="outline" className="w-full">
-                  Devamını Oku <ArrowRight className="ml-2 h-4 w-4" />
+                  Read More <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
             </CardFooter>
@@ -56,9 +56,9 @@ export default async function BlogPage() {
         ))}
         {posts.length === 0 && (
           <div className="col-span-full text-center py-10">
-            <p className="text-muted-foreground text-lg">Henüz yayınlanmış bir blog yazısı bulunmuyor.</p>
+            <p className="text-muted-foreground text-lg">No blog posts published yet.</p>
             <Link href="/" passHref>
-              <Button variant="link" className="mt-4">Anasayfaya Dön</Button>
+              <Button variant="link" className="mt-4">Return to Homepage</Button>
             </Link>
           </div>
         )}
@@ -66,4 +66,3 @@ export default async function BlogPage() {
     </div>
   );
 }
-

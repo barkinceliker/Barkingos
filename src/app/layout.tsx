@@ -5,7 +5,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
 import { checkAuthStatus } from '@/lib/actions/auth';
-import { getSiteGeneralSettings } from '@/lib/actions/settings-actions'; // getThemeSetting removed
+import { getSiteGeneralSettings } from '@/lib/actions/settings-actions';
 import { cn } from '@/lib/utils';
 import { PT_Sans, Playfair_Display, Source_Code_Pro } from 'next/font/google';
 
@@ -31,14 +31,14 @@ const sourceCodePro = Source_Code_Pro({
   display: 'swap',
 });
 
-const staticMetadataDescription = 'Kişisel portfolyo, blog, hizmetler, projeler ve daha fazlası tek bir sayfada.';
+const staticMetadataDescription = 'Personal portfolio, blog, services, projects, and more, all in one place.';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const logPrefix = "[RootLayout generateMetadata] SUNUCU:";
-  console.log(`${logPrefix} Site başlığı için genel ayarlar çekiliyor...`);
+  const logPrefix = "[RootLayout generateMetadata] SERVER:";
+  console.log(`${logPrefix} Fetching general settings for site title...`);
   const siteSettings = await getSiteGeneralSettings();
-  const title = siteSettings?.siteTitle || 'BenimSitem | Portfolyo ve Blog';
-  console.log(`${logPrefix} Oluşturulan başlık: '${title}'`);
+  const title = siteSettings?.siteTitle || 'Barkin Celiker | Portfolio & Blog';
+  console.log(`${logPrefix} Generated title: '${title}'`);
   return {
     title: title,
     description: staticMetadataDescription,
@@ -49,11 +49,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 async function AuthAwareUIComponents() {
-  const logPrefix = "[RootLayout AuthAwareUIComponents] SUNUCU:";
-  console.log(`${logPrefix} Kimlik doğrulama ve site ayarları çekiliyor...`);
+  const logPrefix = "[RootLayout AuthAwareUIComponents] SERVER:";
+  console.log(`${logPrefix} Fetching authentication status and site settings...`);
   const auth = await checkAuthStatus();
   const siteSettings = await getSiteGeneralSettings();
-  console.log(`${logPrefix} Kimlik durumu: ${auth.isAuthenticated}, Site Başlığı: ${siteSettings.siteTitle}`);
+  console.log(`${logPrefix} Auth status: ${auth.isAuthenticated}, Site Title: ${siteSettings.siteTitle}`);
   return (
     <>
       <Header
@@ -70,25 +70,21 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const logPrefix = "[RootLayout SUNUCU]";
-  console.log(`${logPrefix} ================== BAŞLANGIÇ ==================`);
+  const logPrefix = "[RootLayout SERVER]";
+  console.log(`${logPrefix} ================== START ==================`);
   
-  // Tema ayarları kaldırıldığı için getThemeSetting çağrısı ve ilgili mantık kaldırıldı.
-  // Artık tema doğrudan globals.css ile :root üzerinden yönetiliyor.
-
   const fontVariableClasses = cn(ptSans.variable, playfairDisplay.variable, sourceCodePro.variable);
-  console.log(`${logPrefix} HTML için font değişken sınıfları: '${fontVariableClasses}'`);
+  console.log(`${logPrefix} Font variable classes for HTML: '${fontVariableClasses}'`);
   
-  // HTML sınıfına tema sınıfı ekleme mantığı kaldırıldı.
   const finalHtmlClasses = cn(fontVariableClasses).trim(); 
-  const htmlKey = `${fontVariableClasses}`; // Key de basitleştirildi.
+  const htmlKey = `${fontVariableClasses}`;
 
-  console.log(`${logPrefix} <html> etiketine uygulanacak className: '${finalHtmlClasses}'`);
-  console.log(`${logPrefix} <html> etiketine uygulanacak key: '${htmlKey}'`);
-  console.log(`${logPrefix} ==================== BİTİŞ ====================`);
+  console.log(`${logPrefix} className to be applied to <html> tag: '${finalHtmlClasses}'`);
+  console.log(`${logPrefix} key to be applied to <html> tag: '${htmlKey}'`);
+  console.log(`${logPrefix} ==================== END ====================`);
 
   return (
-    <html lang="tr" className={finalHtmlClasses} key={htmlKey}>
+    <html lang="en" className={finalHtmlClasses} key={htmlKey}>
       <head />
       <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
         <AuthAwareUIComponents />

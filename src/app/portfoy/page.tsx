@@ -16,11 +16,13 @@ interface PortfolioItem {
   dataAiHint?: string;
 }
 
+// This page seems to be static. It will be translated.
+// If this data were dynamic, it would need manual translation in the database.
 const portfolioItems: PortfolioItem[] = [
   {
     id: '1',
-    title: 'E-ticaret Platformu Geliştirme',
-    description: 'Modern ve kullanıcı dostu bir e-ticaret platformu. Ürün listeleme, sepet işlemleri ve ödeme entegrasyonları özelliklerini içerir.',
+    title: 'E-commerce Platform Development',
+    description: 'A modern and user-friendly e-commerce platform. Features include product listing, cart operations, and payment integrations.',
     imageUrl: 'https://placehold.co/600x400.png',
     projectUrl: '#',
     repoUrl: '#',
@@ -29,8 +31,8 @@ const portfolioItems: PortfolioItem[] = [
   },
   {
     id: '2',
-    title: 'Mobil Uygulama Tasarımı ve Geliştirme',
-    description: 'iOS ve Android için geliştirilmiş, kullanıcı etkileşimini ön planda tutan bir sosyal medya uygulaması.',
+    title: 'Mobile App Design and Development',
+    description: 'A social media application developed for iOS and Android, focusing on user interaction.',
     imageUrl: 'https://placehold.co/600x400.png',
     projectUrl: '#',
     tags: ['React Native', 'Firebase', 'UI/UX Design'],
@@ -38,8 +40,8 @@ const portfolioItems: PortfolioItem[] = [
   },
   {
     id: '3',
-    title: 'Veri Analizi Paneli',
-    description: 'Büyük veri setlerini işleyerek anlamlı görseller sunan interaktif bir analiz paneli.',
+    title: 'Data Analysis Dashboard',
+    description: 'An interactive analysis panel that processes large datasets to present meaningful visuals.',
     imageUrl: 'https://placehold.co/600x400.png',
     repoUrl: '#',
     tags: ['Python', 'Django', 'D3.js', 'Pandas'],
@@ -47,8 +49,8 @@ const portfolioItems: PortfolioItem[] = [
   },
   {
     id: '4',
-    title: 'Kişisel Blog Altyapısı',
-    description: 'Markdown destekli, SEO dostu ve minimalist tasarımlı kişisel blog sistemi.',
+    title: 'Personal Blog Infrastructure',
+    description: 'A Markdown-supported, SEO-friendly, and minimalist personal blog system.',
     imageUrl: 'https://placehold.co/600x400.png',
     projectUrl: '#',
     repoUrl: '#',
@@ -57,13 +59,13 @@ const portfolioItems: PortfolioItem[] = [
   },
 ];
 
-export default function PortfoyPage() {
+export default function PortfolioPage() {
   return (
-    <div className="space-y-12">
+    <div className="space-y-12 rounded-xl bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))] p-4 md:p-8">
       <section className="text-center">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-4">Portföyüm</h1>
+        <h1 className="text-4xl md:text-5xl font-headline font-bold text-gradient mb-4">My Portfolio</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Yaptığım çalışmalar, geliştirdiğim projeler ve kazandığım deneyimlerin bir özeti.
+          A summary of my work, developed projects, and gained experiences.
         </p>
       </section>
 
@@ -80,7 +82,7 @@ export default function PortfoyPage() {
               data-ai-hint={item.dataAiHint || "project image"}
             />
             <CardHeader>
-              <CardTitle className="font-headline text-xl">{item.title}</CardTitle>
+              <CardTitle className="font-headline text-xl text-gradient">{item.title}</CardTitle>
               <div className="flex flex-wrap gap-2 mt-2">
                 {item.tags.map(tag => (
                   <span key={tag} className="text-xs bg-accent/20 text-accent-foreground px-2 py-1 rounded-full">{tag}</span>
@@ -94,14 +96,14 @@ export default function PortfoyPage() {
               {item.projectUrl && (
                 <Link href={item.projectUrl} target="_blank" rel="noopener noreferrer" passHref>
                   <Button variant="outline" size="sm">
-                    <ExternalLink className="mr-2 h-4 w-4" /> Projeyi Gör
+                    <ExternalLink className="mr-2 h-4 w-4" /> View Project
                   </Button>
                 </Link>
               )}
               {item.repoUrl && (
                 <Link href={item.repoUrl} target="_blank" rel="noopener noreferrer" passHref>
                   <Button variant="ghost" size="sm">
-                    <Github className="mr-2 h-4 w-4" /> Kodlar
+                    <Github className="mr-2 h-4 w-4" /> Code
                   </Button>
                 </Link>
               )}
