@@ -5,27 +5,23 @@ import { z } from 'zod';
 import { admin, getAdminInitializationError } from '@/lib/firebaseAdmin';
 import { cache } from 'react';
 import { revalidatePath } from 'next/cache';
-import { THEME_OPTIONS, type ThemeName, THEME_PALETTES, type ThemePalette } from '@/lib/theme-config';
+import { THEME_OPTIONS, type ThemeName, THEME_PALETTES } from '@/lib/theme-config';
 
 // --- Theme Settings ---
+// Artık sadece tema adını saklayacağız. Palet, theme-config.ts'den gelecek.
 export interface ThemeSetting {
   activeThemeName: ThemeName;
-  activeThemePalette: ThemePalette;
-  updatedAt?: string;
+  updatedAt?: string; // Firestore'dan gelen timestamp
 }
 
 const themeSettingSchema = z.object({
   activeThemeName: z.enum(THEME_OPTIONS, {
     errorMap: () => ({ message: "Geçersiz tema adı." }),
   }),
-  // activeThemePalette is not directly validated from client,
-  // it's looked up on the server from THEME_PALETTES based on activeThemeName
 });
 
-const DEFAULT_THEME_PALETTE = THEME_PALETTES.default;
 const DEFAULT_THEME_SETTING: ThemeSetting = {
   activeThemeName: 'default',
-  activeThemePalette: DEFAULT_THEME_PALETTE,
 };
 
 // --- Site General Settings ---
@@ -58,14 +54,13 @@ async function getDb() {
 
 const SITE_SETTINGS_COLLECTION = 'siteSettings';
 const GENERAL_SETTINGS_DOCUMENT_ID = 'general';
-
-const CUSTOM_THEMES_COLLECTION = 'customThemes';
-const ACTIVE_THEME_DOCUMENT_ID = 'activeSystemThemeWithPalette'; // New document ID
+const CUSTOM_THEMES_COLLECTION = 'customThemes'; // Bu koleksiyon adı korunuyor
+const ACTIVE_THEME_DOCUMENT_ID = 'activeSystemTheme'; // Doküman adı sadece tema adını tutacak şekilde basitleştirildi
 
 // --- Theme Setting Actions ---
 export const getThemeSetting = cache(async (): Promise<ThemeSetting> => {
   const logPrefix = "[settings-actions getThemeSetting] SUNUCU EYLEMİ (cache'li):";
-  console.log(`${logPrefix} Veritabanından/cache'den tema ayarı ve paleti çekiliyor... YOL: ${CUSTOM_THEMES_COLLECTION}/${ACTIVE_THEME_DOCUMENT_ID}`);
+  console.log(`${logPrefix} Veritabanından/cache'den tema ayarı çekiliyor... YOL: ${CUSTOM_THEMES_COLLECTION}/${ACTIVE_THEME_DOCUMENT_ID}`);
   try {
     const db = await getDb();
     const docRef = db.collection(CUSTOM_THEMES_COLLECTION).doc(ACTIVE_THEME_DOCUMENT_ID);
@@ -74,33 +69,22 @@ export const getThemeSetting = cache(async (): Promise<ThemeSetting> => {
     if (docSnap.exists) {
       const data = docSnap.data();
       const themeNameFromDb = data?.activeThemeName as ThemeName;
-      const paletteFromDb = data?.activeThemePalette as ThemePalette | undefined;
       const updatedAt = data?.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString();
 
-      if (THEME_OPTIONS.includes(themeNameFromDb) && paletteFromDb && Object.keys(paletteFromDb).length > 0) {
-        console.log(`${logPrefix} VERİTABANINDA BULUNAN TEMA AYARI: Ad='${themeNameFromDb}', Palet mevcut. Güncellenme='${updatedAt}'.`);
+      if (THEME_OPTIONS.includes(themeNameFromDb)) {
+        console.log(`${logPrefix} VERİTABANINDA BULUNAN TEMA ADI: '${themeNameFromDb}'. Güncellenme='${updatedAt}'.`);
         return {
           activeThemeName: themeNameFromDb,
-          activeThemePalette: paletteFromDb,
           updatedAt: updatedAt,
         };
-      } else if (THEME_OPTIONS.includes(themeNameFromDb)) {
-        // Palette DB'de yok ama isim var, THEME_PALETTES'ten bulup döndür
-        console.warn(`${logPrefix} VERİTABANINDA '${themeNameFromDb}' için palet eksik. THEME_PALETTES'ten tamamlanıyor.`);
-        const foundPalette = THEME_PALETTES[themeNameFromDb];
-        if (foundPalette) {
-          return { activeThemeName: themeNameFromDb, activeThemePalette: foundPalette, updatedAt };
-        }
       }
-      // Eğer isim de geçerli değilse veya palet bulunamadıysa varsayılana dön
-      console.warn(`${logPrefix} VERİTABANINDA geçerli tema adı veya palet bulunamadı. Varsayılana dönülüyor.`);
+      console.warn(`${logPrefix} VERİTABANINDA geçerli tema adı bulunamadı ('${themeNameFromDb}'). Varsayılana dönülüyor.`);
     } else {
       console.log(`${logPrefix} VERİTABANINDA '${ACTIVE_THEME_DOCUMENT_ID}' dokümanı bulunamadı. Varsayılan tema ayarı oluşturuluyor ve kaydediliyor.`);
     }
     // Varsayılanı kaydet ve döndür
     const defaultDataToSave: ThemeSetting & { updatedAt: admin.firestore.FieldValue } = {
         activeThemeName: DEFAULT_THEME_SETTING.activeThemeName,
-        activeThemePalette: DEFAULT_THEME_SETTING.activeThemePalette,
         updatedAt: admin.firestore.FieldValue.serverTimestamp()
       };
     await db.collection(CUSTOM_THEMES_COLLECTION).doc(ACTIVE_THEME_DOCUMENT_ID).set(defaultDataToSave);
@@ -118,7 +102,7 @@ export const getThemeSetting = cache(async (): Promise<ThemeSetting> => {
 
 export async function updateThemeSetting(themeName: ThemeName) {
   const logPrefix = "[settings-actions updateThemeSetting] SUNUCU EYLEMİ:";
-  console.log(`${logPrefix} BAŞLADI: Tema '${themeName}' olarak güncelleniyor... YOL: ${CUSTOM_THEMES_COLLECTION}/${ACTIVE_THEME_DOCUMENT_ID}`);
+  console.log(`${logPrefix} BAŞLADI: Tema adı '${themeName}' olarak güncelleniyor... YOL: ${CUSTOM_THEMES_COLLECTION}/${ACTIVE_THEME_DOCUMENT_ID}`);
 
   const adminInitError = getAdminInitializationError();
   if (adminInitError) {
@@ -136,30 +120,29 @@ export async function updateThemeSetting(themeName: ThemeName) {
   }
   console.log(`${logPrefix} Tema adı '${themeName}' doğrulaması başarılı.`);
 
-  const paletteToSave = THEME_PALETTES[themeName];
-  if (!paletteToSave) {
-    console.error(`${logPrefix} '${themeName}' için THEME_PALETTES içinde palet bulunamadı!`);
+  // Palet THEME_PALETTES'ten kontrol ediliyor ama veritabanına sadece isim kaydedilecek.
+  if (!THEME_PALETTES[themeName]) {
+    console.error(`${logPrefix} '${themeName}' için THEME_PALETTES içinde palet bulunamadı! Bu tema adı geçersiz veya yapılandırılmamış.`);
     return { success: false, message: `Seçilen tema için palet yapılandırması bulunamadı: ${themeName}` };
   }
-  console.log(`${logPrefix} '${themeName}' için palet THEME_PALETTES'ten başarıyla alındı.`);
+  console.log(`${logPrefix} '${themeName}' için THEME_PALETTES'te palet mevcut.`);
 
   try {
     const db = await getDb();
     const docRef = db.collection(CUSTOM_THEMES_COLLECTION).doc(ACTIVE_THEME_DOCUMENT_ID);
-    const dataToSave = {
+    const dataToSave = { // Sadece tema adını ve timestamp'i kaydediyoruz.
       activeThemeName: themeName,
-      activeThemePalette: paletteToSave,
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     };
 
-    console.log(`${logPrefix} Firestore'a YAZILACAK VERİ ('${docRef.path}'): Ad='${dataToSave.activeThemeName}', Palet Anahtarları=${Object.keys(dataToSave.activeThemePalette).join(', ')}`);
-    await docRef.set(dataToSave, { merge: true });
-    console.log(`${logPrefix} VERİTABANI GÜNCELLEME BAŞARILI: Tema '${themeName}' ve paleti kaydedildi.`);
+    console.log(`${logPrefix} Firestore'a YAZILACAK VERİ ('${docRef.path}'): Ad='${dataToSave.activeThemeName}'`);
+    await docRef.set(dataToSave, { merge: true }); // merge: true ile sadece bu alanları günceller, dokümandaki diğer alanları (varsa) korur.
+    console.log(`${logPrefix} VERİTABANI GÜNCELLEME BAŞARILI: Tema adı '${themeName}' olarak kaydedildi.`);
 
     try {
       console.log(`${logPrefix} Yollar yeniden doğrulanmaya çalışılıyor: revalidatePath('/', 'layout') ve revalidatePath('/admin')...`);
-      revalidatePath('/', 'layout');
-      revalidatePath('/admin');
+      revalidatePath('/', 'layout'); // RootLayout'u etkiler
+      revalidatePath('/admin'); // Admin sayfasındaki tema seçiciyi etkileyebilir
       console.log(`${logPrefix} Yollar başarıyla yeniden doğrulandı.`);
     } catch (revalidateError: any) {
       console.warn(`${logPrefix} UYARI: Yol yeniden doğrulama başarısız oldu ancak veritabanı güncellemesi başarılıydı. Hata: ${revalidateError.message}`, revalidateError.stack);
@@ -181,7 +164,8 @@ export async function updateThemeSetting(themeName: ThemeName) {
 
 // --- Site General Settings Actions ---
 export const getSiteGeneralSettings = cache(async (): Promise<SiteGeneralSettings> => {
-  console.log(`[settings-actions getSiteGeneralSettings] SUNUCU EYLEMİ (cache'li): Veritabanından genel site ayarları çekiliyor... YOL: ${SITE_SETTINGS_COLLECTION}/${GENERAL_SETTINGS_DOCUMENT_ID}`);
+  const logPrefix = "[settings-actions getSiteGeneralSettings] SUNUCU EYLEMİ (cache'li):";
+  console.log(`${logPrefix} Veritabanından genel site ayarları çekiliyor... YOL: ${SITE_SETTINGS_COLLECTION}/${GENERAL_SETTINGS_DOCUMENT_ID}`);
   try {
     const db = await getDb();
     const docRef = db.collection(SITE_SETTINGS_COLLECTION).doc(GENERAL_SETTINGS_DOCUMENT_ID);
@@ -193,39 +177,40 @@ export const getSiteGeneralSettings = cache(async (): Promise<SiteGeneralSetting
       const updatedAt = (data?.updatedAt && typeof (data.updatedAt as admin.firestore.Timestamp).toDate === 'function')
                         ? (data.updatedAt as admin.firestore.Timestamp).toDate().toISOString()
                         : new Date().toISOString();
-      console.log(`[settings-actions getSiteGeneralSettings] Genel ayarlar bulundu. Başlık: '${siteTitle}', Güncellenme: ${updatedAt}`);
+      console.log(`${logPrefix} Genel ayarlar bulundu. Başlık: '${siteTitle}', Güncellenme: ${updatedAt}`);
       return {
         siteTitle: siteTitle,
         updatedAt: updatedAt,
       };
     } else {
-      console.log(`[settings-actions getSiteGeneralSettings] VERİTABANINDA '${SITE_SETTINGS_COLLECTION}/${GENERAL_SETTINGS_DOCUMENT_ID}' dokümanı bulunamadı. Varsayılan genel ayarlar oluşturuluyor...`);
+      console.log(`${logPrefix} VERİTABANINDA '${SITE_SETTINGS_COLLECTION}/${GENERAL_SETTINGS_DOCUMENT_ID}' dokümanı bulunamadı. Varsayılan genel ayarlar oluşturuluyor...`);
       const defaultDataToSave = {
         ...DEFAULT_SITE_GENERAL_SETTINGS,
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       };
       await docRef.set(defaultDataToSave);
       const newUpdatedAt = new Date().toISOString();
-      console.log(`[settings-actions getSiteGeneralSettings] '${SITE_SETTINGS_COLLECTION}/${GENERAL_SETTINGS_DOCUMENT_ID}' için varsayılan oluşturuldu. Başlık: '${DEFAULT_SITE_GENERAL_SETTINGS.siteTitle}', Güncellenme: ${newUpdatedAt}`);
+      console.log(`${logPrefix} '${SITE_SETTINGS_COLLECTION}/${GENERAL_SETTINGS_DOCUMENT_ID}' için varsayılan oluşturuldu. Başlık: '${DEFAULT_SITE_GENERAL_SETTINGS.siteTitle}', Güncellenme: ${newUpdatedAt}`);
       return { ...DEFAULT_SITE_GENERAL_SETTINGS, updatedAt: newUpdatedAt };
     }
   } catch (error) {
-    console.error("[settings-actions getSiteGeneralSettings] Genel site ayarları çekilirken HATA:", error);
+    console.error(`${logPrefix} Genel site ayarları çekilirken HATA:`, error);
     const errorUpdatedAt = new Date().toISOString();
-    console.log(`[settings-actions getSiteGeneralSettings] Hata nedeniyle varsayılan genel ayarlar döndürülüyor. Başlık: '${DEFAULT_SITE_GENERAL_SETTINGS.siteTitle}', Sahte Güncellenme: ${errorUpdatedAt}`);
+    console.log(`${logPrefix} Hata nedeniyle varsayılan genel ayarlar döndürülüyor. Başlık: '${DEFAULT_SITE_GENERAL_SETTINGS.siteTitle}', Sahte Güncellenme: ${errorUpdatedAt}`);
     return { ...DEFAULT_SITE_GENERAL_SETTINGS, updatedAt: errorUpdatedAt };
   }
 });
 
 export async function updateSiteGeneralSettings(data: Partial<Omit<SiteGeneralSettings, 'updatedAt'>>) {
-  console.log(`[settings-actions updateSiteGeneralSettings] SUNUCU EYLEMİ BAŞLADI: Genel site ayarları güncelleniyor... YOL: ${SITE_SETTINGS_COLLECTION}/${GENERAL_SETTINGS_DOCUMENT_ID}`, data);
+  const logPrefix = "[settings-actions updateSiteGeneralSettings] SUNUCU EYLEMİ:";
+  console.log(`${logPrefix} BAŞLADI: Genel site ayarları güncelleniyor... YOL: ${SITE_SETTINGS_COLLECTION}/${GENERAL_SETTINGS_DOCUMENT_ID}`, data);
   const { ...restData } = data;
   const validation = siteGeneralSettingsSchema.partial().safeParse(restData);
   if (!validation.success) {
-    console.error("[settings-actions updateSiteGeneralSettings] Doğrulama BAŞARISIZ:", validation.error.flatten().fieldErrors);
+    console.error(`${logPrefix} Doğrulama BAŞARISIZ:`, validation.error.flatten().fieldErrors);
     return { success: false, message: "Doğrulama hatası.", errors: validation.error.flatten().fieldErrors };
   }
-  console.log("[settings-actions updateSiteGeneralSettings] Doğrulama başarılı.");
+  console.log(`${logPrefix} Doğrulama başarılı.`);
 
   try {
     const db = await getDb();
@@ -234,18 +219,20 @@ export async function updateSiteGeneralSettings(data: Partial<Omit<SiteGeneralSe
       ...validation.data,
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     };
-    console.log(`[settings-actions updateSiteGeneralSettings] Firestore'a YAZILACAK VERİ ('${docRef.path}'):`, JSON.stringify(dataToSave));
+    console.log(`${logPrefix} Firestore'a YAZILACAK VERİ ('${docRef.path}'):`, JSON.stringify(dataToSave));
     await docRef.set(dataToSave, { merge: true });
-    console.log("[settings-actions updateSiteGeneralSettings] VERİTABANI GÜNCELLEME BAŞARILI.");
+    console.log(`${logPrefix} VERİTABANI GÜNCELLEME BAŞARILI.`);
 
-    console.log("[settings-actions updateSiteGeneralSettings] Yollar yeniden doğrulanmaya çalışılıyor: revalidatePath('/', 'layout') ve revalidatePath('/admin')...");
+    console.log(`${logPrefix} Yollar yeniden doğrulanmaya çalışılıyor: revalidatePath('/', 'layout') ve revalidatePath('/admin')...`);
     revalidatePath('/', 'layout');
     revalidatePath('/admin');
-    console.log("[settings-actions updateSiteGeneralSettings] Yollar başarıyla yeniden doğrulandı.");
+    console.log(`${logPrefix} Yollar başarıyla yeniden doğrulandı.`);
 
     return { success: true, message: 'Genel site ayarları başarıyla güncellendi.' };
   } catch (error: any) {
-    console.error("[settings-actions updateSiteGeneralSettings] Genel site ayarları güncellenirken HATA:", error);
+    console.error(`${logPrefix} Genel site ayarları güncellenirken HATA:`, error);
     return { success: false, message: `Bir hata oluştu: ${error.message}` };
   }
 }
+
+    

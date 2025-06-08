@@ -27,6 +27,7 @@ const getThemeDisplayName = (themeKey: ThemeName): string => {
 };
 
 // İstemci tarafında anlık önizleme için CSS değişkenlerini doğrudan documentElement.style'a uygular
+// Bu fonksiyon, `theme-config.ts` içindeki `THEME_PALETTES`'i kullanır.
 function applyClientSideThemePreview(themeName: ThemeName | null) {
   const logPrefix = "[ThemeSettingsDropdown applyClientSideThemePreview]";
   console.log(`${logPrefix} ÇAĞRILDI. Uygulanacak tema adı: '${themeName}'`);
@@ -37,44 +38,49 @@ function applyClientSideThemePreview(themeName: ThemeName | null) {
   }
   const root = document.documentElement;
 
-  // Önce mevcut tema sınıfını kaldır, sadece client-side preview için
-  const currentThemeClasses = Array.from(root.classList).filter(cls => cls.startsWith('theme-'));
-  currentThemeClasses.forEach(cls => root.classList.remove(cls));
-  console.log(`${logPrefix} Önceki 'theme-*' sınıfları kaldırıldı. Mevcut sınıflar: '${root.className}'`);
+  console.log(`${logPrefix} ÖNCESİ: <html> sınıfları: '${root.className}'`);
+  console.log(`${logPrefix} ÖNCESİ: root.style content:`, root.style.cssText.substring(0, 200) + '...');
 
 
-  // Önceki dinamik olarak eklenmiş stilleri temizle (bu biraz kaba bir yöntem)
-  // ALL_THEME_VARIABLE_KEYS, THEME_PALETTES.default içindeki tüm CSS değişken adlarını içermelidir.
+  // 1. Önceki dinamik olarak eklenmiş stilleri (CSS değişkenlerini) temizle
   ALL_THEME_VARIABLE_KEYS.forEach(key => {
     root.style.removeProperty(key);
   });
-  console.log(`${logPrefix} Önceki dinamik stiller (root.style üzerinden) temizlendi.`);
+  console.log(`${logPrefix} ORTASI: Önceki dinamik CSS değişkenleri (root.style üzerinden) temizlendi.`);
+
+  // 2. Tema sınıfını da temizle (sadece anlık önizleme için, kalıcı sınıf RootLayout'tan gelir)
+  const currentThemeClasses = Array.from(root.classList).filter(cls => cls.startsWith('theme-'));
+  currentThemeClasses.forEach(cls => root.classList.remove(cls));
+  console.log(`${logPrefix} ORTASI: Önceki 'theme-*' sınıfları kaldırıldı. Mevcut sınıflar: '${root.className}'`);
 
 
   if (themeName && THEME_PALETTES[themeName]) {
     const palette = THEME_PALETTES[themeName];
-    console.log(`${logPrefix} '${themeName}' için palet bulundu. Değişkenler uygulanıyor...`, palette);
+    console.log(`${logPrefix} '${themeName}' için palet bulundu (THEME_PALETTES'ten). Değişkenler uygulanıyor...`, Object.keys(palette));
     Object.entries(palette).forEach(([variable, value]) => {
       // Değerler zaten HSL'nin içindeki sayılar olduğu için doğrudan `hsl(${value})` kullanıyoruz.
       root.style.setProperty(variable, `hsl(${value})`);
     });
-    // Fallback veya non-variable stiller için sınıfı da ekleyelim
+    // Anlık önizleme için tema sınıfını da ekleyebiliriz, ancak stil enjeksiyonu zaten yapıldığı için gerekmeyebilir.
+    // Yine de tutarlılık için ekleyelim.
     if (themeName !== 'default') {
-      root.classList.add(`theme-${themeName}`);
+       root.classList.add(`theme-${themeName}`);
     }
-    console.log(`${logPrefix} '${themeName}' teması ve sınıfı <html>'e uygulandı. HTML sınıfları: '${root.className}'`);
+    console.log(`${logPrefix} SONRASI: '${themeName}' teması CSS değişkenleri ve sınıfı <html>'e uygulandı. Yeni HTML sınıfları: '${root.className}'`);
+    console.log(`${logPrefix} SONRASI: root.style content (ilk 200 karakter):`, root.style.cssText.substring(0, 200) + '...');
+
   } else if (themeName === 'default' || !themeName) {
     // 'default' tema veya tanımsız tema ise, stil özelliklerini kaldırarak globals.css'teki :root'a geri dönülür.
     // Yukarıda zaten tüm değişkenler temizlendiği için ekstra bir işlem gerekmeyebilir.
     // Sadece 'theme-default' sınıfı eklenmez.
-    console.log(`${logPrefix} '${themeName || 'default'}' tema seçildi. Dinamik stiller temizlendi, globals.css :root geçerli olmalı.`);
+    console.log(`${logPrefix} SONRASI: '${themeName || 'default'}' tema seçildi. Dinamik stiller temizlendi, globals.css :root geçerli olmalı. HTML Sınıfları: '${root.className}'`);
   }
 }
 
 
 export default function ThemeSettingsDropdown() {
   const [selectedTheme, setSelectedTheme] = useState<ThemeName>('default');
-  const [dbThemeName, setDbThemeName] = useState<ThemeName>('default');
+  const [dbThemeName, setDbThemeName] = useState<ThemeName>('default'); // Veritabanından gelen, kaydedilmiş tema
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
@@ -86,15 +92,16 @@ export default function ThemeSettingsDropdown() {
       setIsLoading(true);
       console.log(`${logPrefix} İLK YÜKLEME: Sunucudan başlangıç tema ayarı çekiliyor...`);
       try {
+        // getThemeSetting artık sadece { activeThemeName: string } döndürüyor
         const setting = await getThemeSetting();
         const themeNameToApply = setting?.activeThemeName || 'default';
         setSelectedTheme(themeNameToApply);
-        setDbThemeName(themeNameToApply);
+        setDbThemeName(themeNameToApply); // Veritabanındaki kaydedilmiş temayı set et
         console.log(`${logPrefix} İLK YÜKLEME: Sunucudan gelen tema adı: '${themeNameToApply}'.`);
-        // İlk yüklemede anlık önizleme için applyClientSideThemePreview'ı çağırmaya gerek yok,
-        // çünkü RootLayout zaten sunucudan gelen paletle stilleri enjekte ediyor.
-        // Ancak, tutarlılık için veya sayfa geçişlerinde bir flash oluyorsa çağrılabilir.
-        // applyClientSideThemePreview(themeNameToApply);
+        
+        // İlk yüklemede, sayfa zaten sunucudan gelen tema sınıfıyla render edilmiş olmalı (RootLayout sayesinde).
+        // Ancak, anlık tutarlılık için veya istemci tarafında bir başlangıç stili uygulamak gerekirse çağrılabilir.
+        // applyClientSideThemePreview(themeNameToApply); // Bu çağrı, stillerin enjekte edilmesini sağlar.
       } catch (error) {
         console.error(`${logPrefix} İLK YÜKLEME: Mevcut tema ayarı yüklenirken hata:`, error);
         toast({
@@ -102,6 +109,8 @@ export default function ThemeSettingsDropdown() {
           description: "Mevcut tema ayarı yüklenemedi.",
           variant: "destructive",
         });
+        // Hata durumunda varsayılan tema için stilleri uygula
+        // applyClientSideThemePreview('default');
       } finally {
         setIsLoading(false);
         console.log(`${logPrefix} İLK YÜKLEME: Tema ayarı yükleme tamamlandı.`);
@@ -114,7 +123,7 @@ export default function ThemeSettingsDropdown() {
     const newThemeName = value as ThemeName;
     setSelectedTheme(newThemeName);
     console.log(`[ThemeSettingsDropdown handleThemeChange] Dropdown değeri değişti: '${newThemeName}'. Anlık önizleme uygulanıyor...`);
-    applyClientSideThemePreview(newThemeName);
+    applyClientSideThemePreview(newThemeName); // Canlı önizleme için stilleri doğrudan uygula
   };
 
   const handleSaveTheme = async () => {
@@ -123,18 +132,20 @@ export default function ThemeSettingsDropdown() {
       toast({ title: "Bilgi", description: "Tema zaten güncel." });
       return;
     }
-    console.log(`${logPrefix} ADIM 1: Tema '${selectedTheme}' olarak kaydedilecek. Mevcut veritabanı tema adı: '${dbThemeName}'. Sunucuya gönderiliyor...`);
+    console.log(`${logPrefix} ADIM 1: Tema adı '${selectedTheme}' olarak kaydedilecek. Mevcut veritabanı tema adı: '${dbThemeName}'. Sunucuya gönderiliyor...`);
     setIsSaving(true);
     try {
+      // updateThemeSetting artık sadece tema adını alıyor.
       const result = await updateThemeSetting(selectedTheme);
       console.log(`${logPrefix} ADIM 2: updateThemeSetting ('${selectedTheme}' için) sunucu yanıtı:`, result);
 
       if (result.success) {
-        setDbThemeName(selectedTheme);
+        setDbThemeName(selectedTheme); // Kaydedilen temayı state'e yansıt
         console.log(`${logPrefix} ADIM 3A: Sunucu güncellemesi başarılı. İstemci tarafı dbThemeName '${selectedTheme}' olarak ayarlandı.`);
-        // applyClientSideThemePreview zaten handleThemeChange'de çağrıldığı için burada tekrar çağırmaya gerek yok,
-        // ama kullanıcı direkt kaydete basarsa diye bir kontrol eklenebilir veya state'in güncel olduğundan emin olunur.
-        // Anlık önizleme zaten seçili tema üzerinden yapılıyor.
+        
+        // Anlık önizleme zaten seçili tema üzerinden yapılıyor (handleThemeChange ile).
+        // Kayıttan sonra, `router.refresh()` sunucu tarafı render'ı tetikleyecek ve `RootLayout`
+        // doğru sınıfı ve anahtarı `<html>` etiketine uygulayacaktır.
 
         toast({
           title: "Başarılı!",
@@ -206,7 +217,7 @@ export default function ThemeSettingsDropdown() {
           <Label htmlFor="theme-select" className="text-sm font-medium">Tema Seçin</Label>
           <Select
             value={selectedTheme}
-            onValueChange={handleThemeChange} // Bu fonksiyon anlık önizlemeyi tetikleyecek
+            onValueChange={handleThemeChange} 
             disabled={isLoading || isSaving}
           >
             <SelectTrigger id="theme-select" className="w-full mt-1">
@@ -238,3 +249,5 @@ export default function ThemeSettingsDropdown() {
     </Card>
   );
 }
+
+    

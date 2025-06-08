@@ -6,7 +6,7 @@ import Footer from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
 import FloatingLogoutButton from '@/components/layout/FloatingLogoutButton';
 import { checkAuthStatus } from '@/lib/actions/auth';
-import { getThemeSetting, type ThemeSetting, getSiteGeneralSettings } from '@/lib/actions/settings-actions';
+import { getThemeSetting, type ThemeSetting, getSiteGeneralSettings } from '@/lib/actions/settings-actions'; // ThemeSetting sadece activeThemeName içerecek
 import { cn } from '@/lib/utils';
 import { PT_Sans, Playfair_Display, Source_Code_Pro } from 'next/font/google';
 
@@ -67,15 +67,7 @@ async function AuthAwareUIComponents() {
   );
 }
 
-function generateThemeVariablesStyle(palette: Record<string, string> | undefined): string {
-  if (!palette || Object.keys(palette).length === 0) {
-    return '';
-  }
-  const variables = Object.entries(palette)
-    .map(([key, value]) => `${key}: hsl(${value});`)
-    .join('\n  ');
-  return `:root {\n  ${variables}\n}`;
-}
+// Dinamik stil enjeksiyon fonksiyonu kaldırıldı, çünkü tema sınıfı ile globals.css kullanılacak.
 
 export default async function RootLayout({
   children,
@@ -85,44 +77,34 @@ export default async function RootLayout({
   const logPrefix = "[RootLayout SERVER RENDER]";
   console.log(`${logPrefix} ================== BAŞLANGIÇ ==================`);
 
+  // getThemeSetting artık sadece { activeThemeName: string, updatedAt: string } döndürecek.
   const themeSetting = await getThemeSetting();
   console.log(`${logPrefix} getThemeSetting() çağrıldı. Sonuç (veritabanı/cache):`, JSON.stringify(themeSetting));
 
   const activeThemeName = themeSetting?.activeThemeName || 'default';
-  const activeThemePalette = themeSetting?.activeThemePalette;
-  console.log(`${logPrefix} Kullanılacak aktif tema adı: '${activeThemeName}'`);
-  console.log(`${logPrefix} Kullanılacak aktif tema paleti mevcut mu: ${!!activeThemePalette}`);
+  console.log(`${logPrefix} Sunucuda render için kullanılacak aktif tema: '${activeThemeName}'`);
 
-
+  // Dinamik palet ve stil enjeksiyonu kaldırıldı.
+  // Tema sınıfı doğrudan globals.css'teki tanımları tetikleyecek.
   const themeClassName = activeThemeName === 'default' ? '' : `theme-${activeThemeName}`;
-  console.log(`${logPrefix} HTML için hesaplanan tema sınıfı (className için): '${themeClassName}'`);
+  console.log(`${logPrefix} HTML için hesaplanan tema sınıfı: '${themeClassName}'`);
 
   const fontVariableClasses = cn(ptSans.variable, playfairDisplay.variable, sourceCodePro.variable);
   console.log(`${logPrefix} HTML için font değişken sınıfları: '${fontVariableClasses}'`);
 
   const finalHtmlClasses = cn(themeClassName, fontVariableClasses).trim();
   // Key, tema adı ve fontlara bağlı olmalı ki tema veya font değiştiğinde <html> yeniden render edilsin.
-  // Palette değişimi de key'i etkilemeli, bu yüzden activeThemeName yeterli.
-  const htmlKey = `${activeThemeName}-${fontVariableClasses}`;
+  const htmlKey = `${activeThemeName}-${fontVariableClasses}`; // Sadece tema adına bağlı
 
   console.log(`${logPrefix} <html> etiketine uygulanacak className: '${finalHtmlClasses}'`);
   console.log(`${logPrefix} <html> etiketine uygulanacak key: '${htmlKey}'`);
-
-  const inlineThemeStyle = generateThemeVariablesStyle(activeThemePalette);
-  if (inlineThemeStyle) {
-    console.log(`${logPrefix} Dinamik olarak enjekte edilecek CSS değişkenleri:\n<style>\n${inlineThemeStyle}\n</style>`);
-  } else {
-    console.log(`${logPrefix} Dinamik stil enjeksiyonu için palet bulunamadı veya boş. Fallback (globals.css) kullanılacak.`);
-  }
 
   console.log(`${logPrefix} ==================== BİTİŞ ====================`);
 
   return (
     <html lang="tr" className={finalHtmlClasses} key={htmlKey}>
       <head>
-        {inlineThemeStyle && (
-          <style dangerouslySetInnerHTML={{ __html: inlineThemeStyle }} />
-        )}
+        {/* Dinamik stil enjeksiyonu kaldırıldı. */}
       </head>
       <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
         <AuthAwareUIComponents />
@@ -135,3 +117,5 @@ export default async function RootLayout({
     </html>
   );
 }
+
+    
