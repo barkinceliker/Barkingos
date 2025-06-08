@@ -6,12 +6,22 @@ import Footer from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
 import FloatingLogoutButton from '@/components/layout/FloatingLogoutButton';
 import { checkAuthStatus } from '@/lib/actions/auth';
-import { getThemeSetting, type ThemeName } from '@/lib/actions/settings-actions'; // Import theme actions
+import { getThemeSetting, type ThemeName } from '@/lib/actions/settings-actions';
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'BenimSitem',
   description: 'Kişisel portfolyo ve blog sitesi',
+  icons: [
+    {
+      rel: 'icon',
+      url: '/favicon.ico', // This points to public/favicon.ico
+      type: 'image/x-icon',
+      sizes: 'any', // Or specific sizes like '16x16' or '32x32' if you have them
+    },
+    // You can add other icon types here if needed, e.g., apple-touch-icon
+    // { rel: 'apple-touch-icon', url: '/apple-icon.png' },
+  ],
 };
 
 export const dynamic = 'force-dynamic';
