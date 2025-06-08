@@ -5,14 +5,12 @@
 
 body {
   font-family: 'PT Sans', sans-serif;
-  /* Siyah, Altın, Gri ve Turuncu karışımı gradient arka plan */
-  background: hsl(0, 0%, 7%); /* Fallback solid very dark grey */
+  /* Zümrüt Yeşili & Gümüş Vurgulu Koyu Okyanus gradient arka plan */
+  background: hsl(var(--background)); /* Fallback solid dark ocean blue */
   background-image: linear-gradient(145deg, 
-    hsl(0, 0%, 4%) 0%, /* Siyah'a yakın başlangıç */
-    hsl(0, 0%, 18%) 30%, /* Koyu Gri (kırı) */
-    hsl(40, 75%, 30%) 60%, /* Koyu, zengin Altın */
-    hsl(28, 80%, 35%) 85%, /* Koyu, sıcak Turuncu */
-    hsl(0, 0%, 5%) 100% /* Siyah'a yakın bitiş */
+    hsl(var(--gradient-body-start-hsl)) 0%, 
+    hsl(var(--gradient-body-mid-hsl)) 50%, 
+    hsl(var(--gradient-body-end-hsl)) 100%
   );
   background-attachment: fixed;
   background-size: cover;
@@ -24,64 +22,69 @@ html {
 }
 
 @layer base {
-  :root { /* Dark Theme: Siyah, Altın, Gri, Turuncu Vurgulu */
-    --background: 0 0% 7%;             /* Çok Koyu Gri/Siyaha Yakın (Fallback) */
-    --foreground: 0 0% 96%;           /* Açık Gri/Kırık Beyaz (Metin için) */
+  :root { /* Dark Theme: Emerald Green & Silver Accented Deep Ocean */
+    /* Body Gradient Colors */
+    --gradient-body-start-hsl: 210 60% 8%;   /* Very Dark Deep Ocean Blue */
+    --gradient-body-mid-hsl: 180 55% 10%;   /* Dark Teal/Emerald Hint */
+    --gradient-body-end-hsl: 150 50% 12%;    /* Deep Dark Emerald Green */
+
+    --background: 210 60% 5%;             /* Very Dark Ocean Blue (Fallback) */
+    --foreground: 210 20% 95%;           /* Very Light Silvery Grey (Text) */
     
-    --card: 0 0% 10%;                 /* Biraz Daha Açık Koyu Gri (Kartlar için) */
+    --card: 210 55% 9%;                 /* Slightly Lighter Dark Ocean Blue (Cards) */
     --card-foreground: hsl(var(--foreground));
 
-    --popover: 0 0% 12%;              /* Koyu Açılır Pencere */
+    --popover: 210 50% 11%;              /* Dark Popover Background */
     --popover-foreground: hsl(var(--foreground));
 
-    /* Birincil ve Vurgu renkleri Altın ve Turuncu olacak */
-    --primary: 40 90% 55%;            /* Zengin Altın - Birincil eylemler için */
-    --primary-foreground: 0 0% 10%;   /* Altın butonlar üzerinde koyu metin */
+    /* Primary and Accent colors will be Emerald and Silver/Light Blue */
+    --primary: 155 60% 45%;            /* Rich Emerald Green - Primary actions */
+    --primary-foreground: 155 20% 97%;   /* Light text on Emerald buttons */
     
-    --accent: 28 100% 60%;            /* Canlı Turuncu - Vurgular için */
-    --accent-foreground: 0 0% 10%;    /* Turuncu vurgular üzerinde koyu metin */
+    --accent: 200 70% 75%;            /* Bright Silver/Light Blue - Accents */
+    --accent-foreground: 200 60% 15%;    /* Dark text on Silver/Light Blue accents */
 
-    --secondary: 0 0% 15%;            /* İkincil elemanlar için Koyu Gri */
-    --secondary-foreground: 0 0% 80%; /* İkincil elemanlar üzerinde Daha Açık Gri metin */
+    --secondary: 210 40% 18%;            /* Darker Ocean Blue for secondary elements */
+    --secondary-foreground: 210 15% 80%; /* Lighter Grey text on secondary elements */
 
-    --muted: 0 0% 15%;                /* Sessiz elemanlar için Koyu Gri */
-    --muted-foreground: 0 0% 60%;     /* Sessiz metinler için Orta Gri */
+    --muted: 210 35% 15%;                /* Muted Ocean Blue */
+    --muted-foreground: 210 15% 65%;     /* Muted Grey text */
     
-    --destructive: 0 70% 55%;         /* Yıkıcı eylemler için derin, zengin bir kırmızı */
+    --destructive: 0 65% 55%;         /* Deep, rich red for destructive actions */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 20%;               /* Koyu Gri Kenarlık */
-    --input: 0 0% 12%;                /* Koyu Input Arka Planı */
-    --ring: 40 90% 60%;               /* Odak için Altın Halka */
+    --border: 210 40% 25%;               /* Ocean Blue Border */
+    --input: 210 50% 12%;                /* Dark Input Background */
+    --ring: 155 65% 50%;               /* Emerald Green Ring for focus */
     --radius: 0.5rem;
 
-    /* Metin Gradienti - Belirgin Turuncu Tonları */
-    --gradient-start-hsl: 28 100% 60%; /* Canlı Turuncu */
-    --gradient-end-hsl: 20 90% 55%;    /* Koyu/Kırmızımsı Turuncu */
+    /* Text Gradient - Bright Emerald to Light Silvery Blue */
+    --gradient-start-hsl: 155 65% 50%; /* Bright Emerald Green */
+    --gradient-end-hsl: 200 75% 80%;   /* Light Silvery Blue */
 
-    /* Hero Section Arka Plan Gradienti */
-    --hero-gradient-start-hsl: 0 0% 10%;    /* Çok Koyu Gri */
-    --hero-gradient-mid-hsl: 40 80% 35%;    /* Temanın altın rengine yakın, derin bir ton */
-    --hero-gradient-end-hsl: 28 90% 40%;    /* Temanın turuncu rengine yakın, derin bir ton */
+    /* Hero Section Background Gradient */
+    --hero-gradient-start-hsl: 210 50% 12%;    /* Dark Ocean Blue (slightly lighter than body) */
+    --hero-gradient-mid-hsl: 150 50% 25%;     /* Mid-tone Emerald Green */
+    --hero-gradient-end-hsl: 200 50% 20%;     /* Lighter Ocean Blue */
 
-    /* Grafik Renkleri (Altın/Turuncu ile Koyu Tema için Ayarlandı) */
-    --chart-1: hsl(var(--primary));    /* Altın */
-    --chart-2: hsl(var(--accent));     /* Turuncu */
-    --chart-3: 30 80% 65%;             /* Daha Açık Turuncu */
-    --chart-4: 50 70% 60%;             /* Daha Açık Altın / Sarı */
-    --chart-5: 0 0% 70%;               /* Kontrast için Açık Gri */
+    /* Chart Colors (Emerald/Silver/Blue for Dark Theme) */
+    --chart-1: hsl(var(--primary));    /* Emerald */
+    --chart-2: hsl(var(--accent));     /* Silver/Light Blue */
+    --chart-3: 170 55% 55%;            /* Lighter Teal/Emerald */
+    --chart-4: 220 60% 70%;            /* Softer Blue */
+    --chart-5: 210 10% 70%;            /* Contrast Light Grey */
 
-    /* Kenar Çubuğu Renkleri (Koyu Tema) */
-    --sidebar-background: 0 0% 9%;     /* Karttan daha koyu, ana arka plana benzer */
+    /* Sidebar Colors (Dark Theme) */
+    --sidebar-background: 210 60% 7%;      /* Similar to main background, slightly darker card */
     --sidebar-foreground: hsl(var(--foreground));
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 0 0% 18%;        /* Aktif öğelerin arka planı için biraz daha açık gri */
-    --sidebar-accent-foreground: hsl(var(--accent)); /* İkonlar/metin için Turuncu */
+    --sidebar-accent: 210 50% 15%;         /* Active item background - a bit lighter ocean blue */
+    --sidebar-accent-foreground: hsl(var(--accent)); /* Accent color for icons/text */
     --sidebar-border: hsl(var(--border));
     --sidebar-ring: hsl(var(--ring));
 
-    /* İnce Ayar ve Özel Eleman Renkleri (Altın/Turuncu ile Koyu Tema) */
+    /* Fine-tune and Custom Element Colors (Emerald/Silver with Dark Ocean Theme) */
     --link-text: hsl(var(--accent));
     --link-hover-text: hsl(var(--accent) / 0.8); 
     --button-primary-bg: hsl(var(--primary));
@@ -94,7 +97,7 @@ html {
     --input-border: hsl(var(--border));
     --input-text: hsl(var(--foreground));
     --input-focus-ring: hsl(var(--ring));
-    --card-title-text: hsl(var(--foreground)); /* text-gradient, CardTitle özel stilini yönetir */
+    --card-title-text: hsl(var(--foreground)); /* text-gradient manages CardTitle specific style */
     --card-description-text: hsl(var(--muted-foreground));
 
     --blockquote-bg: hsl(var(--secondary));
