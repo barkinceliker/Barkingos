@@ -1,133 +1,136 @@
 
-import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { FileText, Settings, Newspaper, FolderKanban, ListTree, Sparkles, Mail, Brain, Briefcase, Edit3, Palette, Database } from 'lucide-react'; // Added Database icon
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Settings, LayoutDashboard, Newspaper, FolderKanban, Sparkles, Brain, Briefcase, FileText, Palette, Paintbrush, MailIcon } from 'lucide-react';
 
-export default async function AdminDashboardPage() {
-  const managementSections = [
-    {
-      title: 'Blog Yazısı Yönetimi',
-      description: 'Mevcut blog yazılarınızı yönetin, yenilerini ekleyin veya düzenleyin.',
-      href: '/admin/manage-data?section=blog',
-      icon: Newspaper,
-    },
-    {
-      title: 'Proje Yönetimi',
-      description: 'Mevcut projelerinizi yönetin, yenilerini ekleyin veya düzenleyin.',
-      href: '/admin/manage-data?section=projects',
-      icon: FolderKanban,
-    },
-    {
-      title: 'Hizmet Yönetimi',
-      description: 'Sitede sunulan hizmetleri ekleyin, düzenleyin veya silin.',
-      href: '/admin/manage-data?section=services',
-      icon: Sparkles,
-    },
-    {
-      title: 'Yetenek Yönetimi',
-      description: 'Yeteneklerinizi ve yetkinlik seviyelerinizi yönetin.',
-      href: '/admin/manage-data?section=skills',
-      icon: Brain,
-    },
-    {
-      title: 'Deneyim Yönetimi',
-      description: 'Profesyonel deneyimlerinizi ve iş geçmişinizi yönetin.',
-      href: '/admin/manage-data?section=experiences',
-      icon: Briefcase,
-    },
-  ];
+// Data fetching functions for embedded forms
+import { getHomepageContent } from '@/lib/actions/page-content-actions';
+import { getHakkimdaContent } from '@/lib/actions/page-content-actions';
 
-  const otherAdminPages = [
-    {
-      title: 'Sayfa İçerik Yönetimi',
-      description: 'Anasayfa, Hakkımda gibi statik sayfa içeriklerini düzenleyin.',
-      href: '/admin/manage-content',
+// Form Components to embed
+import EditHomepageForm from '@/components/admin/forms/EditHomepageForm';
+import EditHakkimdaPageForm from '@/components/admin/forms/EditHakkimdaPageForm';
+
+// Management Content Components (Tables and links)
+import BlogManagementContent from '@/app/admin/manage-blog/_components/BlogManagementContent';
+import ProjectManagementContent from '@/app/admin/manage-projects/_components/ProjectManagementContent';
+import ServiceManagementContent from '@/app/admin/manage-services/_components/ServiceManagementContent';
+import SkillManagementContent from '@/app/admin/manage-skills/_components/SkillManagementContent';
+import ExperienceManagementContent from '@/app/admin/manage-experiences/_components/ExperienceManagementContent';
+
+// Settings and Other Content Components
+import ThemeSettingsFormCard from '@/app/admin/manage-settings/theme/_components/ThemeSettingsFormCard'; // Client Component
+import CustomThemesTableCard from '@/app/admin/manage-settings/custom-themes/_components/CustomThemesTableCard'; // Server Component
+import ContactMessagesTableCard from '@/app/admin/contact-messages/_components/ContactMessagesTableCard'; // Server Component
+
+
+export default async function AdminUnifiedPage() {
+  const homepageContent = await getHomepageContent();
+  const hakkimdaContent = await getHakkimdaContent();
+
+  const accordionSections = [
+    { 
+      value: "anasayfa", 
+      title: "Anasayfa İçeriği", 
+      icon: LayoutDashboard, 
+      description: "Sitenizin anasayfasında görünecek başlıkları ve metinleri buradan yönetin.",
+      content: <EditHomepageForm initialData={homepageContent} /> 
+    },
+    { 
+      value: "hakkimda", 
+      title: "Hakkımda Sayfası İçeriği", 
       icon: FileText,
+      description: "Hakkımda sayfasının başlıklarını, metinlerini ve profil resmi bilgilerini yönetin.",
+      content: <EditHakkimdaPageForm initialData={hakkimdaContent} /> 
     },
-    {
-      title: 'Site Ayarları',
-      description: 'Sitenizin genel ayarlarını (tema vb.) yönetin.',
-      href: '/admin/manage-settings',
-      icon: Palette, // Changed from Settings to Palette for consistency
+    { 
+      value: "blog", 
+      title: "Blog Yazıları Yönetimi", 
+      icon: Newspaper,
+      description: "Mevcut blog yazılarını görüntüleyin, düzenleyin veya yenilerini ekleyin.",
+      content: <BlogManagementContent /> 
     },
-    {
-      title: 'Gelen Mesajlar',
-      description: 'İletişim formundan gönderilen mesajları görüntüleyin.',
-      href: '/admin/contact-messages',
-      icon: Mail,
+    { 
+      value: "projeler", 
+      title: "Proje Yönetimi", 
+      icon: FolderKanban,
+      description: "Mevcut projeleri görüntüleyin, düzenleyin veya yenilerini ekleyin.",
+      content: <ProjectManagementContent /> 
+    },
+    { 
+      value: "hizmetler", 
+      title: "Hizmet Yönetimi", 
+      icon: Sparkles,
+      description: "Sitede sunulan hizmetleri ekleyin, düzenleyin veya silin.",
+      content: <ServiceManagementContent /> 
+    },
+    { 
+      value: "yetenekler", 
+      title: "Yetenek Yönetimi", 
+      icon: Brain,
+      description: "Yeteneklerinizi ve yetkinlik seviyelerinizi yönetin.",
+      content: <SkillManagementContent /> 
+    },
+    { 
+      value: "deneyimler", 
+      title: "Deneyim Yönetimi", 
+      icon: Briefcase,
+      description: "Profesyonel deneyimlerinizi ve iş geçmişinizi yönetin.",
+      content: <ExperienceManagementContent /> 
+    },
+    { 
+      value: "tema-ayarlari", 
+      title: "Site Tema Ayarları", 
+      icon: Palette,
+      description: "Sitenizin genel görünümünü ve renk paletini seçin.",
+      content: <ThemeSettingsFormCard /> // Client Component
+    },
+    { 
+      value: "ozel-temalar", 
+      title: "Özel Tema Yönetimi", 
+      icon: Paintbrush,
+      description: "Oluşturduğunuz özel temaları görüntüleyin, düzenleyin veya yenilerini ekleyin.",
+      content: <CustomThemesTableCard /> // Server Component
+    },
+     { 
+      value: "gelen-mesajlar", 
+      title: "Gelen İletişim Mesajları", 
+      icon: MailIcon,
+      description: "Sitenizin iletişim formundan gönderilen mesajları görüntüleyin.",
+      content: <ContactMessagesTableCard /> // Server Component
     },
   ];
-
 
   return (
-    <div className="space-y-12">
-      <section className="text-center">
-        <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-4">Admin Paneli</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Web sitesi yönetimi ve içerik araçlarına buradan ulaşabilirsiniz.
+    <div className="space-y-8">
+      <section className="text-center py-8 bg-card shadow-md rounded-lg">
+        <h1 className="text-4xl md:text-5xl font-headline font-bold text-primary mb-3">Site Yönetim Paneli</h1>
+        <p className="text-lg text-muted-foreground max-w-3xl mx-auto px-4">
+          Web sitenizin tüm içeriğini ve ayarlarını tek bir yerden yönetin. Aşağıdaki bölümlerden düzenlemek istediğinizi seçin.
         </p>
       </section>
 
-      <section className="space-y-8">
-        <div>
-            <h2 className="text-2xl font-headline font-semibold text-primary mb-6 flex items-center">
-                <Database className="mr-3 h-7 w-7 text-accent" /> Veri Yönetimi Bölümleri
-            </h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {managementSections.map((section) => {
-                const Icon = section.icon;
-                return (
-                    <Card key={section.title} className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
-                    <CardHeader>
-                        <div className="flex justify-center mb-4">
-                        <Icon className="h-12 w-12 text-accent" />
-                        </div>
-                        <CardTitle className="font-headline text-2xl text-center">{section.title}</CardTitle>
-                        <CardDescription className="text-center">
-                        {section.description}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="text-center">
-                        <Link href={section.href} passHref>
-                        <Button className="w-full">{section.title.replace("Yönetimi", "Yönet")}</Button>
-                        </Link>
-                    </CardContent>
-                    </Card>
-                );
-                })}
-            </div>
-        </div>
-        
-        <div>
-            <h2 className="text-2xl font-headline font-semibold text-primary mb-6 mt-12 flex items-center">
-                <Settings className="mr-3 h-7 w-7 text-accent" /> Diğer Yönetim Araçları
-            </h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {otherAdminPages.map((section) => {
-                const Icon = section.icon;
-                return (
-                    <Card key={section.title} className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
-                    <CardHeader>
-                        <div className="flex justify-center mb-4">
-                        <Icon className="h-12 w-12 text-accent" />
-                        </div>
-                        <CardTitle className="font-headline text-2xl text-center">{section.title}</CardTitle>
-                        <CardDescription className="text-center">
-                        {section.description}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="text-center">
-                        <Link href={section.href} passHref>
-                        <Button className="w-full">{section.title.replace("Yönetimi", "Yönet").replace("Ayarları", "Ayarlarını Yönet").replace("Mesajlar", "Mesajları Gör")}</Button>
-                        </Link>
-                    </CardContent>
-                    </Card>
-                );
-                })}
-            </div>
-        </div>
-      </section>
+      <Accordion type="multiple" className="w-full space-y-4">
+        {accordionSections.map((section) => {
+          const Icon = section.icon;
+          return (
+            <AccordionItem value={section.value} key={section.value} className="border bg-card rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+              <AccordionTrigger className="p-6 hover:no-underline">
+                <div className="flex items-center text-left">
+                  <Icon className="h-7 w-7 mr-4 text-accent flex-shrink-0" />
+                  <div>
+                    <h2 className="text-xl font-headline font-semibold text-primary">{section.title}</h2>
+                    <p className="text-sm text-muted-foreground mt-1 pr-4">{section.description}</p>
+                  </div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="p-6 border-t">
+                {section.content}
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
+      </Accordion>
     </div>
   );
 }

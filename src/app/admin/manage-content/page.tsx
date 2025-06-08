@@ -1,65 +1,49 @@
 
+// Bu sayfa artık kullanılmıyor. 
+// Anasayfa ve Hakkımda içerik yönetimi doğrudan /src/app/admin/page.tsx içindeki
+// akordeon bölümlerine taşındı.
+
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, Edit3, Home } from 'lucide-react';
 
-export default function ManageContentPage() {
-  const manageablePages = [
-    {
-      name: 'Anasayfa İçeriği',
-      description: 'Anasayfanın hero alanı, başlıklar ve kısa metinlerini düzenleyin.',
-      editUrl: '/admin/manage-content/anasayfa',
-      icon: Home,
-    },
-    {
-      name: 'Hakkımda Sayfası',
-      description: '"Hakkımda" sayfasının başlıklarını, metinlerini ve profil resmini düzenleyin.',
-      editUrl: '/admin/manage-content/hakkimda',
-      icon: FileText,
-    },
-    // Gelecekte diğer sayfalar buraya eklenebilir
-  ];
+export default function ManageContentPageObsolete() {
 
   return (
     <div className="space-y-8">
       <section>
-        <h1 className="text-3xl font-headline font-bold text-primary">Site İçerik Yönetimi</h1>
-        <p className="text-muted-foreground">Sitenizin ana sayfalarının içeriklerini buradan düzenleyebilirsiniz.</p>
+        <h1 className="text-3xl font-headline font-bold text-primary">Site İçerik Yönetimi (Artık Kullanılmıyor)</h1>
+        <p className="text-muted-foreground">
+            Sayfa içerikleri artık ana yönetim panelindeki ilgili akordeon bölümlerinden yönetilmektedir.
+        </p>
       </section>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {manageablePages.map((page) => {
-          const Icon = page.icon;
-          return (
-            <Card key={page.name} className="shadow-lg hover:shadow-xl transition-shadow">
+            <Card className="shadow-lg opacity-50 cursor-not-allowed">
               <CardHeader className="flex flex-row items-start space-x-4 pb-4">
                 <div className="p-3 bg-accent/10 rounded-md">
-                  <Icon className="h-6 w-6 text-accent" />
+                  <Home className="h-6 w-6 text-accent" />
                 </div>
                 <div>
-                  <CardTitle className="font-headline text-xl">{page.name}</CardTitle>
-                  <CardDescription className="text-sm mt-1">{page.description}</CardDescription>
+                  <CardTitle className="font-headline text-xl">Anasayfa İçeriği</CardTitle>
+                  <CardDescription className="text-sm mt-1">Ana yönetim panelinden düzenleyin.</CardDescription>
                 </div>
               </CardHeader>
               <CardContent>
-                <Link href={page.editUrl} passHref>
-                  <Button className="w-full">
+                  <Button className="w-full" disabled>
                     <Edit3 className="mr-2 h-4 w-4" /> Düzenle
                   </Button>
-                </Link>
               </CardContent>
             </Card>
-          );
-        })}
-         <Card className="shadow-lg opacity-50 cursor-not-allowed">
+             <Card className="shadow-lg opacity-50 cursor-not-allowed">
             <CardHeader className="flex flex-row items-start space-x-4 pb-4">
-                <div className="p-3 bg-muted/30 rounded-md">
-                  <FileText className="h-6 w-6 text-muted-foreground" />
+                <div className="p-3 bg-accent/10 rounded-md">
+                  <FileText className="h-6 w-6 text-accent" />
                 </div>
                 <div>
-                  <CardTitle className="font-headline text-xl">Hizmetler Sayfası</CardTitle>
-                  <CardDescription className="text-sm mt-1">Hizmetler sayfasının içeriğini düzenleyin. (Yakında)</CardDescription>
+                  <CardTitle className="font-headline text-xl">Hakkımda Sayfası</CardTitle>
+                  <CardDescription className="text-sm mt-1">Ana yönetim panelinden düzenleyin.</CardDescription>
                 </div>
               </CardHeader>
               <CardContent>
@@ -68,22 +52,11 @@ export default function ManageContentPage() {
                   </Button>
               </CardContent>
         </Card>
-        <Card className="shadow-lg opacity-50 cursor-not-allowed">
-            <CardHeader className="flex flex-row items-start space-x-4 pb-4">
-                <div className="p-3 bg-muted/30 rounded-md">
-                  <FileText className="h-6 w-6 text-muted-foreground" />
-                </div>
-                <div>
-                  <CardTitle className="font-headline text-xl">İletişim Sayfası</CardTitle>
-                  <CardDescription className="text-sm mt-1">İletişim sayfasındaki bilgileri düzenleyin. (Yakında)</CardDescription>
-                </div>
-              </CardHeader>
-              <CardContent>
-                  <Button className="w-full" disabled>
-                    <Edit3 className="mr-2 h-4 w-4" /> Düzenle
-                  </Button>
-              </CardContent>
-        </Card>
+      </div>
+        <div className="text-center mt-8">
+        <Link href="/admin">
+          <Button variant="outline">Ana Yönetim Paneline Dön</Button>
+        </Link>
       </div>
     </div>
   );

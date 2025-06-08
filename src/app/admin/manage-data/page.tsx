@@ -1,4 +1,8 @@
 
+// Bu sayfa artık kullanılmıyor. 
+// Tüm veri yönetimi (Blog, Projeler, Hizmetler, Yetenekler, Deneyimler) 
+// artık doğrudan /src/app/admin/page.tsx içindeki akordeon bölümlerine taşındı.
+
 import BlogManagementContent from '@/app/admin/manage-blog/_components/BlogManagementContent';
 import ProjectManagementContent from '@/app/admin/manage-projects/_components/ProjectManagementContent';
 import ServiceManagementContent from '@/app/admin/manage-services/_components/ServiceManagementContent';
@@ -6,8 +10,10 @@ import SkillManagementContent from '@/app/admin/manage-skills/_components/SkillM
 import ExperienceManagementContent from '@/app/admin/manage-experiences/_components/ExperienceManagementContent';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
-export default async function ManageDataPage({
+export default async function ManageDataPageObsolete({
   searchParams,
 }: {
   searchParams: { section?: string };
@@ -15,38 +21,28 @@ export default async function ManageDataPage({
   const section = searchParams.section;
 
   let contentToRender = null;
-  let pageTitle = "Veri Yönetimi";
-  let pageDescription = "Yönetilecek bir bölüm seçin veya geçerli bir bölüm görüntüleyin.";
+  let pageTitle = "Veri Yönetimi (Artık Kullanılmıyor)";
+  let pageDescription = `Bu bölümdeki ${section || 'veri'} yönetimi artık ana yönetim panelindeki ilgili akordeon bölümünden yönetilmektedir.`;
 
   switch (section) {
     case 'blog':
       contentToRender = <BlogManagementContent />;
-      pageTitle = "Blog Yazısı Yönetimi";
-      pageDescription = "Mevcut blog yazılarını görüntüleyin, düzenleyin veya yenilerini ekleyin.";
       break;
     case 'projects':
       contentToRender = <ProjectManagementContent />;
-      pageTitle = "Proje Yönetimi";
-      pageDescription = "Mevcut projeleri görüntüleyin, düzenleyin veya yenilerini ekleyin.";
       break;
     case 'services':
       contentToRender = <ServiceManagementContent />;
-      pageTitle = "Hizmet Yönetimi";
-      pageDescription = "Mevcut hizmetleri görüntüleyin, düzenleyin veya yenilerini ekleyin.";
       break;
     case 'skills':
       contentToRender = <SkillManagementContent />;
-      pageTitle = "Yetenek Yönetimi";
-      pageDescription = "Mevcut yetenekleri görüntüleyin, düzenleyin veya yenilerini ekleyin.";
       break;
     case 'experiences':
       contentToRender = <ExperienceManagementContent />;
-      pageTitle = "Deneyim Yönetimi";
-      pageDescription = "Mevcut deneyimleri görüntüleyin, düzenleyin veya yenilerini ekleyin.";
       break;
     default:
-      pageTitle = "Geçersiz Bölüm";
-      pageDescription = "Lütfen admin panelinden geçerli bir yönetim bölümü seçin.";
+      pageTitle = "Geçersiz Bölüm (Artık Kullanılmıyor)";
+      pageDescription = "Lütfen ana admin panelinden geçerli bir yönetim bölümü seçin.";
       contentToRender = (
         <Card className="shadow-xl">
           <CardHeader>
@@ -58,7 +54,7 @@ export default async function ManageDataPage({
           <CardContent>
             <p className="text-muted-foreground">
               Görüntülemeye çalıştığınız yönetim bölümü (<code>{section || 'belirtilmemiş'}</code>) bulunamadı veya geçersiz.
-              Lütfen admin paneli ana sayfasından geçerli bir bölüm seçin.
+              Lütfen ana admin paneli ana sayfasından geçerli bir bölüm seçin.
             </p>
           </CardContent>
         </Card>
@@ -72,6 +68,11 @@ export default async function ManageDataPage({
         <p className="text-muted-foreground">{pageDescription}</p>
       </section>
       {contentToRender}
+      <div className="text-center mt-8">
+        <Link href="/admin">
+          <Button variant="outline">Ana Yönetim Paneline Dön</Button>
+        </Link>
+      </div>
     </div>
   );
 }
