@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -75,6 +76,7 @@ export default function PortfoyPage() {
               width={600}
               height={400}
               className="w-full h-56 object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               data-ai-hint={item.dataAiHint || "project image"}
             />
             <CardHeader>

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ArrowRight, BookOpen, Briefcase } from "lucide-react";
 import { getHomepageContent } from "@/lib/actions/page-content-actions";
 
-export const dynamic = 'force-dynamic';
+// export const dynamic = 'force-dynamic'; // Removed for better performance
 
 export default async function Home() {
   const content = await getHomepageContent();
@@ -68,6 +68,7 @@ export default async function Home() {
                 width={600} 
                 height={400} 
                 className="w-full h-48 object-cover"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 data-ai-hint="abstract technology" 
               />
               <CardHeader>
@@ -95,6 +96,16 @@ export default async function Home() {
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {[1, 2].map((item) => (
             <Card key={item} className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+              {/* Assuming a placeholder image for blog posts as well */}
+              <Image
+                src={`https://placehold.co/600x300.png?text=Blog+Yazısı+${item}`}
+                alt={`Blog Yazısı ${item}`}
+                width={600}
+                height={300}
+                className="w-full h-48 object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                data-ai-hint="writing abstract"
+              />
               <CardHeader>
                 <CardTitle className="font-headline">Blog Yazısı Başlığı {item}</CardTitle>
                 <CardDescription className="text-sm text-muted-foreground">1 Ocak 2024</CardDescription>

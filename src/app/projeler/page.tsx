@@ -29,6 +29,7 @@ export default async function ProjelerPage() {
                   width={800}
                   height={500}
                   className="w-full h-64 md:h-full object-cover"
+                  sizes="(max-width: 768px) 100vw, 33vw"
                   data-ai-hint={item.dataAiHint || "project screenshot"}
                 />
               </div>
@@ -98,5 +99,4 @@ export default async function ProjelerPage() {
     </div>
   );
 }
-
     

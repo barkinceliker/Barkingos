@@ -28,6 +28,7 @@ export default async function BlogPage() {
                 width={600}
                 height={400}
                 className="w-full h-56 object-cover cursor-pointer"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 data-ai-hint={post.dataAiHint || "blog image"}
               />
             </Link>
