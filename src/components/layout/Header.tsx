@@ -3,6 +3,7 @@
 
 import LinkFromNext from 'next/link';
 import React, { useState, useEffect, useCallback } from 'react';
+// Corrected icon imports, including X directly from 'lucide-react'
 import { Menu as MenuIcon, Loader2, LogIn, Shield, MoreVertical, X, ChevronDown, FileText, BookOpenText, User, Home, Award, Lightbulb, Briefcase, Sparkles, MessageSquare, LogOut as LogOutIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -107,7 +108,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       if (pathname.startsWith('/admin')) {
         router.push('/');
       }
-      setIsMobileMenuOpen(false);
+      setIsMobileMenuOpen(false); // Close mobile menu if open
       router.refresh();
     } catch (error) {
       toast({ title: "Çıkış Hatası", description: "Bir hata oluştu.", variant: "destructive" });
@@ -116,7 +117,6 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     }
   };
 
-
   const NavLink: React.FC<NavLinkProps> = ({ href, children, onClick, className, disabled, iconName, isAction }) => {
     const IconComponent = getLucideIcon(iconName);
     const currentPathname = usePathname();
@@ -124,78 +124,81 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
   
     const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement, MouseEvent>) => {
       let eventDefaultPrevented = false;
+      const currentHref = href || '';
   
-      if (href && href.startsWith('/#')) {
-        const targetId = href.substring(href.indexOf('#') + 1);
+      if (currentHref.startsWith('/#')) {
+        const targetId = currentHref.substring(currentHref.indexOf('#') + 1);
         const targetElement = document.getElementById(targetId);
         if (targetElement) {
-          if (typeof e.preventDefault === 'function') {
+          if (e && typeof e.preventDefault === 'function') {
             e.preventDefault();
             eventDefaultPrevented = true;
           }
           targetElement.scrollIntoView({ behavior: 'smooth' });
           if (window.history.pushState) {
             if (currentPathname === '/') {
-              window.history.pushState(null, '', href);
+              window.history.pushState(null, '', currentHref);
             } else {
-               router.push(href);
+              router.push(currentHref);
             }
           } else {
-            window.location.hash = href.substring(1); 
+            window.location.hash = currentHref.substring(1);
           }
         }
       }
   
-      if (onClick && !eventDefaultPrevented) { // Call onClick only if default was not prevented or not a hash link
-        onClick(e);
-      } else if (onClick && eventDefaultPrevented) { // If hash link, call onClick after scroll
+      if (onClick) {
+         // Call onClick regardless, allowing parent (like SheetClose) to handle its logic
         onClick(e);
       }
     }, [href, currentPathname, router, onClick]);
+    
   
     useEffect(() => {
-      setIsActiveClient(false); // Default to false on server and initial client render
+      setIsActiveClient(false); 
   
       if (typeof window !== 'undefined' && href) {
         const checkActivity = () => {
           let currentActivity = false;
+          const currentHash = window.location.hash;
+          const currentFullUrlPath = window.location.pathname + currentHash;
+
           if (href.startsWith('/#')) {
-            if (currentPathname === '/') {
-              const hash = window.location.hash;
+            if (currentPathname === '/') { // Only check hash if on homepage
               const targetHash = href.substring(href.indexOf('#'));
-              if (href === '/#anasayfa-section') {
-                currentActivity = !hash || hash === '' || hash === targetHash;
-              } else {
-                currentActivity = hash === targetHash;
+              currentActivity = currentHash === targetHash;
+              if (href === '/#anasayfa-section' && (currentHash === '' || currentHash === '#')) {
+                currentActivity = true; // Treat no hash or '#' as active for anasayfa
               }
-            } else {
+            } else { // Not on homepage, hash links are not considered "active" in this context
               currentActivity = false;
             }
-          } else {
+          } else { // Regular link
             currentActivity = currentPathname === href;
           }
+          
           if (isActiveClient !== currentActivity) {
             setIsActiveClient(currentActivity);
           }
         };
   
-        checkActivity(); // Check on mount/hydration
+        checkActivity();
         const handleHashChange = () => checkActivity();
-        const handlePopState = () => checkActivity(); // For browser back/forward
+        const handlePopState = () => checkActivity();
   
         window.addEventListener('hashchange', handleHashChange);
-        window.addEventListener('popstate', handlePopState); 
+        window.addEventListener('popstate', handlePopState);
   
         return () => {
           window.removeEventListener('hashchange', handleHashChange);
           window.removeEventListener('popstate', handlePopState);
         };
       }
-    }, [href, currentPathname]); // Rerun when href or pathname changes
+    }, [href, currentPathname, isActiveClient]); // Removed isActiveClient from deps to avoid potential loops, check if needed
   
     const commonClasses = cn(
       "text-foreground hover:bg-accent/10 hover:text-accent-foreground",
-      "justify-start py-2 rounded-md",
+      "justify-start py-2 rounded-md", // Standard padding for items
       isActiveClient && !isAction && "bg-accent/20 text-accent-foreground font-semibold",
       className,
       disabled && "opacity-50 cursor-not-allowed"
@@ -207,7 +210,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           variant="ghost"
           size="sm"
           onClick={handleLinkClick}
-          className={cn(commonClasses)} // Removed gap-0, default gap-2 will apply
+          className={cn(commonClasses)}
           disabled={disabled}
         >
           {IconComponent && <IconComponent className={cn("h-4 w-4")} />}
@@ -221,12 +224,12 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         asChild
         variant="ghost"
         size="sm"
-        className={cn(commonClasses, "xl:text-sm lg:text-xs")} // Removed gap-0, default gap-2 will apply
+        className={cn(commonClasses, "xl:text-sm lg:text-xs px-3")} // Restored px-3 for desktop link spacing
         disabled={disabled}
       >
         <LinkFromNext href={href || '#'} onClick={handleLinkClick}>
           {IconComponent && <IconComponent className={cn("h-4 w-4")} />} 
-          <span>{children}</span>
+          <span className="ml-2">{children}</span>
         </LinkFromNext>
       </Button>
     );
@@ -256,16 +259,22 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         <div className="my-2 border-t border-border" />
         {isAuthenticated ? (
            <SheetClose asChild>
-             <Button variant="ghost" onClick={handleLogout} className="text-base py-2.5 px-4 text-destructive hover:bg-destructive/10 hover:text-destructive justify-start w-full" disabled={isSubmittingLogout}> {/* Removed gap-0 */}
-               {isSubmittingLogout ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogOutIcon className="h-5 w-5" />}
+             <Button variant="ghost" onClick={handleLogout} className="text-base py-2.5 px-4 text-destructive hover:bg-destructive/10 hover:text-destructive justify-start w-full" disabled={isSubmittingLogout}>
+               {isSubmittingLogout ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <LogOutIcon className="mr-2 h-5 w-5" />}
                <span>{logoutNavItemData.label}</span>
              </Button>
            </SheetClose>
         ) : (
            <SheetClose asChild>
-              <Button variant="default" onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }} className="text-base py-2.5 px-4 justify-start w-full mt-2" disabled={isSubmittingLogin}> {/* Removed gap-0 */}
-                {isSubmittingLogin ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="h-5 w-5" />}
-                <span>Giriş Yap</span>
+              <Button
+                variant="default"
+                onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }}
+                className="text-base py-2.5 px-4 justify-start w-full mt-2"
+                disabled={isSubmittingLogin}
+                aria-label="Giriş Yap"
+              >
+                {isSubmittingLogin ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <LogIn className="mr-2 h-5 w-5" />}
+                {/* Giriş Yap metni buradan kaldırıldı */}
               </Button>
             </SheetClose>
         )}
@@ -316,7 +325,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             href="/#anasayfa-section"
             className="text-2xl font-headline font-bold text-gradient"
             onClick={(e) => {
-              setIsMobileMenuOpen(false); // Close mobile menu if open
+              setIsMobileMenuOpen(false);
               const hrefAttr = e.currentTarget.getAttribute('href');
                if (typeof window !== 'undefined' && window.location.pathname === '/' && hrefAttr && hrefAttr.startsWith('/#')) {
                   e.preventDefault();
@@ -339,28 +348,30 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             {siteTitle}
           </LinkFromNext>
 
-          <nav className="hidden lg:flex space-x-0 items-center"> {/* Changed space-x-1 to space-x-0 */}
+          {/* Desktop Navigation - visible on lg screens and up */}
+          <nav className="hidden lg:flex items-center space-x-0"> {/* Sekmeler arası boşluk için space-x-0 */}
             {staticNavItems.map((item) => (
-              <NavLink key={`desktop-nav-${item.id}`} href={item.href} iconName={item.iconName} className="px-3">
+              <NavLink key={`desktop-nav-${item.id}`} href={item.href} iconName={item.iconName} className="xl:text-sm lg:text-xs px-3">
                 {item.label}
               </NavLink>
             ))}
           </nav>
 
           <div className="flex items-center space-x-2">
-             <div className="hidden lg:flex items-center">
+            {/* Desktop Admin/Login Controls - visible on lg screens and up */}
+            <div className="hidden lg:flex items-center">
               {isAuthenticated ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="xl:text-sm lg:text-xs px-3">
                       <Shield className="h-4 w-4" />
-                      <span className="ml-2">{adminNavItemData.label}</span> {/* Added ml-2 for spacing from icon */}
+                      <span className="ml-2">{adminNavItemData.label}</span>
                       <ChevronDown className="ml-1 h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem asChild className="cursor-pointer w-full flex items-center"> {/* Removed gap-0 */}
-                      <LinkFromNext href={adminNavItemData.href} className="w-full flex items-center"> {/* Removed gap-0 */}
+                    <DropdownMenuItem asChild className="cursor-pointer w-full flex items-center">
+                      <LinkFromNext href={adminNavItemData.href} className="w-full flex items-center">
                         <Shield className="h-4 w-4" />
                         <span className="ml-2">{adminNavItemData.label}</span>
                       </LinkFromNext>
@@ -369,22 +380,28 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                     <DropdownMenuItem
                       onClick={handleLogout}
                       disabled={isSubmittingLogout}
-                      className="text-destructive focus:bg-destructive focus:text-destructive-foreground cursor-pointer flex items-center" /* Removed gap-0 */
+                      className="text-destructive focus:bg-destructive focus:text-destructive-foreground cursor-pointer flex items-center"
                     >
-                      {isSubmittingLogout ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogOutIcon className="h-4 w-4" />}
+                      {isSubmittingLogout ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOutIcon className="h-4 w-4" />}
                       <span className="ml-2">Çıkış Yap</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button variant="default" size="sm" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin} className="xl:text-sm lg:text-xs"> {/* Removed gap-0 */}
-                  {isSubmittingLogin ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
-                  <span>Giriş Yap</span>
+                <Button
+                  variant="default"
+                  size="icon" // Only icon for desktop
+                  onClick={() => setIsLoginDialogOpen(true)}
+                  disabled={isSubmittingLogin}
+                  className="p-2" // Adjust padding for icon-only button
+                  aria-label="Giriş Yap"
+                >
+                  {isSubmittingLogin ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="h-5 w-5" />}
                 </Button>
               )}
             </div>
 
-
+            {/* Mobile Menu Trigger - visible on screens smaller than lg */}
             <div className="lg:hidden">
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
@@ -423,7 +440,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                         </LinkFromNext>
                       </SheetTitle>
                        <SheetClose>
-                          <X className="h-5 w-5" />
+                          <X className="h-5 w-5" /> {/* Using X icon */}
                           <span className="sr-only">Kapat</span>
                       </SheetClose>
                   </SheetHeader>
@@ -475,4 +492,3 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     </>
   );
 }
-
