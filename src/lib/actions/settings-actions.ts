@@ -34,7 +34,7 @@ const siteGeneralSettingsSchema = z.object({
 });
 
 const DEFAULT_SITE_GENERAL_SETTINGS: SiteGeneralSettings = {
-  siteTitle: 'BenimSitem', // Varsayılan site başlığı
+  siteTitle: 'BenimSitem', 
 };
 
 
@@ -51,41 +51,43 @@ async function getDb() {
   return admin.firestore();
 }
 
-const SITE_SETTINGS_COLLECTION = 'siteSettings';
-const THEME_DOCUMENT_ID = 'theme';
+// Collection and Document IDs
+const SITE_SETTINGS_COLLECTION = 'siteSettings'; // For general settings like siteTitle
 const GENERAL_SETTINGS_DOCUMENT_ID = 'general';
 
+const CUSTOM_THEMES_COLLECTION = 'customThemes'; // For theme settings
+const ACTIVE_THEME_DOCUMENT_ID = 'activeSystemTheme'; // Document ID for the active theme
 
 // --- Theme Setting Actions ---
 export const getThemeSetting = cache(async (): Promise<ThemeSetting> => {
-  console.log("[settings-actions getThemeSetting] SUNUCU EYLEMİ (cache'li): Veritabanından tema ayarı çekiliyor...");
+  console.log(`[settings-actions getThemeSetting] SUNUCU EYLEMİ (cache'li): Veritabanından tema ayarı çekiliyor... YOL: ${CUSTOM_THEMES_COLLECTION}/${ACTIVE_THEME_DOCUMENT_ID}`);
   try {
     const db = await getDb();
-    const docRef = db.collection(SITE_SETTINGS_COLLECTION).doc(THEME_DOCUMENT_ID);
+    const docRef = db.collection(CUSTOM_THEMES_COLLECTION).doc(ACTIVE_THEME_DOCUMENT_ID);
     const docSnap = await docRef.get();
 
     if (docSnap.exists) {
       const data = docSnap.data();
       const parsedTheme = THEME_OPTIONS.includes(data?.activeTheme as ThemeName) ? data?.activeTheme as ThemeName : 'default';
       const updatedAt = data?.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString();
-      console.log(`[settings-actions getThemeSetting] VERİTABANINDA BULUNAN TEMA AYARI: Aktif Tema='${parsedTheme}', Güncellenme='${updatedAt}'. Doküman verisi:`, JSON.stringify(data));
+      console.log(`[settings-actions getThemeSetting] VERİTABANINDA BULUNAN TEMA AYARI (${CUSTOM_THEMES_COLLECTION}/${ACTIVE_THEME_DOCUMENT_ID}): Aktif Tema='${parsedTheme}', Güncellenme='${updatedAt}'. Doküman verisi:`, JSON.stringify(data));
       return {
         activeTheme: parsedTheme,
         updatedAt: updatedAt,
       };
     } else {
-      console.log(`[settings-actions getThemeSetting] VERİTABANINDA '${SITE_SETTINGS_COLLECTION}/${THEME_DOCUMENT_ID}' dokümanı bulunamadı. Varsayılan tema ayarı oluşturuluyor: '${DEFAULT_THEME_SETTING.activeTheme}'`);
+      console.log(`[settings-actions getThemeSetting] VERİTABANINDA '${CUSTOM_THEMES_COLLECTION}/${ACTIVE_THEME_DOCUMENT_ID}' dokümanı bulunamadı. Varsayılan tema ayarı oluşturuluyor: '${DEFAULT_THEME_SETTING.activeTheme}'`);
       const defaultDataToSave = {
         ...DEFAULT_THEME_SETTING,
         updatedAt: admin.firestore.FieldValue.serverTimestamp()
       };
       await docRef.set(defaultDataToSave);
       const newUpdatedAt = new Date().toISOString();
-      console.log(`[settings-actions getThemeSetting] '${SITE_SETTINGS_COLLECTION}/${THEME_DOCUMENT_ID}' için varsayılan oluşturuldu. Tema: '${DEFAULT_THEME_SETTING.activeTheme}', Güncellenme: ${newUpdatedAt}`);
+      console.log(`[settings-actions getThemeSetting] '${CUSTOM_THEMES_COLLECTION}/${ACTIVE_THEME_DOCUMENT_ID}' için varsayılan oluşturuldu. Tema: '${DEFAULT_THEME_SETTING.activeTheme}', Güncellenme: ${newUpdatedAt}`);
       return { ...DEFAULT_THEME_SETTING, updatedAt: newUpdatedAt };
     }
   } catch (error: any) {
-    console.error("[settings-actions getThemeSetting] TEMA ÇEKİLİRKEN HATA:", error.message, error.stack);
+    console.error(`[settings-actions getThemeSetting] TEMA ÇEKİLİRKEN HATA (YOL: ${CUSTOM_THEMES_COLLECTION}/${ACTIVE_THEME_DOCUMENT_ID}):`, error.message, error.stack);
     const errorUpdatedAt = new Date().toISOString();
     console.log(`[settings-actions getThemeSetting] Hata nedeniyle varsayılan tema döndürülüyor. Tema: '${DEFAULT_THEME_SETTING.activeTheme}', Sahte Güncellenme: ${errorUpdatedAt}`);
     return { ...DEFAULT_THEME_SETTING, updatedAt: errorUpdatedAt };
@@ -93,7 +95,7 @@ export const getThemeSetting = cache(async (): Promise<ThemeSetting> => {
 });
 
 export async function updateThemeSetting(themeName: ThemeName) {
-  console.log(`[settings-actions updateThemeSetting] SUNUCU EYLEMİ BAŞLADI: Tema '${themeName}' olarak güncelleniyor...`);
+  console.log(`[settings-actions updateThemeSetting] SUNUCU EYLEMİ BAŞLADI: Tema '${themeName}' olarak güncelleniyor... YOL: ${CUSTOM_THEMES_COLLECTION}/${ACTIVE_THEME_DOCUMENT_ID}`);
 
   const adminInitError = getAdminInitializationError();
   if (adminInitError) {
@@ -116,16 +118,16 @@ export async function updateThemeSetting(themeName: ThemeName) {
     const db = await getDb(); 
     console.log("[settings-actions updateThemeSetting] Firestore DB bağlantısı alındı.");
 
-    const docRef = db.collection(SITE_SETTINGS_COLLECTION).doc(THEME_DOCUMENT_ID);
+    const docRef = db.collection(CUSTOM_THEMES_COLLECTION).doc(ACTIVE_THEME_DOCUMENT_ID);
     const dataToSave = {
       activeTheme: validation.data.activeTheme,
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     };
     
-    console.log(`[settings-actions updateThemeSetting] Firestore'a YAZILACAK VERİ ('${SITE_SETTINGS_COLLECTION}/${THEME_DOCUMENT_ID}'):`, JSON.stringify(dataToSave));
+    console.log(`[settings-actions updateThemeSetting] Firestore'a YAZILACAK VERİ ('${CUSTOM_THEMES_COLLECTION}/${ACTIVE_THEME_DOCUMENT_ID}'):`, JSON.stringify(dataToSave));
     await docRef.set(dataToSave, { merge: true }); 
-    const newTimestamp = new Date().toISOString(); // Firestore'dan okumak yerine anlık bir timestamp.
-    console.log(`[settings-actions updateThemeSetting] VERİTABANI GÜNCELLEME BAŞARILI: Tema '${validation.data.activeTheme}' olarak ayarlandı. Firestore Timestamp: (sunucu zamanı), Yaklaşık İstemci Zamanı: ${newTimestamp}`);
+    const newTimestamp = new Date().toISOString(); 
+    console.log(`[settings-actions updateThemeSetting] VERİTABANI GÜNCELLEME BAŞARILI: Tema '${validation.data.activeTheme}' olarak ayarlandı. Firestore Timestamp: (sunucu zamanı), Yaklaşık İstemci Zamanı: ${newTimestamp}. YOL: ${CUSTOM_THEMES_COLLECTION}/${ACTIVE_THEME_DOCUMENT_ID}`);
 
     try {
       console.log("[settings-actions updateThemeSetting] Yollar yeniden doğrulanmaya çalışılıyor: revalidatePath('/', 'layout') ve revalidatePath('/admin')...");
@@ -144,7 +146,7 @@ export async function updateThemeSetting(themeName: ThemeName) {
     } else if (error.message) {
         detailedErrorMessage = error.message; 
     }
-    console.error(`[settings-actions updateThemeSetting] Firestore İŞLEM HATASI: ${detailedErrorMessage}`, error.stack, JSON.stringify(error, Object.getOwnPropertyNames(error).concat(['cause'])));
+    console.error(`[settings-actions updateThemeSetting] Firestore İŞLEM HATASI (YOL: ${CUSTOM_THEMES_COLLECTION}/${ACTIVE_THEME_DOCUMENT_ID}): ${detailedErrorMessage}`, error.stack, JSON.stringify(error, Object.getOwnPropertyNames(error).concat(['cause'])));
     return { success: false, message: `Tema güncellenemedi: ${detailedErrorMessage}` };
   }
 }
@@ -152,7 +154,7 @@ export async function updateThemeSetting(themeName: ThemeName) {
 
 // --- Site General Settings Actions ---
 export const getSiteGeneralSettings = cache(async (): Promise<SiteGeneralSettings> => {
-  console.log("[settings-actions getSiteGeneralSettings] SUNUCU EYLEMİ (cache'li): Veritabanından genel site ayarları çekiliyor...");
+  console.log(`[settings-actions getSiteGeneralSettings] SUNUCU EYLEMİ (cache'li): Veritabanından genel site ayarları çekiliyor... YOL: ${SITE_SETTINGS_COLLECTION}/${GENERAL_SETTINGS_DOCUMENT_ID}`);
   try {
     const db = await getDb();
     const docRef = db.collection(SITE_SETTINGS_COLLECTION).doc(GENERAL_SETTINGS_DOCUMENT_ID);
@@ -189,8 +191,8 @@ export const getSiteGeneralSettings = cache(async (): Promise<SiteGeneralSetting
 });
 
 export async function updateSiteGeneralSettings(data: Partial<Omit<SiteGeneralSettings, 'updatedAt'>>) {
-  console.log("[settings-actions updateSiteGeneralSettings] SUNUCU EYLEMİ BAŞLADI: Genel site ayarları güncelleniyor...", data);
-  const { ...restData } = data; // Ensure no 'updatedAt' is passed from client
+  console.log(`[settings-actions updateSiteGeneralSettings] SUNUCU EYLEMİ BAŞLADI: Genel site ayarları güncelleniyor... YOL: ${SITE_SETTINGS_COLLECTION}/${GENERAL_SETTINGS_DOCUMENT_ID}`, data);
+  const { ...restData } = data; 
   const validation = siteGeneralSettingsSchema.partial().safeParse(restData);
   if (!validation.success) {
     console.error("[settings-actions updateSiteGeneralSettings] Doğrulama BAŞARISIZ:", validation.error.flatten().fieldErrors);
@@ -220,5 +222,3 @@ export async function updateSiteGeneralSettings(data: Partial<Omit<SiteGeneralSe
     return { success: false, message: `Bir hata oluştu: ${error.message}` };
   }
 }
-
-    
