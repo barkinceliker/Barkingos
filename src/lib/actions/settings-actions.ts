@@ -41,9 +41,12 @@ const DEFAULT_SITE_GENERAL_SETTINGS: SiteGeneralSettings = {
 async function getDb() {
   const adminInitError = getAdminInitializationError();
   if (adminInitError) {
+    // Log the specific initialization error before throwing
+    console.error(`[settings-actions getDb] Admin SDK initialization check failed: ${adminInitError}`);
     throw new Error(`Sunucu yapılandırma hatası (Admin SDK): ${adminInitError}`);
   }
   if (!admin || !admin.firestore) {
+    console.error("[settings-actions getDb] Firebase Admin SDK (admin.firestore) not properly initialized after passing pre-check.");
     throw new Error("Firebase Admin SDK (admin.firestore) düzgün başlatılamadı.");
   }
   return admin.firestore();
@@ -86,28 +89,60 @@ export const getThemeSetting = cache(async (): Promise<ThemeSetting> => {
 
 export async function updateThemeSetting(themeName: ThemeName) {
   console.log(`[settings-actions] updateThemeSetting called with themeName: ${themeName}`);
+
+  const adminInitError = getAdminInitializationError();
+  if (adminInitError) {
+    const errorMessage = `Firebase Admin SDK not initialized properly: ${adminInitError}`;
+    console.error(`[settings-actions] updateThemeSetting PRE-CHECK FAILED: ${errorMessage}`);
+    // Return a more specific message if Admin SDK is the issue
+    return { success: false, message: `Tema güncellenemedi: Sunucu yapılandırma sorunu (${adminInitError}). Lütfen sistem yöneticisi ile iletişime geçin.` };
+  }
+  console.log("[settings-actions] updateThemeSetting: Admin SDK pre-check passed.");
+
   const validation = themeSettingSchema.safeParse({ activeTheme: themeName });
   if (!validation.success) {
-    console.error("[settings-actions] updateThemeSetting validation failed:", validation.error.flatten().fieldErrors);
-    return { success: false, message: "Geçersiz tema adı.", errors: validation.error.flatten().fieldErrors };
+    const validationErrors = validation.error.flatten().fieldErrors;
+    console.error("[settings-actions] updateThemeSetting validation failed:", JSON.stringify(validationErrors));
+    return { success: false, message: "Geçersiz tema adı.", errors: validationErrors };
   }
+  console.log("[settings-actions] updateThemeSetting: Theme name validation successful.");
 
   try {
-    const db = await getDb();
+    const db = await getDb(); // This can throw if admin SDK issues persist beyond initial check
+    console.log("[settings-actions] updateThemeSetting: Firestore DB instance obtained.");
+
     const docRef = db.collection(SITE_SETTINGS_COLLECTION).doc(THEME_DOCUMENT_ID);
+    console.log(`[settings-actions] updateThemeSetting: Attempting to set theme '${validation.data.activeTheme}' in Firestore document '${THEME_DOCUMENT_ID}'.`);
+
     await docRef.set({
       activeTheme: validation.data.activeTheme,
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
 
-    console.log(`[settings-actions] Theme updated in DB to: ${validation.data.activeTheme}. Revalidating paths...`);
-    revalidatePath('/', 'layout'); 
-    revalidatePath('/admin'); 
-    console.log("[settings-actions] Paths revalidated.");
+    console.log(`[settings-actions] updateThemeSetting: Theme successfully updated in DB to: ${validation.data.activeTheme}.`);
+
+    try {
+      console.log("[settings-actions] updateThemeSetting: Attempting to revalidate paths...");
+      revalidatePath('/', 'layout');
+      revalidatePath('/admin');
+      console.log("[settings-actions] updateThemeSetting: Paths revalidated successfully.");
+    } catch (revalidateError: any) {
+      console.warn(`[settings-actions] updateThemeSetting: Path revalidation failed but db update was successful. Error: ${revalidateError.message}`, revalidateError);
+      // We still consider the main operation successful if DB write succeeded.
+      // Revalidation is a secondary step.
+    }
+
     return { success: true, message: 'Tema başarıyla güncellendi.' };
   } catch (error: any) {
-    console.error("[settings-actions] Error updating theme setting:", error);
-    return { success: false, message: `Bir hata oluştu: ${error.message}` };
+    let detailedErrorMessage = `Tema güncellenirken bir sunucu hatası oluştu.`;
+    if (error.code) { // Firebase errors often have a code
+        detailedErrorMessage = `Firestore Hatası (Kod: ${error.code}): ${error.message}`;
+    } else if (error.message) {
+        detailedErrorMessage = error.message; // Could be the error from getDb()
+    }
+    // Log the full error object for more context, especially if it's not a standard Firebase error.
+    console.error(`[settings-actions] Error in updateThemeSetting operation: ${detailedErrorMessage}`, JSON.stringify(error, Object.getOwnPropertyNames(error).concat(['cause'])));
+    return { success: false, message: `Tema güncellenemedi: ${detailedErrorMessage}` };
   }
 }
 
@@ -120,7 +155,7 @@ export const getSiteGeneralSettings = cache(async (): Promise<SiteGeneralSetting
     const docSnap = await docRef.get();
 
     if (docSnap.exists) {
-      const data = docSnap.data() as Partial<SiteGeneralSettings>; 
+      const data = docSnap.data() as Partial<SiteGeneralSettings>;
       return {
         siteTitle: data?.siteTitle || DEFAULT_SITE_GENERAL_SETTINGS.siteTitle,
         updatedAt: (docSnap.data()?.updatedAt as admin.firestore.Timestamp)?.toDate()?.toISOString() || new Date().toISOString(),
@@ -139,7 +174,7 @@ export const getSiteGeneralSettings = cache(async (): Promise<SiteGeneralSetting
 });
 
 export async function updateSiteGeneralSettings(data: Partial<Omit<SiteGeneralSettings, 'updatedAt'>>) {
-  const { ...restData } = data; 
+  const { ...restData } = data;
   const validation = siteGeneralSettingsSchema.partial().safeParse(restData);
   if (!validation.success) {
     return { success: false, message: "Doğrulama hatası.", errors: validation.error.flatten().fieldErrors };
@@ -149,12 +184,12 @@ export async function updateSiteGeneralSettings(data: Partial<Omit<SiteGeneralSe
     const db = await getDb();
     const docRef = db.collection(SITE_SETTINGS_COLLECTION).doc(GENERAL_SETTINGS_DOCUMENT_ID);
     await docRef.set({
-      ...validation.data, 
+      ...validation.data,
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     }, { merge: true });
 
-    revalidatePath('/', 'layout'); 
-    revalidatePath('/admin'); 
+    revalidatePath('/', 'layout');
+    revalidatePath('/admin');
     return { success: true, message: 'Genel site ayarları başarıyla güncellendi.' };
   } catch (error: any) {
     console.error("Error updating site general settings:", error);
