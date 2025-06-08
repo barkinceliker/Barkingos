@@ -6,7 +6,7 @@ import Footer from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
 import FloatingLogoutButton from '@/components/layout/FloatingLogoutButton';
 import { checkAuthStatus } from '@/lib/actions/auth';
-import { getThemeSetting, type ThemeName, getSiteGeneralSettings } from '@/lib/actions/settings-actions';
+import { getThemeSetting, type ThemeSetting, getSiteGeneralSettings } from '@/lib/actions/settings-actions';
 import { cn } from '@/lib/utils';
 import { PT_Sans, Playfair_Display, Source_Code_Pro } from 'next/font/google';
 
@@ -35,24 +35,26 @@ const sourceCodePro = Source_Code_Pro({
 const staticMetadataDescription = 'Kişisel portfolyo, blog, hizmetler, projeler ve daha fazlası tek bir sayfada.';
 
 export async function generateMetadata(): Promise<Metadata> {
-  console.log("[RootLayout generateMetadata] SUNUCU: Site başlığı için genel ayarlar çekiliyor...");
+  const logPrefix = "[RootLayout generateMetadata] SUNUCU:";
+  console.log(`${logPrefix} Site başlığı için genel ayarlar çekiliyor...`);
   const siteSettings = await getSiteGeneralSettings();
   const title = siteSettings?.siteTitle || 'BenimSitem | Portfolyo ve Blog';
-  console.log(`[RootLayout generateMetadata] SUNUCU: Oluşturulan başlık: '${title}'`);
+  console.log(`${logPrefix} Oluşturulan başlık: '${title}'`);
   return {
     title: title,
-    description: staticMetadataDescription, 
+    description: staticMetadataDescription,
     icons: {
-      icon: '/favicon.ico', 
+      icon: '/favicon.ico',
     },
   };
 }
 
 async function AuthAwareUIComponents() {
-  console.log("[RootLayout AuthAwareUIComponents] SUNUCU: Kimlik doğrulama ve site ayarları çekiliyor...");
+  const logPrefix = "[RootLayout AuthAwareUIComponents] SUNUCU:";
+  console.log(`${logPrefix} Kimlik doğrulama ve site ayarları çekiliyor...`);
   const auth = await checkAuthStatus();
-  const siteSettings = await getSiteGeneralSettings(); 
-  console.log(`[RootLayout AuthAwareUIComponents] SUNUCU: Kimlik durumu: ${auth.isAuthenticated}, Site Başlığı: ${siteSettings.siteTitle}`);
+  const siteSettings = await getSiteGeneralSettings();
+  console.log(`${logPrefix} Kimlik durumu: ${auth.isAuthenticated}, Site Başlığı: ${siteSettings.siteTitle}`);
   return (
     <>
       <Header
@@ -65,37 +67,62 @@ async function AuthAwareUIComponents() {
   );
 }
 
+function generateThemeVariablesStyle(palette: Record<string, string> | undefined): string {
+  if (!palette || Object.keys(palette).length === 0) {
+    return '';
+  }
+  const variables = Object.entries(palette)
+    .map(([key, value]) => `${key}: hsl(${value});`)
+    .join('\n  ');
+  return `:root {\n  ${variables}\n}`;
+}
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  console.log("[RootLayout SERVER RENDER] ================== BAŞLANGIÇ ==================");
-  
-  const themeSetting = await getThemeSetting(); // Bu fonksiyon zaten cache'li
-  const activeTheme = themeSetting?.activeTheme || 'default';
-  
-  console.log(`[RootLayout SERVER RENDER] getThemeSetting() çağrıldı. Sonuç (veritabanı/cache):`, JSON.stringify(themeSetting));
-  console.log(`[RootLayout SERVER RENDER] Sunucuda render için kullanılacak aktif tema: '${activeTheme}'`);
-  
-  const themeClass = activeTheme === 'default' ? '' : `theme-${activeTheme}`;
-  console.log(`[RootLayout SERVER RENDER] HTML için hesaplanan tema sınıfı: '${themeClass}'`);
+  const logPrefix = "[RootLayout SERVER RENDER]";
+  console.log(`${logPrefix} ================== BAŞLANGIÇ ==================`);
+
+  const themeSetting = await getThemeSetting();
+  console.log(`${logPrefix} getThemeSetting() çağrıldı. Sonuç (veritabanı/cache):`, JSON.stringify(themeSetting));
+
+  const activeThemeName = themeSetting?.activeThemeName || 'default';
+  const activeThemePalette = themeSetting?.activeThemePalette;
+  console.log(`${logPrefix} Kullanılacak aktif tema adı: '${activeThemeName}'`);
+  console.log(`${logPrefix} Kullanılacak aktif tema paleti mevcut mu: ${!!activeThemePalette}`);
+
+
+  const themeClassName = activeThemeName === 'default' ? '' : `theme-${activeThemeName}`;
+  console.log(`${logPrefix} HTML için hesaplanan tema sınıfı (className için): '${themeClassName}'`);
 
   const fontVariableClasses = cn(ptSans.variable, playfairDisplay.variable, sourceCodePro.variable);
-  console.log(`[RootLayout SERVER RENDER] HTML için font değişken sınıfları: '${fontVariableClasses}'`);
-  
-  // `key` prop'u için en önemli olan temanın değişmesi. Font sınıfları genellikle sabit kalır.
-  // Bu yüzden `activeTheme`'i `key`'e dahil etmek yeterli ve daha nettir.
-  const finalHtmlClasses = cn(themeClass, fontVariableClasses).trim();
-  const htmlKey = `${activeTheme}-${fontVariableClasses}`; // Key'i tema ve fontlara bağlı yapalım
+  console.log(`${logPrefix} HTML için font değişken sınıfları: '${fontVariableClasses}'`);
 
-  console.log(`[RootLayout SERVER RENDER] <html> etiketine uygulanacak className: '${finalHtmlClasses}'`);
-  console.log(`[RootLayout SERVER RENDER] <html> etiketine uygulanacak key: '${htmlKey}'`);
-  console.log("[RootLayout SERVER RENDER] ==================== BİTİŞ ====================");
+  const finalHtmlClasses = cn(themeClassName, fontVariableClasses).trim();
+  // Key, tema adı ve fontlara bağlı olmalı ki tema veya font değiştiğinde <html> yeniden render edilsin.
+  // Palette değişimi de key'i etkilemeli, bu yüzden activeThemeName yeterli.
+  const htmlKey = `${activeThemeName}-${fontVariableClasses}`;
+
+  console.log(`${logPrefix} <html> etiketine uygulanacak className: '${finalHtmlClasses}'`);
+  console.log(`${logPrefix} <html> etiketine uygulanacak key: '${htmlKey}'`);
+
+  const inlineThemeStyle = generateThemeVariablesStyle(activeThemePalette);
+  if (inlineThemeStyle) {
+    console.log(`${logPrefix} Dinamik olarak enjekte edilecek CSS değişkenleri:\n<style>\n${inlineThemeStyle}\n</style>`);
+  } else {
+    console.log(`${logPrefix} Dinamik stil enjeksiyonu için palet bulunamadı veya boş. Fallback (globals.css) kullanılacak.`);
+  }
+
+  console.log(`${logPrefix} ==================== BİTİŞ ====================`);
 
   return (
     <html lang="tr" className={finalHtmlClasses} key={htmlKey}>
       <head>
+        {inlineThemeStyle && (
+          <style dangerouslySetInnerHTML={{ __html: inlineThemeStyle }} />
+        )}
       </head>
       <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
         <AuthAwareUIComponents />
@@ -108,6 +135,3 @@ export default async function RootLayout({
     </html>
   );
 }
-    
-
-    
