@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Settings, Newspaper, FolderKanban, ListTree, Sparkles, Mail, Brain, Briefcase, Edit3 } from 'lucide-react';
+import { FileText, Settings, Newspaper, FolderKanban, ListTree, Sparkles, Mail, Brain, Briefcase, Edit3, Palette } from 'lucide-react';
 
 export default async function AdminDashboardPage() {
   return (
@@ -105,14 +105,31 @@ export default async function AdminDashboardPage() {
              <div className="flex justify-center mb-4">
                 <FileText className="h-12 w-12 text-accent" />
             </div>
-            <CardTitle className="font-headline text-2xl text-center">Site İçerik Yönetimi</CardTitle>
+            <CardTitle className="font-headline text-2xl text-center">Sayfa İçerik Yönetimi</CardTitle>
             <CardDescription className="text-center">
-              'Hakkımda' sayfası gibi çeşitli statik sayfa içeriklerini düzenleyin.
+              Anasayfa, Hakkımda gibi statik sayfa içeriklerini düzenleyin.
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
             <Link href="/admin/manage-content" passHref>
               <Button className="w-full">İçerikleri Yönet</Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
+          <CardHeader>
+             <div className="flex justify-center mb-4">
+                <Palette className="h-12 w-12 text-accent" />
+            </div>
+            <CardTitle className="font-headline text-2xl text-center">Site Ayarları</CardTitle>
+            <CardDescription className="text-center">
+              Sitenizin genel ayarlarını (tema vb.) yönetin.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <Link href="/admin/manage-settings" passHref>
+              <Button className="w-full">Ayarları Yönet</Button>
             </Link>
           </CardContent>
         </Card>

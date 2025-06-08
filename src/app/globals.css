@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -77,6 +78,50 @@ body {
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .theme-ocean-depth {
+    --background: 200 50% 15%; /* Dark Blue */
+    --foreground: 190 30% 85%; /* Light Bluish Gray */
+    --card: 200 45% 20%;
+    --card-foreground: 190 30% 85%;
+    --popover: 200 45% 20%;
+    --popover-foreground: 190 30% 85%;
+    --primary: 180 60% 50%; /* Teal */
+    --primary-foreground: 200 50% 10%; 
+    --secondary: 210 40% 30%; /* Muted Blue */
+    --secondary-foreground: 180 60% 80%; 
+    --muted: 210 30% 25%;
+    --muted-foreground: 190 30% 65%;
+    --accent: 30 80% 60%; /* Coral/Orange */
+    --accent-foreground: 200 50% 10%; 
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 200 40% 35%;
+    --input: 200 40% 25%;
+    --ring: 180 70% 60%; 
+  }
+
+  .theme-cyber-punk {
+    --background: 270 60% 8%;  /* Very Dark Purple/Almost Black */
+    --foreground: 300 100% 85%; /* Bright Pink/Magenta for text */
+    --card: 270 50% 12%;
+    --card-foreground: 300 100% 85%;
+    --popover: 270 50% 12%;
+    --popover-foreground: 300 100% 85%;
+    --primary: 180 100% 50%; /* Neon Cyan */
+    --primary-foreground: 270 60% 5%; 
+    --secondary: 250 70% 20%; /* Deep Blue */
+    --secondary-foreground: 210 100% 75%; /* Electric Blue text */
+    --muted: 270 40% 15%;
+    --muted-foreground: 270 30% 60%; /* Muted Purple text */
+    --accent: 60 100% 50%;  /* Neon Yellow */
+    --accent-foreground: 270 60% 5%;  
+    --destructive: 0 100% 55%; /* Bright Red */
+    --destructive-foreground: 0 0% 100%;
+    --border: 270 50% 30%;
+    --input: 270 50% 18%;
+    --ring: 300 100% 70%; /* Bright Pink for rings */
   }
 }
 

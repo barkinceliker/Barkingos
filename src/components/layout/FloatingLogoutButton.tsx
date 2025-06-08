@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -7,39 +8,32 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth as firebaseClientAuth } from '@/lib/firebase';
-import { logout as serverLogout } from '@/lib/actions/auth'; // Corrected import
+import { logout as serverLogout } from '@/lib/actions/auth';
 
 interface FloatingLogoutButtonProps {
   initialIsAuthenticated: boolean;
 }
 
 export default function FloatingLogoutButton({ initialIsAuthenticated }: FloatingLogoutButtonProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState(initialIsAuthenticated);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Start as false
   const [isSubmittingLogout, setIsSubmittingLogout] = useState(false);
-  // Removed currentUser state as it's implicitly handled by isAuthenticated
 
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
 
   useEffect(() => {
+    // Set initial state based on prop, then let onAuthStateChanged take over
+    if (initialIsAuthenticated) {
+      setIsAuthenticated(true);
+    }
+
     const unsubscribe = onAuthStateChanged(firebaseClientAuth, (user) => {
-      console.log("[FloatingLogoutButton onAuthStateChanged] Firebase user:", user ? user.uid : null);
-      setIsAuthenticated(!!user);
+      console.log("[FloatingLogoutButton onAuthStateChanged] Firebase user from SDK:", user ? user.uid : null);
+      setIsAuthenticated(!!user); // SDK state is the source of truth after mount
     });
     return () => unsubscribe();
-  }, []);
-
-  // Sync with server-provided initial state for the first render, then let onAuthStateChanged take over.
-  useEffect(() => {
-    console.log("[FloatingLogoutButton] initialIsAuthenticated prop received:", initialIsAuthenticated);
-    // This ensures the component uses the prop value until onAuthStateChanged fires for the first time.
-    // After that, onAuthStateChanged becomes the source of truth for isAuthenticated.
-    if (firebaseClientAuth.currentUser === null) { // Only set if Firebase hasn't determined current user yet
-        setIsAuthenticated(initialIsAuthenticated);
-    }
-  }, [initialIsAuthenticated]);
-
+  }, [initialIsAuthenticated]); // Effect depends on initialIsAuthenticated for the first setup
 
   const handleLogout = async () => {
     setIsSubmittingLogout(true);
@@ -48,7 +42,7 @@ export default function FloatingLogoutButton({ initialIsAuthenticated }: Floatin
       await firebaseClientAuth.signOut();
       console.log("[FloatingLogoutButton handleLogout] Client-side signOut successful.");
 
-      const result = await serverLogout(); // This is the call to the imported function
+      const result = await serverLogout();
       console.log("[FloatingLogoutButton handleLogout] serverLogout (cookie deletion) result:", result);
 
       if (result.success) {
@@ -57,8 +51,6 @@ export default function FloatingLogoutButton({ initialIsAuthenticated }: Floatin
         toast({ title: "Çıkış Hatası", description: result.error || "Sunucu tarafında çıkış sırasında bir sorun oluştu.", variant: "destructive" });
       }
 
-      // onAuthStateChanged will set isAuthenticated to false, which should hide this button.
-      // Refresh to ensure layout and other server components update.
       if (pathname.startsWith('/admin')) {
         router.push('/');
       }
@@ -71,7 +63,7 @@ export default function FloatingLogoutButton({ initialIsAuthenticated }: Floatin
     }
   };
 
-  console.log("[FloatingLogoutButton Render] isAuthenticated state:", isAuthenticated);
+  console.log("[FloatingLogoutButton Render] isAuthenticated state:", isAuthenticated, "Initial Prop:", initialIsAuthenticated);
 
   if (!isAuthenticated) {
     return null;

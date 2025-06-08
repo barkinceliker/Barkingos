@@ -6,18 +6,18 @@ import Footer from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
 import FloatingLogoutButton from '@/components/layout/FloatingLogoutButton';
 import { checkAuthStatus } from '@/lib/actions/auth';
+import { getThemeSetting, type ThemeName } from '@/lib/actions/settings-actions'; // Import theme actions
+import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'BenimSitem',
   description: 'Kişisel portfolyo ve blog sitesi',
 };
 
-// Force dynamic rendering for this layout and its children
 export const dynamic = 'force-dynamic';
 
 async function AuthAwareUIComponents() {
   const auth = await checkAuthStatus();
-  // Log to see if this component re-runs and gets fresh auth status
   console.log("[AuthAwareUIComponents] Auth status from checkAuthStatus:", auth);
   return (
     <>
@@ -27,13 +27,16 @@ async function AuthAwareUIComponents() {
   );
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const themeSetting = await getThemeSetting();
+  const themeClass = themeSetting.activeTheme === 'default' ? '' : `theme-${themeSetting.activeTheme}`;
+
   return (
-    <html lang="tr">
+    <html lang="tr" className={cn(themeClass)}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
