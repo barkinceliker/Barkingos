@@ -21,73 +21,73 @@ html {
 }
 
 @layer base {
-  :root { /* Obsidian & Forged Steel Theme */
-    /* Body Gradient Colors (Top-left to Bottom-right) */
-    --gradient-body-start-hsl: 220 10% 8%;  /* Very Dark Desaturated Blue/Charcoal */
-    --gradient-body-mid-hsl: 210 8% 12%;    /* Dark Cool Gray */
-    --gradient-body-end-hsl: 30 10% 10%;    /* Hint of Dark Bronze/Brown in dark gray */
+  :root { /* Obsidian & Dövülmüş Çelik Teması */
+    /* Gövde Arka Plan Gradienti (Sol Üstten Sağ Alta) */
+    --gradient-body-start-hsl: 220 10% 8%;  /* Çok Koyu Obsidyen/Kömür */
+    --gradient-body-mid-hsl: 210 8% 12%;    /* Koyu Soğuk Çelik Grisi */
+    --gradient-body-end-hsl: 30 10% 10%;    /* Koyu, Hafif Bronz/Kahve Yansımalı Gri */
 
-    --background: 220 10% 5%;              /* Obsidian Black (Fallback) */
-    --foreground: 210 15% 92%;            /* Light Steel Gray/Off-white (Text) */
+    --background: 220 10% 5%;              /* Çok Koyu Obsidyen (Fallback) */
+    --foreground: 210 15% 92%;            /* Açık Çelik Grisi/Kırık Beyaz (Metin) */
 
-    --card: 220 10% 10%;                  /* Dark Charcoal Card */
+    --card: 220 10% 10%;                  /* Koyu Obsidyen/Kömür Kart */
     --card-foreground: hsl(var(--foreground));
 
-    --popover: 220 10% 11%;               /* Dark Charcoal Popover Background */
+    --popover: 220 10% 11%;               /* Koyu Kömür Popover Arka Planı */
     --popover-foreground: hsl(var(--foreground));
 
-    /* Primary (Burnished Bronze/Deep Orange) ve Accent (Steely Blue) */
-    --primary: 30 60% 50%;                /* Burnished Bronze/Deep Orange - Ana etkileşimler */
-    --primary-foreground: 30 60% 95%;     /* Light color (primary butonlar için) */
+    /* Birincil (Yanık Bronz) ve Vurgu (Çelik Mavisi) */
+    --primary: 30 60% 50%;                /* Yanık Koyu Bronz/Bakır - Ana etkileşimler */
+    --primary-foreground: 30 60% 95%;     /* Açık renk (primary butonlar için) */
 
-    --accent: 210 60% 65%;                /* Steely Blue - Vurgular */
-    --accent-foreground: 210 60% 10%;     /* Koyu text (çelik mavisi vurgular için) */
+    --accent: 210 60% 65%;                /* Keskin Çelik Mavisi - Vurgular */
+    --accent-foreground: 210 60% 10%;     /* Koyu metin (çelik mavisi vurgular için) */
 
-    --secondary: 220 10% 18%;             /* Medium Dark Gray (ikincil elemanlar) */
-    --secondary-foreground: 210 15% 85%;  /* Lighter gray text (ikincil için) */
+    --secondary: 220 10% 18%;             /* Orta Koyu Gri (ikincil elemanlar) */
+    --secondary-foreground: 210 15% 85%;  /* Daha açık gri metin (ikincil için) */
 
-    --muted: 220 10% 15%;                 /* Muted Dark Gray */
-    --muted-foreground: 210 10% 65%;      /* Muted Gray text */
+    --muted: 220 10% 15%;                 /* Sessiz Koyu Gri */
+    --muted-foreground: 210 10% 65%;      /* Sessiz Gri metin */
 
-    --destructive: 0 70% 50%;             /* Vivid Red (yıkıcı eylemler için) */
+    --destructive: 0 70% 50%;             /* Canlı Kırmızı (yıkıcı eylemler için) */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 10% 25%;                /* Gray/Steel Border */
-    --input: 220 10% 7%;                  /* Very Dark Gray Input Background */
-    --ring: 30 65% 58%;                   /* Bright Bronze Ring (focus için) */
+    --border: 220 10% 25%;                /* Gri/Çelik Kenarlık */
+    --input: 220 10% 7%;                  /* Çok Koyu Gri Input Arka Planı */
+    --ring: 30 65% 58%;                   /* Parlak Bronz Ring (focus için) */
     --radius: 0.5rem;
 
-    /* Text Gradient - Bronze to Steely Blue */
-    --gradient-start-hsl: 30 65% 55%;     /* Brighter Bronze */
-    --gradient-end-hsl: 210 65% 70%;   /* Brighter Steely Blue */
+    /* Metin Gradienti - Parlak Bronzdan Parlak Çelik Mavisine */
+    --gradient-start-hsl: 30 65% 55%;     /* Daha Parlak Yanık Bronz */
+    --gradient-end-hsl: 210 65% 70%;   /* Daha Parlak Çelik Mavisi */
 
-    /* Hero Section Background Gradient Colors */
+    /* Hero Bölümü Arka Plan Gradient Renkleri */
     --hero-gradient-start-hsl: 220 12% 14%;
     --hero-gradient-mid-hsl: 210 10% 18%;
     --hero-gradient-end-hsl: 30 15% 16%;
 
-    /* Navbar Background Gradient Colors */
-    --navbar-gradient-start-hsl: 220 15% 15%; /* Darker Steel */
-    --navbar-gradient-end-hsl: 220 10% 11%;    /* Very Dark Desaturated Steel/Obsidian */
+    /* Navigasyon Çubuğu Arka Plan Gradient Renkleri (Hizmetler metin gradientiyle aynı) */
+    --navbar-gradient-start-hsl: 30 65% 55%; /* Parlak Yanık Bronz */
+    --navbar-gradient-end-hsl: 210 65% 70%;   /* Parlak Çelik Mavisi */
 
-    /* Chart Colors (Obsidian & Forged Steel Tema için) */
-    --chart-1: hsl(var(--primary));     /* Burnished Bronze */
-    --chart-2: hsl(var(--accent));      /* Steely Blue */
-    --chart-3: 15 70% 45%;              /* Deep Red/Orange */
-    --chart-4: 200 50% 55%;             /* Medium Blue/Gray */
-    --chart-5: 40 40% 70%;              /* Muted Gold/Light Bronze */
+    /* Grafik Renkleri (Obsidyen & Dövülmüş Çelik Tema için) */
+    --chart-1: hsl(var(--primary));     /* Yanık Bronz */
+    --chart-2: hsl(var(--accent));      /* Çelik Mavisi */
+    --chart-3: 15 70% 45%;              /* Derin Kırmızı/Turuncu */
+    --chart-4: 200 50% 55%;             /* Orta Mavi/Gri */
+    --chart-5: 40 40% 70%;              /* Sessiz Altın/Açık Bronz */
 
-    /* Sidebar Colors (Obsidian & Forged Steel Tema) */
-    --sidebar-background: 220 10% 9%;        /* Card background like, slightly darker */
+    /* Kenar Çubuğu Renkleri (Obsidyen & Dövülmüş Çelik Tema) */
+    --sidebar-background: 220 10% 9%;        /* Kart arka planı gibi, biraz daha koyu */
     --sidebar-foreground: hsl(var(--foreground));
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 220 12% 14%;           /* Active item background - slightly lighter gray */
-    --sidebar-accent-foreground: hsl(var(--accent)); /* Steely Blue accent for icons/text */
+    --sidebar-accent: 220 12% 14%;           /* Aktif öğe arka planı - biraz daha açık gri */
+    --sidebar-accent-foreground: hsl(var(--accent)); /* İkonlar/metinler için Çelik Mavisi vurgu */
     --sidebar-border: hsl(var(--border));
     --sidebar-ring: hsl(var(--ring));
 
-    /* Fine-tune and Custom Element Colors */
+    /* İnce Ayar ve Özel Eleman Renkleri */
     --link-text: hsl(var(--accent));
     --link-hover-text: hsl(var(--accent) / 0.8);
     --button-primary-bg: hsl(var(--primary));
@@ -100,7 +100,7 @@ html {
     --input-border: hsl(var(--border));
     --input-text: hsl(var(--foreground));
     --input-focus-ring: hsl(var(--ring));
-    --card-title-text: hsl(var(--foreground));
+    --card-title-text: hsl(var(--foreground)); /* text-gradient ile yönetiliyor */
     --card-description-text: hsl(var(--muted-foreground));
 
     --blockquote-bg: hsl(var(--secondary));
@@ -136,4 +136,3 @@ html {
     background-image: linear-gradient(to right, hsl(var(--navbar-gradient-start-hsl)), hsl(var(--navbar-gradient-end-hsl)));
   }
 }
-
