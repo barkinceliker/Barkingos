@@ -21,7 +21,7 @@ const themeSettingSchema = z.object({
 });
 
 const DEFAULT_THEME_SETTING: ThemeSetting = {
-  activeThemeName: 'default',
+  activeThemeName: 'ocean-depth', // Varsayılan tema 'ocean-depth' olarak değiştirildi
 };
 
 // --- Site General Settings ---
@@ -234,5 +234,3 @@ export async function updateSiteGeneralSettings(data: Partial<Omit<SiteGeneralSe
     return { success: false, message: `Bir hata oluştu: ${error.message}` };
   }
 }
-
-    
