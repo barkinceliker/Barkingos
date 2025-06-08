@@ -5,8 +5,8 @@
 
 body {
   font-family: 'PT Sans', sans-serif;
-  /* Zümrüt Yeşili & Gümüş Vurgulu Koyu Okyanus gradient arka plan */
-  background: hsl(var(--background)); /* Fallback solid dark ocean blue */
+  /* Volcanic Ember & Obsidian gradient background */
+  background: hsl(var(--background)); /* Fallback solid dark obsidian */
   background-image: linear-gradient(145deg, 
     hsl(var(--gradient-body-start-hsl)) 0%, 
     hsl(var(--gradient-body-mid-hsl)) 50%, 
@@ -22,69 +22,69 @@ html {
 }
 
 @layer base {
-  :root { /* Dark Theme: Emerald Green & Silver Accented Deep Ocean */
+  :root { /* Dark Theme: Volcanic Ember & Obsidian */
     /* Body Gradient Colors */
-    --gradient-body-start-hsl: 210 60% 8%;   /* Very Dark Deep Ocean Blue */
-    --gradient-body-mid-hsl: 180 55% 10%;   /* Dark Teal/Emerald Hint */
-    --gradient-body-end-hsl: 150 50% 12%;    /* Deep Dark Emerald Green */
+    --gradient-body-start-hsl: 220 15% 8%;   /* Very Dark Desaturated Blue/Obsidian */
+    --gradient-body-mid-hsl: 15 60% 15%;    /* Deep Dark Fiery Brown/Red */
+    --gradient-body-end-hsl: 30 70% 20%;     /* Dark Ember Orange */
 
-    --background: 210 60% 5%;             /* Very Dark Ocean Blue (Fallback) */
-    --foreground: 210 20% 95%;           /* Very Light Silvery Grey (Text) */
+    --background: 220 15% 5%;             /* Very Dark Obsidian (Fallback) */
+    --foreground: 30 15% 95%;           /* Warm Off-White (Text) */
     
-    --card: 210 55% 9%;                 /* Slightly Lighter Dark Ocean Blue (Cards) */
+    --card: 220 15% 9%;                 /* Slightly Lighter Dark Obsidian (Cards) */
     --card-foreground: hsl(var(--foreground));
 
-    --popover: 210 50% 11%;              /* Dark Popover Background */
+    --popover: 220 15% 11%;              /* Dark Popover Background */
     --popover-foreground: hsl(var(--foreground));
 
-    /* Primary and Accent colors will be Emerald and Silver/Light Blue */
-    --primary: 155 60% 45%;            /* Rich Emerald Green - Primary actions */
-    --primary-foreground: 155 20% 97%;   /* Light text on Emerald buttons */
+    /* Primary and Accent colors will be Fiery Red/Orange and Ember/Gold */
+    --primary: 10 70% 50%;            /* Strong Fiery Red/Orange - Primary actions */
+    --primary-foreground: 10 15% 97%;   /* Light text on Fiery buttons */
     
-    --accent: 200 70% 75%;            /* Bright Silver/Light Blue - Accents */
-    --accent-foreground: 200 60% 15%;    /* Dark text on Silver/Light Blue accents */
+    --accent: 35 90% 60%;            /* Bright Ember Orange/Gold - Accents */
+    --accent-foreground: 35 70% 10%;    /* Dark text on Ember/Gold accents */
 
-    --secondary: 210 40% 18%;            /* Darker Ocean Blue for secondary elements */
-    --secondary-foreground: 210 15% 80%; /* Lighter Grey text on secondary elements */
+    --secondary: 220 10% 18%;            /* Darker Desaturated Blue for secondary elements */
+    --secondary-foreground: 220 10% 80%; /* Lighter Grey text on secondary elements */
 
-    --muted: 210 35% 15%;                /* Muted Ocean Blue */
-    --muted-foreground: 210 15% 65%;     /* Muted Grey text */
+    --muted: 220 10% 15%;                /* Muted Obsidian */
+    --muted-foreground: 220 10% 65%;     /* Muted Grey text */
     
-    --destructive: 0 65% 55%;         /* Deep, rich red for destructive actions */
+    --destructive: 0 75% 55%;         /* Classic strong red for destructive actions */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 210 40% 25%;               /* Ocean Blue Border */
-    --input: 210 50% 12%;                /* Dark Input Background */
-    --ring: 155 65% 50%;               /* Emerald Green Ring for focus */
+    --border: 220 15% 25%;               /* Desaturated Blue Border */
+    --input: 220 15% 12%;                /* Dark Input Background */
+    --ring: 35 95% 65%;               /* Ember/Gold Ring for focus */
     --radius: 0.5rem;
 
-    /* Text Gradient - Bright Emerald to Light Silvery Blue */
-    --gradient-start-hsl: 155 65% 50%; /* Bright Emerald Green */
-    --gradient-end-hsl: 200 75% 80%;   /* Light Silvery Blue */
+    /* Text Gradient - Fiery Red/Orange to Bright Ember/Gold */
+    --gradient-start-hsl: 10 75% 55%; /* Slightly brighter Primary Red/Orange */
+    --gradient-end-hsl: 35 95% 65%;   /* Slightly brighter Accent Ember/Gold */
 
     /* Hero Section Background Gradient */
-    --hero-gradient-start-hsl: 210 50% 12%;    /* Dark Ocean Blue (slightly lighter than body) */
-    --hero-gradient-mid-hsl: 150 50% 25%;     /* Mid-tone Emerald Green */
-    --hero-gradient-end-hsl: 200 50% 20%;     /* Lighter Ocean Blue */
+    --hero-gradient-start-hsl: 220 20% 10%;    /* Dark Obsidian */
+    --hero-gradient-mid-hsl: 15 70% 30%;     /* More vibrant Fiery Red */
+    --hero-gradient-end-hsl: 35 80% 40%;     /* Brighter Ember Orange */
 
-    /* Chart Colors (Emerald/Silver/Blue for Dark Theme) */
-    --chart-1: hsl(var(--primary));    /* Emerald */
-    --chart-2: hsl(var(--accent));     /* Silver/Light Blue */
-    --chart-3: 170 55% 55%;            /* Lighter Teal/Emerald */
-    --chart-4: 220 60% 70%;            /* Softer Blue */
-    --chart-5: 210 10% 70%;            /* Contrast Light Grey */
+    /* Chart Colors (Ember/Gold & Reds for Dark Theme) */
+    --chart-1: hsl(var(--primary));    /* Fiery Red/Orange */
+    --chart-2: hsl(var(--accent));     /* Ember Orange/Gold */
+    --chart-3: 10 60% 40%;            /* Darker Fiery Red */
+    --chart-4: 30 80% 50%;            /* Brighter Orange */
+    --chart-5: 30 10% 70%;            /* Contrast Light Warm Grey */
 
     /* Sidebar Colors (Dark Theme) */
-    --sidebar-background: 210 60% 7%;      /* Similar to main background, slightly darker card */
+    --sidebar-background: 220 15% 7%;      /* Similar to main background, slightly darker card */
     --sidebar-foreground: hsl(var(--foreground));
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 210 50% 15%;         /* Active item background - a bit lighter ocean blue */
+    --sidebar-accent: 220 15% 15%;         /* Active item background - a bit lighter obsidian */
     --sidebar-accent-foreground: hsl(var(--accent)); /* Accent color for icons/text */
     --sidebar-border: hsl(var(--border));
     --sidebar-ring: hsl(var(--ring));
 
-    /* Fine-tune and Custom Element Colors (Emerald/Silver with Dark Ocean Theme) */
+    /* Fine-tune and Custom Element Colors (Fiery & Obsidian Theme) */
     --link-text: hsl(var(--accent));
     --link-hover-text: hsl(var(--accent) / 0.8); 
     --button-primary-bg: hsl(var(--primary));
@@ -97,7 +97,7 @@ html {
     --input-border: hsl(var(--border));
     --input-text: hsl(var(--foreground));
     --input-focus-ring: hsl(var(--ring));
-    --card-title-text: hsl(var(--foreground)); /* text-gradient manages CardTitle specific style */
+    --card-title-text: hsl(var(--foreground)); 
     --card-description-text: hsl(var(--muted-foreground));
 
     --blockquote-bg: hsl(var(--secondary));
@@ -116,7 +116,6 @@ html {
   * {
     @apply border-border;
   }
-  /* body için arka plan stili yukarıda global olarak tanımlandı */
   h1, h2, h3, h4, h5, h6 {
     @apply text-gradient;
   }
