@@ -45,7 +45,7 @@ body {
   }
 
   .dark {
-    /* Keeping dark mode styles as a fallback, but the app will primarily use light mode based on background color */
+    /* This dark class provides a base dark theme, can be overridden by specific themes */
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
@@ -81,47 +81,75 @@ body {
   }
 
   .theme-ocean-depth {
-    --background: 200 50% 15%; /* Dark Blue */
-    --foreground: 190 30% 85%; /* Light Bluish Gray */
-    --card: 200 45% 20%;
-    --card-foreground: 190 30% 85%;
-    --popover: 200 45% 20%;
-    --popover-foreground: 190 30% 85%;
-    --primary: 180 60% 50%; /* Teal */
-    --primary-foreground: 200 50% 10%; 
-    --secondary: 210 40% 30%; /* Muted Blue */
-    --secondary-foreground: 180 60% 80%; 
-    --muted: 210 30% 25%;
-    --muted-foreground: 190 30% 65%;
-    --accent: 30 80% 60%; /* Coral/Orange */
-    --accent-foreground: 200 50% 10%; 
-    --destructive: 0 70% 55%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 200 40% 35%;
-    --input: 200 40% 25%;
-    --ring: 180 70% 60%; 
+    --background: 205 50% 12%; /* Deep Dark Blue */
+    --foreground: 200 20% 88%; /* Light Bluish Gray */
+    --card: 205 45% 18%; /* Slightly Lighter Dark Blue */
+    --card-foreground: 200 20% 88%;
+    --popover: 205 45% 16%; /* Darker Popover */
+    --popover-foreground: 200 20% 88%;
+    --primary: 180 65% 55%; /* Bright Teal/Aqua */
+    --primary-foreground: 205 50% 10%; /* Darkest Blue for contrast */
+    --secondary: 210 40% 25%; /* Muted Desaturated Blue */
+    --secondary-foreground: 180 65% 80%; /* Lighter Teal for secondary text on secondary bg */
+    --muted: 210 35% 22%; /* Darker Muted Blue */
+    --muted-foreground: 200 25% 65%; /* Softer Bluish Gray */
+    --accent: 30 85% 60%; /* Vibrant Coral/Orange */
+    --accent-foreground: 205 50% 10%; /* Darkest Blue for text on accent */
+    --destructive: 0 70% 50%; /* Deep Red */
+    --destructive-foreground: 0 0% 100%; /* White */
+    --border: 205 40% 30%; /* Muted Blue Border */
+    --input: 205 40% 20%; /* Dark Input Background */
+    --ring: 180 70% 65%; /* Brighter Teal for focus rings */
+    --chart-1: 30 85% 60%; /* Coral */
+    --chart-2: 180 65% 55%; /* Teal */
+    --chart-3: 210 50% 70%; /* Light Blue */
+    --chart-4: 50 70% 60%; /* Gold/Yellow */
+    --chart-5: 150 60% 45%; /* Sea Green */
+    /* Sidebar Theming for Ocean Depth */
+    --sidebar-background: 205 50% 10%; /* Even Darker Blue for Sidebar */
+    --sidebar-foreground: 200 20% 80%; /* Light Bluish Gray for Sidebar Text */
+    --sidebar-primary: 180 65% 55%; /* Teal for Sidebar Primary Elements */
+    --sidebar-primary-foreground: 205 50% 8%; /* Darkest Blue for text on primary */
+    --sidebar-accent: 205 45% 15%; /* Slightly Lighter Dark Blue for Sidebar Accent */
+    --sidebar-accent-foreground: 180 65% 75%; /* Lighter Teal for text on accent */
+    --sidebar-border: 205 40% 25%; /* Muted Blue Border for Sidebar */
+    --sidebar-ring: 180 70% 65%; /* Teal for focus rings in Sidebar */
   }
 
   .theme-cyber-punk {
-    --background: 270 60% 8%;  /* Very Dark Purple/Almost Black */
-    --foreground: 300 100% 85%; /* Bright Pink/Magenta for text */
-    --card: 270 50% 12%;
-    --card-foreground: 300 100% 85%;
-    --popover: 270 50% 12%;
-    --popover-foreground: 300 100% 85%;
-    --primary: 180 100% 50%; /* Neon Cyan */
-    --primary-foreground: 270 60% 5%; 
-    --secondary: 250 70% 20%; /* Deep Blue */
-    --secondary-foreground: 210 100% 75%; /* Electric Blue text */
-    --muted: 270 40% 15%;
-    --muted-foreground: 270 30% 60%; /* Muted Purple text */
-    --accent: 60 100% 50%;  /* Neon Yellow */
-    --accent-foreground: 270 60% 5%;  
-    --destructive: 0 100% 55%; /* Bright Red */
-    --destructive-foreground: 0 0% 100%;
-    --border: 270 50% 30%;
-    --input: 270 50% 18%;
-    --ring: 300 100% 70%; /* Bright Pink for rings */
+    --background: 270 70% 7%;  /* Very Dark, Almost Black Purple */
+    --foreground: 300 100% 88%; /* Bright Neon Pink/Magenta */
+    --card: 270 60% 10%; /* Dark Purple Card */
+    --card-foreground: 300 100% 88%;
+    --popover: 270 60% 9%;  /* Darker Popover */
+    --popover-foreground: 300 100% 88%;
+    --primary: 180 100% 50%; /* Neon Cyan/Blue */
+    --primary-foreground: 270 70% 5%; /* Darkest Purple for contrast */
+    --secondary: 250 80% 18%; /* Deep Electric Blue */
+    --secondary-foreground: 210 100% 80%; /* Lighter Electric Blue for text */
+    --muted: 270 50% 12%; /* Dark Muted Purple */
+    --muted-foreground: 270 35% 65%; /* Muted Purple Text */
+    --accent: 60 100% 55%;  /* Neon Yellow */
+    --accent-foreground: 270 70% 5%; /* Darkest Purple for text on accent */
+    --destructive: 0 100% 58%; /* Bright Neon Red */
+    --destructive-foreground: 0 0% 100%; /* White */
+    --border: 270 50% 25%; /* Purple Border */
+    --input: 270 50% 15%; /* Dark Purple Input */
+    --ring: 300 100% 75%; /* Bright Pink for rings */
+    --chart-1: 300 100% 70%; /* Hot Pink */
+    --chart-2: 180 100% 50%; /* Cyan */
+    --chart-3: 240 100% 70%; /* Electric Blue */
+    --chart-4: 60 100% 55%;  /* Neon Yellow */
+    --chart-5: 120 100% 50%; /* Neon Green */
+    /* Sidebar Theming for Cyber Punk */
+    --sidebar-background: 270 70% 5%; /* Even Darker Purple for Sidebar */
+    --sidebar-foreground: 300 100% 80%; /* Bright Pink for Sidebar Text */
+    --sidebar-primary: 180 100% 50%; /* Neon Cyan for Sidebar Primary Elements */
+    --sidebar-primary-foreground: 270 70% 3%; /* Darkest Purple for text on primary */
+    --sidebar-accent: 270 60% 8%; /* Slightly Lighter Dark Purple for Sidebar Accent */
+    --sidebar-accent-foreground: 180 100% 75%; /* Lighter Cyan for text on accent */
+    --sidebar-border: 270 50% 20%; /* Purple Border for Sidebar */
+    --sidebar-ring: 300 100% 75%; /* Bright Pink for focus rings in Sidebar */
   }
 }
 
