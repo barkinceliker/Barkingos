@@ -1,180 +1,110 @@
-
-"use client";
-
-import Link from 'next/link';
-import React, { useState, useEffect } from 'react';
-import { MoreVertical, X } from 'lucide-react'; // Changed List to MoreVertical
-import { Button } from '@/components/ui/button';
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetClose,
-  SheetHeader,
-  SheetTitle
-} from '@/components/ui/sheet';
+import type { Metadata } from 'next';
+import './globals.css';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import { Toaster } from "@/components/ui/toaster";
+// FloatingLogoutButton kaldırıldığı için importu silindi
+import { checkAuthStatus } from '@/lib/actions/auth';
+import { getThemeSetting, type ThemeSetting, getSiteGeneralSettings } from '@/lib/actions/settings-actions';
 import { cn } from '@/lib/utils';
-import { usePathname } from 'next/navigation';
-import type { User as FirebaseUserType } from 'firebase/auth';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth as firebaseClientAuth } from '@/lib/firebase';
-import { getLucideIcon } from '@/components/icons/lucide-icon-map';
+import { PT_Sans, Playfair_Display, Source_Code_Pro } from 'next/font/google';
+// FloatingNavButton kaldırıldığı için importu silindi
 
-const staticNavItems = [
-  { id: 'home', label: 'Anasayfa', href: '/#anasayfa-section', iconName: 'Home' },
-  { id: 'about', label: 'Hakkımda', href: '/#hakkimda-section', iconName: 'User' },
-  { id: 'services', label: 'Hizmetler', href: '/#hizmetler-section', iconName: 'Sparkles' },
-  { id: 'projects', label: 'Projeler', href: '/#projeler-section', iconName: 'Briefcase' },
-  { id: 'skills', label: 'Yetenekler', href: '/#yetenekler-section', iconName: 'Lightbulb' },
-  { id: 'experience', label: 'Deneyimler', href: '/#deneyim-section', iconName: 'Award' },
-  { id: 'resume', label: 'Özgeçmiş', href: '/#ozgecmis-section', iconName: 'FileText' },
-  { id: 'blog', label: 'Blog', href: '/#blog-section', iconName: 'BookOpenText' },
-  { id: 'contact', label: 'İletişim', href: '/#iletisim-section', iconName: 'MessageSquare' },
-];
-const adminNavItemData = { label: 'Admin Panel', href: '/admin', iconName: 'Shield' };
+const ptSans = PT_Sans({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-pt-sans',
+  display: 'swap',
+});
 
-interface FloatingNavButtonProps {
-  initialIsAuthenticated: boolean;
-  siteTitle: string;
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin', 'latin-ext'],
+  style: ['normal', 'italic'],
+  variable: '--font-playfair-display',
+  display: 'swap',
+});
+
+const sourceCodePro = Source_Code_Pro({
+  subsets: ['latin', 'latin-ext'],
+  style: ['normal', 'italic'],
+  variable: '--font-source-code-pro',
+  display: 'swap',
+});
+
+const staticMetadataDescription = 'Kişisel portfolyo, blog, hizmetler, projeler ve daha fazlası tek bir sayfada.';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const logPrefix = "[RootLayout generateMetadata] SUNUCU:";
+  console.log(`${logPrefix} Site başlığı için genel ayarlar çekiliyor...`);
+  const siteSettings = await getSiteGeneralSettings();
+  const title = siteSettings?.siteTitle || 'BenimSitem | Portfolyo ve Blog';
+  console.log(`${logPrefix} Oluşturulan başlık: '${title}'`);
+  return {
+    title: title,
+    description: staticMetadataDescription,
+    icons: {
+      icon: '/favicon.ico',
+    },
+  };
 }
 
-export default function FloatingNavButton({ initialIsAuthenticated, siteTitle }: FloatingNavButtonProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(initialIsAuthenticated);
-  const pathname = usePathname();
+async function AuthAwareUIComponents() {
+  const logPrefix = "[RootLayout AuthAwareUIComponents] SUNUCU:";
+  console.log(`${logPrefix} Kimlik doğrulama ve site ayarları çekiliyor...`);
+  const auth = await checkAuthStatus();
+  const siteSettings = await getSiteGeneralSettings();
+  console.log(`${logPrefix} Kimlik durumu: ${auth.isAuthenticated}, Site Başlığı: ${siteSettings.siteTitle}`);
+  return (
+    <>
+      <Header
+        key={`header-${auth.isAuthenticated.toString()}-${siteSettings.siteTitle}`}
+        initialIsAuthenticated={auth.isAuthenticated}
+        initialSiteTitle={siteSettings.siteTitle}
+      />
+      {/* FloatingLogoutButton ve FloatingNavButton kaldırıldı */}
+    </>
+  );
+}
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(firebaseClientAuth, (user) => {
-      setIsAuthenticated(!!user);
-    });
-    return () => unsubscribe();
-  }, []);
+export default async function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const logPrefix = "[RootLayout SUNUCU]";
+  console.log(`${logPrefix} ================== BAŞLANGIÇ ==================`);
 
-  const NavLink = ({ href, children, iconName }: { href: string; children: React.ReactNode; iconName?: string }) => {
-    const IconComponent = getLucideIcon(iconName);
-    const [isHashActive, setIsHashActive] = useState(false);
+  const themeSetting = await getThemeSetting();
+  console.log(`${logPrefix} getThemeSetting() çağrıldı. Sonuç (veritabanı/cache):`, JSON.stringify(themeSetting));
 
-    useEffect(() => {
-      const checkHash = () => {
-        if (href.startsWith('/#') && pathname === '/') {
-          setIsHashActive(window.location.hash === href.substring(1));
-        } else {
-          setIsHashActive(false);
-        }
-      };
-      if (typeof window !== 'undefined') {
-        checkHash();
-        window.addEventListener('hashchange', checkHash);
-        return () => window.removeEventListener('hashchange', checkHash);
-      }
-    }, [href, pathname]);
+  const activeThemeName = themeSetting?.activeThemeName || 'default';
+  console.log(`${logPrefix} Sunucuda render için kullanılacak aktif tema: '${activeThemeName}'`);
+  
+  const themeClassName = activeThemeName === 'default' ? '' : `theme-${activeThemeName}`;
+  console.log(`${logPrefix} HTML için hesaplanan tema sınıfı: '${themeClassName}'`);
 
-    const isActive =
-      (pathname === '/' && href === '/#anasayfa-section' && (typeof window !== 'undefined' && !window.location.hash)) ||
-      (href.startsWith('/#') && pathname === '/' && isHashActive) ||
-      (pathname === href && !href.startsWith('/#'));
+  const fontVariableClasses = cn(ptSans.variable, playfairDisplay.variable, sourceCodePro.variable);
+  console.log(`${logPrefix} HTML için font değişken sınıfları: '${fontVariableClasses}'`);
+  
+  const finalHtmlClasses = cn(themeClassName, fontVariableClasses).trim();
+  const htmlKey = `${activeThemeName}-${fontVariableClasses}`; 
 
-    const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-      setIsOpen(false); 
-      if (href.startsWith('/#') && typeof window !== 'undefined') {
-        const targetId = href.substring(href.indexOf('#') + 1);
-        const targetElement = document.getElementById(targetId);
-        if (targetElement) {
-          e.preventDefault();
-          targetElement.scrollIntoView({ behavior: 'smooth' });
-          if (window.history.pushState) {
-            const newHash = href.substring(href.indexOf('#'));
-            window.history.pushState(null, '', newHash);
-          } else {
-            window.location.hash = href.substring(href.indexOf('#'));
-          }
-        }
-      }
-    };
-
-    return (
-      <SheetClose asChild>
-        <Button
-          asChild
-          variant="ghost"
-          size="sm" 
-          className={cn(
-            "text-foreground hover:bg-accent/10 hover:text-accent-foreground w-full justify-start text-base py-3 px-4",
-            isActive && "bg-accent/10 text-accent-foreground font-semibold"
-          )}
-        >
-          <Link href={href} onClick={handleLinkClick}>
-            {IconComponent && <IconComponent className="mr-3 h-5 w-5" />}
-            {children}
-          </Link>
-        </Button>
-      </SheetClose>
-    );
-  };
+  console.log(`${logPrefix} <html> etiketine uygulanacak className: '${finalHtmlClasses}'`);
+  console.log(`${logPrefix} <html> etiketine uygulanacak key: '${htmlKey}'`);
+  console.log(`${logPrefix} ==================== BİTİŞ ====================`);
 
   return (
-    // Positioned on the right, vertically centered. Only shows on md screens and up.
-    <div className="fixed top-1/2 -translate-y-1/2 right-4 sm:right-6 z-[90] md:block hidden">
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetTrigger asChild>
-          <Button
-            variant="default" 
-            size="icon"
-            className="shadow-xl rounded-md h-24 w-10 bg-card hover:bg-card/90 border border-primary/30 flex flex-col items-center justify-center" 
-            aria-label="Navigasyon Menüsünü Aç"
-          >
-            <MoreVertical className="h-6 w-6 text-primary" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="right" className="w-[300px] sm:w-[320px] bg-card p-0 flex flex-col">
-          <SheetHeader className="p-4 border-b flex flex-row justify-between items-center">
-            <SheetTitle asChild>
-              <Link
-                href="/#anasayfa-section"
-                className="text-xl font-headline font-bold text-gradient"
-                onClick={(e) => {
-                    setIsOpen(false);
-                    if (typeof window !== 'undefined' && window.location.pathname === '/') {
-                        e.preventDefault();
-                        const targetId = 'anasayfa-section';
-                        document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
-                        window.history.pushState(null, '', '/#anasayfa-section');
-                    }
-                }}
-              >
-                {siteTitle || "Menü"}
-              </Link>
-            </SheetTitle>
-             <SheetClose className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 data-[state=open]:bg-secondary">
-                <X className="h-5 w-5" />
-                <span className="sr-only">Kapat</span>
-            </SheetClose>
-          </SheetHeader>
-          <nav className="flex-grow flex flex-col space-y-1 p-3 overflow-y-auto">
-            {staticNavItems.map((item) => (
-              <NavLink
-                key={`floating-nav-${item.id}`}
-                href={item.href}
-                iconName={item.iconName}
-              >
-                {item.label}
-              </NavLink>
-            ))}
-            {isAuthenticated && (
-              <>
-                <div className="my-2 border-t border-border" />
-                <NavLink
-                  key="floating-nav-admin"
-                  href={adminNavItemData.href}
-                  iconName={adminNavItemData.iconName}
-                >
-                  {adminNavItemData.label}
-                </NavLink>
-              </>
-            )}
-          </nav>
-        </SheetContent>
-      </Sheet>
-    </div>
+    <html lang="tr" className={finalHtmlClasses} key={htmlKey}>
+      <head />
+      <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
+        <AuthAwareUIComponents />
+        <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {children}
+        </main>
+        <Footer />
+        <Toaster />
+      </body>
+    </html>
   );
 }

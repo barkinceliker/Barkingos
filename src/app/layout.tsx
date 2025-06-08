@@ -4,12 +4,12 @@ import './globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
-import FloatingLogoutButton from '@/components/layout/FloatingLogoutButton';
+// FloatingLogoutButton kaldırıldığı için importu silindi
 import { checkAuthStatus } from '@/lib/actions/auth';
 import { getThemeSetting, type ThemeSetting, getSiteGeneralSettings } from '@/lib/actions/settings-actions';
 import { cn } from '@/lib/utils';
 import { PT_Sans, Playfair_Display, Source_Code_Pro } from 'next/font/google';
-import FloatingNavButton from '@/components/layout/FloatingNavButton';
+// FloatingNavButton kaldırıldığı için importu silindi
 
 const ptSans = PT_Sans({
   subsets: ['latin', 'latin-ext'],
@@ -63,12 +63,7 @@ async function AuthAwareUIComponents() {
         initialIsAuthenticated={auth.isAuthenticated}
         initialSiteTitle={siteSettings.siteTitle}
       />
-      <FloatingLogoutButton key={`logout-btn-${auth.isAuthenticated.toString()}`} initialIsAuthenticated={auth.isAuthenticated} />
-      <FloatingNavButton 
-        key={`floating-nav-btn-${auth.isAuthenticated.toString()}-${siteSettings.siteTitle}`} 
-        initialIsAuthenticated={auth.isAuthenticated}
-        siteTitle={siteSettings.siteTitle}
-      />
+      {/* FloatingLogoutButton ve FloatingNavButton kaldırıldı */}
     </>
   );
 }
