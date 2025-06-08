@@ -35,13 +35,13 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
-import { signInWithEmailAndPassword, User as FirebaseUserType, signOut as firebaseSignOut, onAuthStateChanged } from 'firebase/auth'; // Corrected import
+import { signInWithEmailAndPassword, User as FirebaseUserType, signOut as firebaseSignOut, onAuthStateChanged } from 'firebase/auth';
 import { auth as firebaseClientAuth } from '@/lib/firebase';
 import { createSession, logout as serverLogout } from '@/lib/actions/auth';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 
 const staticNavItems = [
-  { id: 'home', label: 'Anasayfa', href: '/#anasayfa-section', iconName: 'Home' },
+  // { id: 'home', label: 'Anasayfa', href: '/#anasayfa-section', iconName: 'Home' }, // Anasayfa butonu kaldırıldı
   { id: 'about', label: 'Hakkımda', href: '/#hakkimda-section', iconName: 'User' },
   { id: 'services', label: 'Hizmetler', href: '/#hizmetler-section', iconName: 'Sparkles' },
   { id: 'projects', label: 'Projeler', href: '/#projeler-section', iconName: 'Briefcase' },
@@ -124,7 +124,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     useEffect(() => {
       const handleActivityUpdate = () => {
         if (typeof window === 'undefined' || !href) {
-          setIsActiveClient(prev => !prev ? prev : false); // Avoid unnecessary updates if no href
+          setIsActiveClient(prev => !prev ? prev : false); 
           return;
         }
 
@@ -132,7 +132,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         const currentHash = window.location.hash;
         const currentWindowPathname = window.location.pathname;
 
-        if (href.startsWith('/#') && currentWindowPathname === '/') {
+        if (href.startsWith('/#') && (currentWindowPathname === '/' || currentWindowPathname === '')) {
           const targetHash = href.substring(href.indexOf('#'));
           calculatedIsActive = currentHash === targetHash;
           if (href === '/#anasayfa-section' && (currentHash === '' || currentHash === '#')) {
@@ -169,7 +169,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           if (window.location.pathname === '/') {
             window.history.pushState(null, '', currentHref);
           } else {
-            router.push(currentHref);
+            router.push(currentHref); 
           }
         }
       }
@@ -310,18 +310,11 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             onClick={(e) => {
               setIsMobileMenuOpen(false);
               const hrefAttr = e.currentTarget.getAttribute('href');
-               if (typeof window !== 'undefined' && window.location.pathname === '/' && hrefAttr && hrefAttr.startsWith('/#')) {
+               if (typeof window !== 'undefined' && (window.location.pathname === '/' || window.location.pathname === '') && hrefAttr && hrefAttr.startsWith('/#')) {
                   e.preventDefault();
                   const targetId = hrefAttr.substring(hrefAttr.indexOf('#') + 1);
                   document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth'});
                   window.history.pushState(null, '', hrefAttr);
-              } else if (typeof window !== 'undefined' && window.location.pathname === '/') {
-                  const targetElement = document.getElementById('anasayfa-section');
-                  if (targetElement) {
-                      e.preventDefault();
-                      targetElement.scrollIntoView({ behavior: 'smooth' });
-                       window.history.pushState(null, '', '/#anasayfa-section');
-                  }
               } else {
                 router.push('/#anasayfa-section');
               }
@@ -398,18 +391,11 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                            onClick={(e) => {
                               setIsMobileMenuOpen(false);
                               const hrefAttr = e.currentTarget.getAttribute('href');
-                               if (typeof window !== 'undefined' && window.location.pathname === '/' && hrefAttr && hrefAttr.startsWith('/#')) {
+                               if (typeof window !== 'undefined' && (window.location.pathname === '/' || window.location.pathname === '') && hrefAttr && hrefAttr.startsWith('/#')) {
                                   e.preventDefault();
                                   const targetId = hrefAttr.substring(hrefAttr.indexOf('#') + 1);
                                   document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth'});
                                   window.history.pushState(null, '', hrefAttr);
-                              } else if (typeof window !== 'undefined' && window.location.pathname === '/') {
-                                  const targetElement = document.getElementById('anasayfa-section');
-                                  if (targetElement) {
-                                      e.preventDefault();
-                                      targetElement.scrollIntoView({ behavior: 'smooth' });
-                                       window.history.pushState(null, '', '/#anasayfa-section');
-                                  }
                               } else {
                                 router.push('/#anasayfa-section');
                               }
