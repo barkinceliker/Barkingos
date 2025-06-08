@@ -4,17 +4,37 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getBlogPostBySlug, getAllPostSlugs } from '@/lib/actions/blog-actions'; // Firestore actions
+import { getBlogPostBySlug, getAllPostSlugs, type BlogPostInput } from '@/lib/actions/blog-actions';
 
 export async function generateStaticParams() {
-  // Artık Firestore'dan slug'ları çekiyoruz
-  return getAllPostSlugs();
+  const slugs = await getAllPostSlugs();
+  // Ensure the returned format is Array<{ slug: string }>
+  if (!Array.isArray(slugs) || !slugs.every(s => typeof s.slug === 'string')) {
+    console.error("[Blog generateStaticParams] getAllPostSlugs did not return the expected format. Received:", slugs);
+    return []; // Return empty array on unexpected format to prevent build errors
+  }
+  return slugs;
 }
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = await getBlogPostBySlug(params.slug); // Firestore'dan çek
+interface BlogPostPageProps {
+  params: {
+    slug: string;
+  };
+}
+
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  const currentSlug = params.slug;
+
+  if (typeof currentSlug !== 'string' || !currentSlug) {
+    console.error(`[BlogPostPage] Invalid or missing slug: "${currentSlug}"`);
+    notFound();
+  }
+
+  console.log(`[BlogPostPage] Fetching post for slug: "${currentSlug}"`);
+  const post: (BlogPostInput & { id: string }) | null = await getBlogPostBySlug(currentSlug);
 
   if (!post) {
+    console.warn(`[BlogPostPage] Post with slug "${currentSlug}" not found by getBlogPostBySlug.`);
     notFound();
   }
 
@@ -57,9 +77,20 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
   );
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const post = await getBlogPostBySlug(params.slug);
+export async function generateMetadata({ params }: BlogPostPageProps) {
+  const currentSlug = params.slug;
+  if (typeof currentSlug !== 'string' || !currentSlug) {
+    console.error(`[Blog generateMetadata] Invalid or missing slug: "${currentSlug}"`);
+    return {
+      title: 'Geçersiz Yazı Adresi',
+    };
+  }
+
+  console.log(`[Blog generateMetadata] Fetching metadata for slug: "${currentSlug}"`);
+  const post = await getBlogPostBySlug(currentSlug);
+
   if (!post) {
+    console.warn(`[Blog generateMetadata] Post with slug "${currentSlug}" not found for metadata.`);
     return {
       title: 'Yazı Bulunamadı',
     };
