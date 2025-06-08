@@ -8,20 +8,36 @@ import FloatingLogoutButton from '@/components/layout/FloatingLogoutButton';
 import { checkAuthStatus } from '@/lib/actions/auth';
 import { getThemeSetting, type ThemeName } from '@/lib/actions/settings-actions';
 import { cn } from '@/lib/utils';
+import { PT_Sans, Playfair_Display, Source_Code_Pro } from 'next/font/google';
+
+const ptSans = PT_Sans({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-pt-sans',
+  display: 'swap',
+});
+
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin', 'latin-ext'],
+  style: ['normal', 'italic'],
+  variable: '--font-playfair-display',
+  display: 'swap',
+});
+
+const sourceCodePro = Source_Code_Pro({
+  subsets: ['latin', 'latin-ext'],
+  style: ['normal', 'italic'],
+  variable: '--font-source-code-pro',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'BenimSitem',
   description: 'Kişisel portfolyo ve blog sitesi',
-  icons: [
-    {
-      rel: 'icon',
-      url: '/favicon.ico', // This points to public/favicon.ico
-      type: 'image/x-icon',
-      sizes: 'any', // Or specific sizes like '16x16' or '32x32' if you have them
-    },
-    // You can add other icon types here if needed, e.g., apple-touch-icon
-    // { rel: 'apple-touch-icon', url: '/apple-icon.png' },
-  ],
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export const dynamic = 'force-dynamic';
@@ -46,13 +62,9 @@ export default async function RootLayout({
   const themeClass = themeSetting.activeTheme === 'default' ? '' : `theme-${themeSetting.activeTheme}`;
 
   return (
-    <html lang="tr" className={cn(themeClass)}>
+    <html lang="tr" className={cn(themeClass, ptSans.variable, playfairDisplay.variable, sourceCodePro.variable)}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet" />
+        {/* Google Fonts linkleri kaldırıldı, next/font kullanılacak */}
       </head>
       <body className="font-body antialiased flex flex-col min-h-screen">
         <AuthAwareUIComponents />

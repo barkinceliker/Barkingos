@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -10,9 +11,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['PT Sans', 'sans-serif'],
-        headline: ['Playfair Display', 'serif'],
-        code: ['Source Code Pro', 'monospace'],
+        body: ['var(--font-pt-sans)', 'sans-serif'],
+        headline: ['var(--font-playfair-display)', 'serif'],
+        code: ['var(--font-source-code-pro)', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -48,6 +49,30 @@ export default {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
+        // İnce ayar renkleri
+        'blockquote-bg': 'hsl(var(--blockquote-bg))',
+        'blockquote-border': 'hsl(var(--blockquote-border))',
+        'blockquote-text': 'hsl(var(--blockquote-text))',
+        'code-bg': 'hsl(var(--code-bg))',
+        'code-text': 'hsl(var(--code-text))',
+        'separator-color': 'hsl(var(--separator-color))',
+        'toast-bg': 'hsl(var(--toast-bg))',
+        'toast-text': 'hsl(var(--toast-text))',
+        'toast-border': 'hsl(var(--toast-border))',
+        'link-text': 'hsl(var(--link-text))',
+        'link-hover-text': 'hsl(var(--link-hover-text))',
+        'button-primary-bg': 'hsl(var(--button-primary-bg))',
+        'button-primary-text': 'hsl(var(--button-primary-text))',
+        'button-primary-hover-bg': 'hsl(var(--button-primary-hover-bg))',
+        'button-secondary-bg': 'hsl(var(--button-secondary-bg))',
+        'button-secondary-text': 'hsl(var(--button-secondary-text))',
+        'button-secondary-hover-bg': 'hsl(var(--button-secondary-hover-bg))',
+        'input-bg': 'hsl(var(--input-bg))',
+        'input-border': 'hsl(var(--input-border))',
+        'input-text': 'hsl(var(--input-text))',
+        'input-focus-ring': 'hsl(var(--input-focus-ring))',
+        'card-title-text': 'hsl(var(--card-title-text))',
+        'card-description-text': 'hsl(var(--card-description-text))',
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',
