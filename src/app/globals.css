@@ -38,9 +38,9 @@ html {
     --ring: 190 80% 65%; /* Luminous Teal/Cyan Ring, slightly brighter for focus */
     --radius: 0.5rem;
 
-    /* Body Background Gradient (Deep Space) */
-    --gradient-body-start-hsl: 230 40% 8%; /* Deep Dark Blue */
-    --gradient-body-end-hsl: 270 45% 10%;   /* Deep Dark Purple/Violet */
+    /* Body Background Gradient (Deep Space - Enhanced) */
+    --gradient-body-start-hsl: 230 50% 9%; /* Daha doygun Koyu Derin Mavi */
+    --gradient-body-end-hsl: 270 55% 12%;   /* Daha doygun ve biraz daha açık Koyu Derin Mor/Menekşe */
 
     /* Text Gradient (Nebula Colors) */
     --gradient-start-hsl: 190 85% 65%; /* Brighter Luminous Teal/Cyan */
