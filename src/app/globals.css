@@ -5,8 +5,8 @@
 
 body {
   font-family: 'PT Sans', sans-serif;
-  /* Ethereal Twilight gradient background - top-left to bottom-right */
-  background: hsl(var(--background)); /* Fallback solid dark indigo */
+  /* Görkemli Sarı Lacivert gradient background - sol-üstten sağ-alta */
+  background: hsl(var(--background)); /* Fallback koyu lacivert */
   background-image: linear-gradient(to bottom right,
     hsl(var(--gradient-body-start-hsl)) 0%,
     hsl(var(--gradient-body-mid-hsl)) 50%,
@@ -22,69 +22,69 @@ html {
 }
 
 @layer base {
-  :root { /* Dark Theme: Ethereal Twilight */
+  :root { /* Koyu Tema: Görkemli Sarı Lacivert */
     /* Body Gradient Colors (Top-left to Bottom-right) */
-    --gradient-body-start-hsl: 260 40% 15%; /* Deep, muted Indigo/Purple */
-    --gradient-body-mid-hsl: 330 30% 25%;   /* Soft, dusty Rose/Mauve */
-    --gradient-body-end-hsl: 200 35% 20%;   /* Dark, desaturated Teal/Blue */
+    --gradient-body-start-hsl: 220 70% 10%;  /* Çok Koyu, Zengin Lacivert */
+    --gradient-body-mid-hsl: 215 60% 15%;    /* Derin Lacivert */
+    --gradient-body-end-hsl: 210 50% 12%;    /* Biraz daha farklı tonda Koyu Lacivert */
 
-    --background: 260 40% 10%;             /* Very Dark Muted Indigo (Fallback) */
-    --foreground: 40 20% 95%;           /* Soft Off-White, slightly warm (Text) */
+    --background: 220 70% 8%;              /* Çok Koyu Lacivert (Fallback) */
+    --foreground: 50 40% 96%;            /* Çok Açık, Altın Sarısına Çalan Kırık Beyaz (Text) */
 
-    --card: 260 38% 12%;                 /* Slightly Lighter Dark Muted Indigo (Cards) */
+    --card: 220 65% 13%;                  /* Koyu Lacivert (Cards) */
     --card-foreground: hsl(var(--foreground));
 
-    --popover: 260 35% 14%;              /* Dark Popover Background */
+    --popover: 220 60% 14%;               /* Koyu Lacivert Popover Background */
     --popover-foreground: hsl(var(--foreground));
 
-    /* Primary and Accent colors will be soft, luminous Lavender and muted Gold */
-    --primary: 275 60% 65%;            /* Luminous, soft Lavender/Lilac - Primary actions */
-    --primary-foreground: 275 15% 97%;   /* Light text on Lavender buttons */
+    /* Primary (Sarı) ve Accent (Açık Sarı) */
+    --primary: 48 100% 55%;             /* Canlı, Zengin Altın Sarısı - Ana etkileşimler */
+    --primary-foreground: 48 100% 10%;    /* Koyu text (sarı butonlar için) */
 
-    --accent: 45 50% 60%;            /* Muted, desaturated Gold/Pale Orange - Accents */
-    --accent-foreground: 45 60% 10%;    /* Dark text on Gold accents */
+    --accent: 52 100% 60%;              /* Biraz daha açık, enerjik Sarı - Vurgular */
+    --accent-foreground: 52 100% 12%;     /* Koyu text (vurgu sarısı için) */
 
-    --secondary: 240 20% 20%;            /* Darker Desaturated Blue for secondary elements */
-    --secondary-foreground: 240 10% 80%; /* Lighter Grey text on secondary elements */
+    --secondary: 220 40% 20%;             /* Daha Koyu Desatüre Lacivert (ikincil elemanlar) */
+    --secondary-foreground: 220 20% 85%;  /* Daha Açık Gri/Lacivert text (ikincil elemanlar için) */
 
-    --muted: 240 15% 18%;                /* Muted Dark Blue */
-    --muted-foreground: 240 10% 65%;     /* Muted Grey text */
+    --muted: 220 30% 18%;                 /* Mat Koyu Lacivert/Gri */
+    --muted-foreground: 220 15% 70%;      /* Mat Gri/Lacivert text */
 
-    --destructive: 0 65% 50%;         /* Muted but clear red for destructive actions */
+    --destructive: 0 70% 50%;          /* Canlı Kırmızı (yıkıcı eylemler için) */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 20% 30%;               /* Desaturated Blue Border */
-    --input: 250 25% 15%;                /* Dark Input Background (Indigoish) */
-    --ring: 275 65% 70%;               /* Luminous Lavender Ring for focus */
+    --border: 220 40% 30%;                /* Desatüre Lacivert Kenarlık */
+    --input: 220 50% 12%;                 /* Koyu Lacivert Input Background */
+    --ring: 48 100% 60%;                /* Parlak Sarı Ring (focus için) */
     --radius: 0.5rem;
 
-    /* Text Gradient - Luminous Lavender to Muted Gold */
-    --gradient-start-hsl: 275 65% 70%; /* Brighter Primary Lavender */
-    --gradient-end-hsl: 45 55% 65%;   /* Brighter Accent Gold */
+    /* Text Gradient - Parlak Sarıdan Altın Sarısına */
+    --gradient-start-hsl: 48 100% 58%;  /* Parlak Altın Sarısı */
+    --gradient-end-hsl: 52 100% 62%;    /* Biraz daha açık, canlı Sarı */
 
     /* Hero Section Background Gradient Colors (Solid, opacity applied via Tailwind class) */
-    --hero-gradient-start-hsl: 260 45% 22%;    /* Muted Indigo (for Hero) */
-    --hero-gradient-mid-hsl: 330 35% 32%;     /* Dusty Rose (for Hero) */
-    --hero-gradient-end-hsl: 200 40% 28%;     /* Desaturated Teal (for Hero) */
+    --hero-gradient-start-hsl: 220 70% 14%;    /* Hero için Koyu Lacivert */
+    --hero-gradient-mid-hsl: 215 60% 18%;     /* Hero için Orta Ton Lacivert */
+    --hero-gradient-end-hsl: 210 55% 16%;     /* Hero için biraz farklı Koyu Lacivert */
 
-    /* Chart Colors (Muted Tones for Ethereal Twilight Theme) */
-    --chart-1: hsl(var(--primary));    /* Luminous Lavender */
-    --chart-2: hsl(var(--accent));     /* Muted Gold */
-    --chart-3: 275 50% 55%;            /* Darker Lavender */
-    --chart-4: 45 40% 50%;            /* Darker Gold */
-    --chart-5: 210 15% 70%;            /* Contrast Light Cool Grey */
+    /* Chart Colors (Sarı Lacivert Tema için) */
+    --chart-1: hsl(var(--primary));     /* Canlı Sarı */
+    --chart-2: hsl(var(--accent));      /* Açık Sarı */
+    --chart-3: 45 80% 50%;             /* Biraz daha koyu Sarı */
+    --chart-4: 210 50% 60%;             /* Açık Lacivert/Mavi */
+    --chart-5: 220 30% 75%;             /* Kontrast Açık Gri/Mavi */
 
-    /* Sidebar Colors (Ethereal Twilight Theme) */
-    --sidebar-background: 260 39% 11%;      /* Similar to card background, slightly darker */
+    /* Sidebar Colors (Sarı Lacivert Tema) */
+    --sidebar-background: 220 68% 11%;       /* Kart arka planına benzer, biraz daha koyu lacivert */
     --sidebar-foreground: hsl(var(--foreground));
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 250 28% 18%;         /* Active item background - a bit lighter dark indigo */
-    --sidebar-accent-foreground: hsl(var(--accent)); /* Accent color for icons/text */
+    --sidebar-accent: 220 50% 16%;          /* Aktif öğe arka planı - biraz daha açık lacivert */
+    --sidebar-accent-foreground: hsl(var(--accent)); /* İkonlar/text için Sarı vurgu */
     --sidebar-border: hsl(var(--border));
     --sidebar-ring: hsl(var(--ring));
 
-    /* Fine-tune and Custom Element Colors (Ethereal Twilight Theme) */
+    /* Fine-tune and Custom Element Colors (Sarı Lacivert Tema) */
     --link-text: hsl(var(--accent));
     --link-hover-text: hsl(var(--accent) / 0.8);
     --button-primary-bg: hsl(var(--primary));
@@ -130,3 +130,4 @@ html {
     text-fill-color: transparent;
   }
 }
+
