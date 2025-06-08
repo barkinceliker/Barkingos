@@ -59,6 +59,11 @@ html {
     --gradient-start-hsl: 28 100% 60%; /* Canlı Turuncu */
     --gradient-end-hsl: 20 90% 55%;    /* Koyu/Kırmızımsı Turuncu */
 
+    /* Hero Section Arka Plan Gradienti */
+    --hero-gradient-start-hsl: 0 0% 10%;    /* Çok Koyu Gri */
+    --hero-gradient-mid-hsl: 40 80% 35%;    /* Temanın altın rengine yakın, derin bir ton */
+    --hero-gradient-end-hsl: 28 90% 40%;    /* Temanın turuncu rengine yakın, derin bir ton */
+
     /* Grafik Renkleri (Altın/Turuncu ile Koyu Tema için Ayarlandı) */
     --chart-1: hsl(var(--primary));    /* Altın */
     --chart-2: hsl(var(--accent));     /* Turuncu */
