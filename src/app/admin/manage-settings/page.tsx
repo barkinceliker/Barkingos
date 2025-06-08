@@ -2,15 +2,21 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Palette, Settings } from 'lucide-react';
+import { Palette, Settings, Paintbrush } from 'lucide-react'; // Added Paintbrush for Custom Themes
 
 export default function ManageSettingsPage() {
   const settingsSections = [
     {
-      name: 'Tema Ayarları',
-      description: 'Sitenizin genel görünümünü ve renk paletini özelleştirin.',
+      name: 'Tema Seçimi',
+      description: 'Sitenizin genel görünümünü ve önceden tanımlanmış renk paletini seçin.',
       editUrl: '/admin/manage-settings/theme',
       icon: Palette,
+    },
+    {
+      name: 'Özel Temaları Yönet',
+      description: 'Kendi temalarınızı oluşturun, düzenleyin veya silin. Detaylı renk kodlarını yönetin.',
+      editUrl: '/admin/manage-settings/custom-themes',
+      icon: Paintbrush, // New icon for custom themes
     },
     // Gelecekte diğer ayar bölümleri buraya eklenebilir
   ];
@@ -19,7 +25,7 @@ export default function ManageSettingsPage() {
     <div className="space-y-8">
       <section>
         <h1 className="text-3xl font-headline font-bold text-primary">Site Ayarları Yönetimi</h1>
-        <p className="text-muted-foreground">Sitenizin genel ayarlarını buradan yönetebilirsiniz.</p>
+        <p className="text-muted-foreground">Sitenizin genel ayarlarını ve görünümünü buradan yönetebilirsiniz.</p>
       </section>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
