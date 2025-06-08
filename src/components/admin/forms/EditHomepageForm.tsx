@@ -21,19 +21,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Save, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+// Schema should now only contain heroTitle and heroSubtitle
 const homepageContentSchema = z.object({
   heroTitle: z.string().min(1, "Hero başlığı gereklidir."),
   heroSubtitle: z.string().min(1, "Hero alt başlığı gereklidir."),
-  aboutSnippetTitle: z.string().min(1, "'Kısaca Ben' bölüm başlığı gereklidir."),
-  aboutSnippetDescription: z.string().min(1, "'Kısaca Ben' bölüm açıklaması gereklidir."),
-  recentProjectsTitle: z.string().min(1, "'Son Projelerim' bölüm başlığı gereklidir."),
-  recentBlogPostsTitle: z.string().min(1, "'Son Blog Yazıları' bölüm başlığı gereklidir."),
 });
 
 type EditHomepageFormValues = z.infer<typeof homepageContentSchema>;
 
 interface EditHomepageFormProps {
-  initialData: HomepageContent;
+  initialData: HomepageContent; // This interface in page-content-actions.ts was already updated
 }
 
 export default function EditHomepageForm({ initialData }: EditHomepageFormProps) {
@@ -45,10 +42,11 @@ export default function EditHomepageForm({ initialData }: EditHomepageFormProps)
     defaultValues: {
       heroTitle: initialData.heroTitle || "",
       heroSubtitle: initialData.heroSubtitle || "",
-      aboutSnippetTitle: initialData.aboutSnippetTitle || "",
-      aboutSnippetDescription: initialData.aboutSnippetDescription || "",
-      recentProjectsTitle: initialData.recentProjectsTitle || "",
-      recentBlogPostsTitle: initialData.recentBlogPostsTitle || "",
+      // Removed fields:
+      // aboutSnippetTitle: initialData.aboutSnippetTitle || "",
+      // aboutSnippetDescription: initialData.aboutSnippetDescription || "",
+      // recentProjectsTitle: initialData.recentProjectsTitle || "",
+      // recentBlogPostsTitle: initialData.recentBlogPostsTitle || "",
     },
   });
 
@@ -56,6 +54,8 @@ export default function EditHomepageForm({ initialData }: EditHomepageFormProps)
 
   async function onSubmit(values: EditHomepageFormValues) {
     try {
+      // updateHomepageContent action in page-content-actions.ts was already updated
+      // to accept only heroTitle and heroSubtitle.
       const result = await updateHomepageContent(values);
       if (result.success) {
         toast({
@@ -92,6 +92,7 @@ export default function EditHomepageForm({ initialData }: EditHomepageFormProps)
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="font-headline text-xl text-primary">Hero Alanı</CardTitle>
+            <CardDescription>Sitenizin ana karşılama bölümünün başlıklarını buradan düzenleyebilirsiniz.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField control={form.control} name="heroTitle" render={({ field }) => (
@@ -111,49 +112,8 @@ export default function EditHomepageForm({ initialData }: EditHomepageFormProps)
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="font-headline text-xl text-primary">"Kısaca Ben" Alanı</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <FormField control={form.control} name="aboutSnippetTitle" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Bölüm Başlığı</FormLabel>
-                <FormControl><Input {...field} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-            <FormField control={form.control} name="aboutSnippetDescription" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Bölüm Açıklaması</FormLabel>
-                <FormControl><Textarea {...field} rows={3} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-          </CardContent>
-        </Card>
-        
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="font-headline text-xl text-primary">Diğer Bölüm Başlıkları</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <FormField control={form.control} name="recentProjectsTitle" render={({ field }) => (
-              <FormItem>
-                <FormLabel>"Son Projelerim" Bölüm Başlığı</FormLabel>
-                <FormControl><Input {...field} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-            <FormField control={form.control} name="recentBlogPostsTitle" render={({ field }) => (
-              <FormItem>
-                <FormLabel>"Son Blog Yazıları" Bölüm Başlığı</FormLabel>
-                <FormControl><Input {...field} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-          </CardContent>
-        </Card>
+        {/* Removed "Kısaca Ben" Card */}
+        {/* Removed "Diğer Bölüm Başlıkları" Card */}
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
