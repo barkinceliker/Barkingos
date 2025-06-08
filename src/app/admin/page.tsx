@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Settings, Newspaper, FolderKanban, ListTree, Sparkles, Mail } from 'lucide-react';
+import { FileText, Settings, Newspaper, FolderKanban, ListTree, Sparkles, Mail, Brain } from 'lucide-react';
 
 export default async function AdminDashboardPage() {
   return (
@@ -62,6 +62,23 @@ export default async function AdminDashboardPage() {
           <CardContent className="text-center">
             <Link href="/admin/manage-services" passHref>
               <Button className="w-full">Hizmetleri Yönet</Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
+          <CardHeader>
+             <div className="flex justify-center mb-4">
+                <Brain className="h-12 w-12 text-accent" />
+            </div>
+            <CardTitle className="font-headline text-2xl text-center">Yetenek Yönetimi</CardTitle>
+            <CardDescription className="text-center">
+              Yeteneklerinizi ve yetkinlik seviyelerinizi yönetin.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <Link href="/admin/manage-skills" passHref>
+              <Button className="w-full">Yetenekleri Yönet</Button>
             </Link>
           </CardContent>
         </Card>
