@@ -75,20 +75,14 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
     const IconComponent = getLucideIcon(iconName);
     const isActive = pathname === href || (pathname === '/' && href === '/#anasayfa-section'); // Highlight anasayfa when on root
 
-    // For same-page anchor links, we don't want full page reload behavior of NextLink sometimes
-    // but for SPA-like scrolling, standard <a> or NextLink with just hash works.
-    // NextLink is generally preferred for its prefetching etc.
-    const isSamePageAnchor = href.startsWith('/#') && pathname === '/';
-    
     const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
         if (onClick) onClick();
         if (href.includes('#')) {
             const targetId = href.substring(href.indexOf('#') + 1);
             const targetElement = document.getElementById(targetId);
             if (targetElement) {
-                e.preventDefault(); // Prevent default if we are handling scroll
+                e.preventDefault(); 
                 targetElement.scrollIntoView({ behavior: 'smooth' });
-                // Update URL hash without page reload for better UX if needed
                 if (window.history.pushState) {
                     window.history.pushState(null, '', href);
                 } else {
@@ -96,21 +90,24 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
                 }
             }
         }
-        // For non-hash links or if target not found, let NextLink handle it
     };
 
 
     return (
-      <Button asChild variant="ghost" className={cn(
-        "text-foreground hover:bg-accent/10 hover:text-accent-foreground",
-        "w-full justify-start",
-        "md:w-auto md:justify-center",
-        isActive && "bg-accent/10 text-accent-foreground font-semibold",
-        className,
-        disabled && "opacity-50 cursor-not-allowed"
+      <Button 
+        asChild 
+        variant="ghost" 
+        size="sm" // Applied sm size for desktop nav links
+        className={cn(
+          "text-foreground hover:bg-accent/10 hover:text-accent-foreground",
+          "w-full justify-start", // For mobile menu
+          "md:w-auto md:justify-center", // For desktop
+          isActive && "bg-accent/10 text-accent-foreground font-semibold",
+          className,
+          disabled && "opacity-50 cursor-not-allowed"
       )} disabled={disabled} >
         <Link href={href} onClick={handleLinkClick}>
-          {IconComponent && <IconComponent className={cn("h-5 w-5", children ? "mr-2" : "")} />}
+          {IconComponent && <IconComponent className={cn("h-4 w-4", children ? "mr-1.5" : "")} />} {/* Adjusted icon size and margin for sm button */}
           <span>{children}</span>
         </Link>
       </Button>
@@ -124,7 +121,7 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
         <NavLink
           href={item.href}
           onClick={isMobile ? () => setIsMobileMenuOpen(false) : undefined}
-          className={isMobile ? "text-base" : ""}
+          className={cn(isMobile ? "text-base py-2" : "", "whitespace-nowrap")} // Added whitespace-nowrap
           iconName={item.iconName}
         >
           {item.label}
@@ -184,15 +181,15 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
             BenimSitem
           </Link>
 
-          <nav className="hidden md:flex space-x-1 items-center flex-wrap">
+          <nav className="hidden md:flex space-x-1 items-center flex-wrap"> {/* Kept space-x-1, can be adjusted */}
             {renderNavItems(staticNavItems, false)}
             {isAuthenticated ? (
               <NavLink key={`admin-panel-link-desktop-${isAuthenticated.toString()}`} href={adminNavItemData.href} iconName={adminNavItemData.iconName}>
                 {adminNavItemData.label}
               </NavLink>
             ) : (
-              <Button variant="default" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin}>
-                {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-5 w-5" />}
+              <Button variant="default" size="sm" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin}> {/* Set size to sm */}
+                {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />} {/* Adjusted icon size */}
                 Giriş Yap
               </Button>
             )}
@@ -217,13 +214,13 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
                   {renderNavItems(staticNavItems, true)}
                   {isAuthenticated ? (
                     <SheetClose asChild>
-                      <NavLink key={`admin-panel-link-mobile-${isAuthenticated.toString()}`} href={adminNavItemData.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base" iconName={adminNavItemData.iconName}>
+                      <NavLink key={`admin-panel-link-mobile-${isAuthenticated.toString()}`} href={adminNavItemData.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base py-2" iconName={adminNavItemData.iconName}>
                         {adminNavItemData.label}
                       </NavLink>
                     </SheetClose>
                   ) : (
                      <SheetClose asChild>
-                        <Button variant="default" onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }} className="text-base justify-start w-full mt-2" disabled={isSubmittingLogin}>
+                        <Button variant="default" onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }} className="text-base py-2 justify-start w-full mt-2" disabled={isSubmittingLogin}>
                           {isSubmittingLogin ? <Loader2 className="mr-3 h-5 w-5 animate-spin" /> : <LogIn className="mr-3 h-5 w-5" />}
                           Giriş Yap
                         </Button>
@@ -274,5 +271,3 @@ export default function Header({ initialIsAuthenticated }: HeaderProps) {
     </>
   );
 }
-
-    
