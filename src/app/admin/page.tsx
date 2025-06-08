@@ -2,9 +2,64 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Settings, Newspaper, FolderKanban, ListTree, Sparkles, Mail, Brain, Briefcase, Edit3, Palette } from 'lucide-react';
+import { FileText, Settings, Newspaper, FolderKanban, ListTree, Sparkles, Mail, Brain, Briefcase, Edit3, Palette, Database } from 'lucide-react'; // Added Database icon
 
 export default async function AdminDashboardPage() {
+  const managementSections = [
+    {
+      title: 'Blog Yazısı Yönetimi',
+      description: 'Mevcut blog yazılarınızı yönetin, yenilerini ekleyin veya düzenleyin.',
+      href: '/admin/manage-data?section=blog',
+      icon: Newspaper,
+    },
+    {
+      title: 'Proje Yönetimi',
+      description: 'Mevcut projelerinizi yönetin, yenilerini ekleyin veya düzenleyin.',
+      href: '/admin/manage-data?section=projects',
+      icon: FolderKanban,
+    },
+    {
+      title: 'Hizmet Yönetimi',
+      description: 'Sitede sunulan hizmetleri ekleyin, düzenleyin veya silin.',
+      href: '/admin/manage-data?section=services',
+      icon: Sparkles,
+    },
+    {
+      title: 'Yetenek Yönetimi',
+      description: 'Yeteneklerinizi ve yetkinlik seviyelerinizi yönetin.',
+      href: '/admin/manage-data?section=skills',
+      icon: Brain,
+    },
+    {
+      title: 'Deneyim Yönetimi',
+      description: 'Profesyonel deneyimlerinizi ve iş geçmişinizi yönetin.',
+      href: '/admin/manage-data?section=experiences',
+      icon: Briefcase,
+    },
+  ];
+
+  const otherAdminPages = [
+    {
+      title: 'Sayfa İçerik Yönetimi',
+      description: 'Anasayfa, Hakkımda gibi statik sayfa içeriklerini düzenleyin.',
+      href: '/admin/manage-content',
+      icon: FileText,
+    },
+    {
+      title: 'Site Ayarları',
+      description: 'Sitenizin genel ayarlarını (tema vb.) yönetin.',
+      href: '/admin/manage-settings',
+      icon: Palette, // Changed from Settings to Palette for consistency
+    },
+    {
+      title: 'Gelen Mesajlar',
+      description: 'İletişim formundan gönderilen mesajları görüntüleyin.',
+      href: '/admin/contact-messages',
+      icon: Mail,
+    },
+  ];
+
+
   return (
     <div className="space-y-12">
       <section className="text-center">
@@ -14,143 +69,64 @@ export default async function AdminDashboardPage() {
         </p>
       </section>
 
-      <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
-          <CardHeader>
-             <div className="flex justify-center mb-4">
-                <Newspaper className="h-12 w-12 text-accent" />
+      <section className="space-y-8">
+        <div>
+            <h2 className="text-2xl font-headline font-semibold text-primary mb-6 flex items-center">
+                <Database className="mr-3 h-7 w-7 text-accent" /> Veri Yönetimi Bölümleri
+            </h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {managementSections.map((section) => {
+                const Icon = section.icon;
+                return (
+                    <Card key={section.title} className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
+                    <CardHeader>
+                        <div className="flex justify-center mb-4">
+                        <Icon className="h-12 w-12 text-accent" />
+                        </div>
+                        <CardTitle className="font-headline text-2xl text-center">{section.title}</CardTitle>
+                        <CardDescription className="text-center">
+                        {section.description}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="text-center">
+                        <Link href={section.href} passHref>
+                        <Button className="w-full">{section.title.replace("Yönetimi", "Yönet")}</Button>
+                        </Link>
+                    </CardContent>
+                    </Card>
+                );
+                })}
             </div>
-            <CardTitle className="font-headline text-2xl text-center">Blog Yazısı Yönetimi</CardTitle>
-            <CardDescription className="text-center">
-              Mevcut blog yazılarınızı yönetin, yenilerini ekleyin veya düzenleyin.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Link href="/admin/manage-blog" passHref>
-              <Button className="w-full">Blogları Yönet</Button>
-            </Link>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
-          <CardHeader>
-             <div className="flex justify-center mb-4">
-                <FolderKanban className="h-12 w-12 text-accent" />
-            </div>
-            <CardTitle className="font-headline text-2xl text-center">Proje Yönetimi</CardTitle>
-            <CardDescription className="text-center">
-              Mevcut projelerinizi yönetin, yenilerini ekleyin veya düzenleyin.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Link href="/admin/manage-projects" passHref>
-              <Button className="w-full">Projeleri Yönet</Button>
-            </Link>
-          </CardContent>
-        </Card>
+        </div>
         
-        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
-          <CardHeader>
-             <div className="flex justify-center mb-4">
-                <Sparkles className="h-12 w-12 text-accent" />
+        <div>
+            <h2 className="text-2xl font-headline font-semibold text-primary mb-6 mt-12 flex items-center">
+                <Settings className="mr-3 h-7 w-7 text-accent" /> Diğer Yönetim Araçları
+            </h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {otherAdminPages.map((section) => {
+                const Icon = section.icon;
+                return (
+                    <Card key={section.title} className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
+                    <CardHeader>
+                        <div className="flex justify-center mb-4">
+                        <Icon className="h-12 w-12 text-accent" />
+                        </div>
+                        <CardTitle className="font-headline text-2xl text-center">{section.title}</CardTitle>
+                        <CardDescription className="text-center">
+                        {section.description}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="text-center">
+                        <Link href={section.href} passHref>
+                        <Button className="w-full">{section.title.replace("Yönetimi", "Yönet").replace("Ayarları", "Ayarlarını Yönet").replace("Mesajlar", "Mesajları Gör")}</Button>
+                        </Link>
+                    </CardContent>
+                    </Card>
+                );
+                })}
             </div>
-            <CardTitle className="font-headline text-2xl text-center">Hizmet Yönetimi</CardTitle>
-            <CardDescription className="text-center">
-              Sitede sunulan hizmetleri ekleyin, düzenleyin veya silin.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Link href="/admin/manage-services" passHref>
-              <Button className="w-full">Hizmetleri Yönet</Button>
-            </Link>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
-          <CardHeader>
-             <div className="flex justify-center mb-4">
-                <Brain className="h-12 w-12 text-accent" />
-            </div>
-            <CardTitle className="font-headline text-2xl text-center">Yetenek Yönetimi</CardTitle>
-            <CardDescription className="text-center">
-              Yeteneklerinizi ve yetkinlik seviyelerinizi yönetin.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Link href="/admin/manage-skills" passHref>
-              <Button className="w-full">Yetenekleri Yönet</Button>
-            </Link>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
-          <CardHeader>
-             <div className="flex justify-center mb-4">
-                <Briefcase className="h-12 w-12 text-accent" />
-            </div>
-            <CardTitle className="font-headline text-2xl text-center">Deneyim Yönetimi</CardTitle>
-            <CardDescription className="text-center">
-              Profesyonel deneyimlerinizi ve iş geçmişinizi yönetin.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Link href="/admin/manage-experiences" passHref>
-              <Button className="w-full">Deneyimleri Yönet</Button>
-            </Link>
-          </CardContent>
-        </Card>
-        
-        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
-          <CardHeader>
-             <div className="flex justify-center mb-4">
-                <FileText className="h-12 w-12 text-accent" />
-            </div>
-            <CardTitle className="font-headline text-2xl text-center">Sayfa İçerik Yönetimi</CardTitle>
-            <CardDescription className="text-center">
-              Anasayfa, Hakkımda gibi statik sayfa içeriklerini düzenleyin.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Link href="/admin/manage-content" passHref>
-              <Button className="w-full">İçerikleri Yönet</Button>
-            </Link>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
-          <CardHeader>
-             <div className="flex justify-center mb-4">
-                <Palette className="h-12 w-12 text-accent" />
-            </div>
-            <CardTitle className="font-headline text-2xl text-center">Site Ayarları</CardTitle>
-            <CardDescription className="text-center">
-              Sitenizin genel ayarlarını (tema vb.) yönetin.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Link href="/admin/manage-settings" passHref>
-              <Button className="w-full">Ayarları Yönet</Button>
-            </Link>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
-          <CardHeader>
-             <div className="flex justify-center mb-4">
-                <Mail className="h-12 w-12 text-accent" />
-            </div>
-            <CardTitle className="font-headline text-2xl text-center">Gelen Mesajlar</CardTitle>
-            <CardDescription className="text-center">
-              İletişim formundan gönderilen mesajları görüntüleyin.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Link href="/admin/contact-messages" passHref>
-              <Button className="w-full">Mesajları Gör</Button>
-            </Link>
-          </CardContent>
-        </Card>
-        
+        </div>
       </section>
     </div>
   );
