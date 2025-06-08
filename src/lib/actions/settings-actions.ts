@@ -5,24 +5,6 @@ import { z } from 'zod';
 import { admin, getAdminInitializationError } from '@/lib/firebaseAdmin';
 import { cache } from 'react';
 import { revalidatePath } from 'next/cache';
-import { THEME_OPTIONS, type ThemeName, THEME_PALETTES } from '@/lib/theme-config';
-
-// --- Theme Settings ---
-// Artık sadece tema adını saklayacağız. Palet, theme-config.ts'den gelecek.
-export interface ThemeSetting {
-  activeThemeName: ThemeName;
-  updatedAt?: string; // Firestore'dan gelen timestamp
-}
-
-const themeSettingSchema = z.object({
-  activeThemeName: z.enum(THEME_OPTIONS, {
-    errorMap: () => ({ message: "Geçersiz tema adı." }),
-  }),
-});
-
-const DEFAULT_THEME_SETTING: ThemeSetting = {
-  activeThemeName: 'midnight-gradient', // Varsayılan tema 'midnight-gradient' (yani "siyah" tema) olarak ayarlandı
-};
 
 // --- Site General Settings ---
 export interface SiteGeneralSettings {
@@ -54,112 +36,6 @@ async function getDb() {
 
 const SITE_SETTINGS_COLLECTION = 'siteSettings';
 const GENERAL_SETTINGS_DOCUMENT_ID = 'general';
-const CUSTOM_THEMES_COLLECTION = 'customThemes'; 
-const ACTIVE_THEME_DOCUMENT_ID = 'activeSystemTheme'; 
-
-// --- Theme Setting Actions ---
-export const getThemeSetting = cache(async (): Promise<ThemeSetting> => {
-  const logPrefix = "[settings-actions getThemeSetting] SUNUCU EYLEMİ (cache'li):";
-  console.log(`${logPrefix} Veritabanından/cache'den tema ayarı çekiliyor... YOL: ${CUSTOM_THEMES_COLLECTION}/${ACTIVE_THEME_DOCUMENT_ID}`);
-  try {
-    const db = await getDb();
-    const docRef = db.collection(CUSTOM_THEMES_COLLECTION).doc(ACTIVE_THEME_DOCUMENT_ID);
-    const docSnap = await docRef.get();
-
-    if (docSnap.exists) {
-      const data = docSnap.data();
-      const themeNameFromDb = data?.activeThemeName as ThemeName;
-      const updatedAt = data?.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString();
-
-      if (THEME_OPTIONS.includes(themeNameFromDb)) {
-        console.log(`${logPrefix} VERİTABANINDA BULUNAN TEMA ADI: '${themeNameFromDb}'. Güncellenme='${updatedAt}'.`);
-        return {
-          activeThemeName: themeNameFromDb,
-          updatedAt: updatedAt,
-        };
-      }
-      console.warn(`${logPrefix} VERİTABANINDA geçerli tema adı bulunamadı ('${themeNameFromDb}'). Varsayılana dönülüyor.`);
-    } else {
-      console.log(`${logPrefix} VERİTABANINDA '${ACTIVE_THEME_DOCUMENT_ID}' dokümanı bulunamadı. Varsayılan tema ayarı oluşturuluyor ve kaydediliyor.`);
-    }
-    
-    const defaultDataToSave: ThemeSetting & { updatedAt: admin.firestore.FieldValue } = {
-        activeThemeName: DEFAULT_THEME_SETTING.activeThemeName,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp()
-      };
-    await db.collection(CUSTOM_THEMES_COLLECTION).doc(ACTIVE_THEME_DOCUMENT_ID).set(defaultDataToSave);
-    const newUpdatedAt = new Date().toISOString();
-    console.log(`${logPrefix} '${ACTIVE_THEME_DOCUMENT_ID}' için varsayılan oluşturuldu. Tema: '${DEFAULT_THEME_SETTING.activeThemeName}', Güncellenme: ${newUpdatedAt}`);
-    return { ...DEFAULT_THEME_SETTING, updatedAt: newUpdatedAt };
-
-  } catch (error: any) {
-    console.error(`${logPrefix} TEMA ÇEKİLİRKEN HATA:`, error.message, error.stack);
-    const errorUpdatedAt = new Date().toISOString();
-    console.log(`${logPrefix} Hata nedeniyle varsayılan tema döndürülüyor.`);
-    return { ...DEFAULT_THEME_SETTING, updatedAt: errorUpdatedAt };
-  }
-});
-
-export async function updateThemeSetting(themeName: ThemeName) {
-  const logPrefix = "[settings-actions updateThemeSetting] SUNUCU EYLEMİ:";
-  console.log(`${logPrefix} BAŞLADI: Tema adı '${themeName}' olarak güncelleniyor... YOL: ${CUSTOM_THEMES_COLLECTION}/${ACTIVE_THEME_DOCUMENT_ID}`);
-
-  const adminInitError = getAdminInitializationError();
-  if (adminInitError) {
-    const errorMessage = `Firebase Admin SDK düzgün başlatılamadı: ${adminInitError}`;
-    console.error(`${logPrefix} ÖN KONTROL BAŞARISIZ: ${errorMessage}`);
-    return { success: false, message: `Tema güncellenemedi: Sunucu yapılandırma sorunu. Detay: ${adminInitError}` };
-  }
-
-  const validation = themeSettingSchema.safeParse({ activeThemeName: themeName });
-  if (!validation.success) {
-    const validationErrors = validation.error.flatten().fieldErrors;
-    const errorMessages = Object.values(validationErrors).flat().join(', ');
-    console.error(`${logPrefix} Tema adı doğrulaması BAŞARISIZ:`, JSON.stringify(validationErrors));
-    return { success: false, message: `Geçersiz tema adı: ${errorMessages}`, errors: validationErrors };
-  }
-  console.log(`${logPrefix} Tema adı '${themeName}' doğrulaması başarılı.`);
-
-  
-  if (!THEME_PALETTES[themeName]) {
-    console.error(`${logPrefix} '${themeName}' için THEME_PALETTES içinde palet bulunamadı! Bu tema adı geçersiz veya yapılandırılmamış.`);
-    return { success: false, message: `Seçilen tema için palet yapılandırması bulunamadı: ${themeName}` };
-  }
-  console.log(`${logPrefix} '${themeName}' için THEME_PALETTES'te palet mevcut.`);
-
-  try {
-    const db = await getDb();
-    const docRef = db.collection(CUSTOM_THEMES_COLLECTION).doc(ACTIVE_THEME_DOCUMENT_ID);
-    const dataToSave = { 
-      activeThemeName: themeName,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp()
-    };
-
-    console.log(`${logPrefix} Firestore'a YAZILACAK VERİ ('${docRef.path}'): Ad='${dataToSave.activeThemeName}'`);
-    await docRef.set(dataToSave, { merge: true }); 
-    console.log(`${logPrefix} VERİTABANI GÜNCELLEME BAŞARILI: Tema adı '${themeName}' olarak kaydedildi.`);
-
-    try {
-      console.log(`${logPrefix} Yollar yeniden doğrulanmaya çalışılıyor: revalidatePath('/', 'layout') ve revalidatePath('/admin')...`);
-      revalidatePath('/', 'layout'); 
-      revalidatePath('/admin'); 
-      console.log(`${logPrefix} Yollar başarıyla yeniden doğrulandı.`);
-    } catch (revalidateError: any) {
-      console.warn(`${logPrefix} UYARI: Yol yeniden doğrulama başarısız oldu ancak veritabanı güncellemesi başarılıydı. Hata: ${revalidateError.message}`, revalidateError.stack);
-    }
-
-    return { success: true, message: 'Tema başarıyla güncellendi.' };
-  } catch (error: any) {
-    let detailedErrorMessage = `Tema güncellenirken bir sunucu hatası oluştu.`;
-    if (error.code) {
-        detailedErrorMessage = `Firestore Hatası (Kod: ${error.code}): ${error.message}`;
-    } else if (error.message) {
-        detailedErrorMessage = error.message;
-    }
-    console.error(`${logPrefix} Firestore İŞLEM HATASI: ${detailedErrorMessage}`, error.stack, JSON.stringify(error, Object.getOwnPropertyNames(error).concat(['cause'])));
-    return { success: false, message: `Tema güncellenemedi: ${detailedErrorMessage}` };
-  }
-}
 
 
 // --- Site General Settings Actions ---
@@ -224,8 +100,8 @@ export async function updateSiteGeneralSettings(data: Partial<Omit<SiteGeneralSe
     console.log(`${logPrefix} VERİTABANI GÜNCELLEME BAŞARILI.`);
 
     console.log(`${logPrefix} Yollar yeniden doğrulanmaya çalışılıyor: revalidatePath('/', 'layout') ve revalidatePath('/admin')...`);
-    revalidatePath('/', 'layout');
-    revalidatePath('/admin');
+    revalidatePath('/', 'layout'); // Update site title in header
+    revalidatePath('/admin'); // Update admin panel if necessary
     console.log(`${logPrefix} Yollar başarıyla yeniden doğrulandı.`);
 
     return { success: true, message: 'Genel site ayarları başarıyla güncellendi.' };
@@ -234,3 +110,9 @@ export async function updateSiteGeneralSettings(data: Partial<Omit<SiteGeneralSe
     return { success: false, message: `Bir hata oluştu: ${error.message}` };
   }
 }
+
+// Removed ThemeSetting related code as per request to use fixed CSS theme.
+// getThemeSetting, updateThemeSetting, ThemeSetting interface, themeSettingSchema,
+// DEFAULT_THEME_SETTING, THEME_OPTIONS, THEME_PALETTES from theme-config import
+// and related constants like CUSTOM_THEMES_COLLECTION, ACTIVE_THEME_DOCUMENT_ID
+// have been removed or commented out.

@@ -1,235 +1,36 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+// This component is no longer used as theme selection has been removed.
+// The site now uses a fixed CSS-defined theme.
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Palette, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
-import { getThemeSetting, updateThemeSetting } from "@/lib/actions/settings-actions";
-import { THEME_OPTIONS, type ThemeName, THEME_PALETTES, type ThemePalette, ALL_THEME_VARIABLE_KEYS } from "@/lib/theme-config";
-import { Loader2, Palette, Save } from "lucide-react";
-
-const getThemeDisplayName = (themeKey: ThemeName): string => {
-  if (themeKey === 'default') return 'Varsayılan (Açık)';
-  return themeKey
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-};
-
-function applyClientSideThemePreview(themeName: ThemeName | null) {
-  const logPrefix = "[ThemeSettingsDropdown applyClientSideThemePreview]";
-  console.log(`${logPrefix} ÇAĞRILDI. Uygulanacak tema adı: '${themeName}'`);
-
-  if (typeof window === "undefined") {
-    console.warn(`${logPrefix} 'window' tanımsız. İstemci tarafı önizleme uygulanamadı.`);
-    return;
-  }
-  const root = document.documentElement;
-
-  console.log(`${logPrefix} ÖNCESİ: <html> sınıfları: '${root.className}'`);
-  console.log(`${logPrefix} ÖNCESİ: root.style content (ilk 200 karakter):`, root.style.cssText.substring(0, 200) + '...');
-
-  ALL_THEME_VARIABLE_KEYS.forEach(key => {
-    root.style.removeProperty(key);
-  });
-  console.log(`${logPrefix} ORTASI: Önceki dinamik CSS değişkenleri (root.style üzerinden) temizlendi.`);
-
-  const currentThemeClasses = Array.from(root.classList).filter(cls => cls.startsWith('theme-'));
-  currentThemeClasses.forEach(cls => root.classList.remove(cls));
-  console.log(`${logPrefix} ORTASI: Önceki 'theme-*' sınıfları kaldırıldı. Mevcut sınıflar: '${root.className}'`);
-
-  if (themeName && THEME_PALETTES[themeName]) {
-    const palette = THEME_PALETTES[themeName];
-    console.log(`${logPrefix} '${themeName}' için palet bulundu (THEME_PALETTES'ten). Değişkenler uygulanıyor...`, Object.keys(palette));
-    Object.entries(palette).forEach(([variable, value]) => {
-      root.style.setProperty(variable, `hsl(${value})`);
-    });
-    
-    if (themeName !== 'default') {
-       root.classList.add(`theme-${themeName}`);
-    }
-    console.log(`${logPrefix} SONRASI: '${themeName}' teması CSS değişkenleri ve sınıfı <html>'e uygulandı. Yeni HTML sınıfları: '${root.className}'`);
-    console.log(`${logPrefix} SONRASI: root.style content (ilk 200 karakter):`, root.style.cssText.substring(0, 200) + '...');
-  } else if (themeName === 'default' || !themeName) {
-    if (themeName !== 'default') { // Only add theme-default if it's explicitly 'default'
-      // No class added for null/undefined or if it's truly default and relies on :root
-    } else {
-      // We don't add 'theme-default' class, we rely on :root in globals.css for default styles.
-      // Clearing properties above handles falling back to :root.
-    }
-    console.log(`${logPrefix} SONRASI: '${themeName || 'default'}' tema seçildi. Dinamik stiller temizlendi, globals.css :root geçerli olmalı. HTML Sınıfları: '${root.className}'`);
-  }
-}
+import Link from "next/link";
 
 
-export default function ThemeSettingsDropdown() {
-  const [selectedTheme, setSelectedTheme] = useState<ThemeName>('default');
-  const [dbThemeName, setDbThemeName] = useState<ThemeName>('default');
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const { toast } = useToast();
-  const router = useRouter();
-
-  useEffect(() => {
-    const logPrefix = "[ThemeSettingsDropdown useEffect]";
-    async function fetchCurrentTheme() {
-      setIsLoading(true);
-      console.log(`${logPrefix} İLK YÜKLEME: Sunucudan başlangıç tema ayarı çekiliyor...`);
-      try {
-        const setting = await getThemeSetting();
-        const themeNameToApply = setting?.activeThemeName || 'default';
-        setSelectedTheme(themeNameToApply);
-        setDbThemeName(themeNameToApply);
-        console.log(`${logPrefix} İLK YÜKLEME: Sunucudan gelen tema adı: '${themeNameToApply}'.`);
-        // applyClientSideThemePreview(themeNameToApply); // Sayfa ilk yüklendiğinde layout.tsx zaten doğru sınıfı uygular
-      } catch (error) {
-        console.error(`${logPrefix} İLK YÜKLEME: Mevcut tema ayarı yüklenirken hata:`, error);
-        toast({
-          title: "Hata",
-          description: "Mevcut tema ayarı yüklenemedi.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-        console.log(`${logPrefix} İLK YÜKLEME: Tema ayarı yükleme tamamlandı.`);
-      }
-    }
-    fetchCurrentTheme();
-  }, [toast]);
-
-  const handleThemeChange = (value: string) => {
-    const newThemeName = value as ThemeName;
-    setSelectedTheme(newThemeName);
-    console.log(`[ThemeSettingsDropdown handleThemeChange] Dropdown değeri değişti: '${newThemeName}'. Anlık önizleme uygulanıyor...`);
-    applyClientSideThemePreview(newThemeName);
-  };
-
-  const handleSaveTheme = async () => {
-    const logPrefix = "[ThemeSettingsDropdown handleSaveTheme]";
-    if (selectedTheme === dbThemeName && !isSaving) {
-      toast({ title: "Bilgi", description: "Tema zaten güncel." });
-      return;
-    }
-    console.log(`${logPrefix} ADIM 1: Tema adı '${selectedTheme}' olarak kaydedilecek. Mevcut veritabanı teması: '${dbThemeName}'. Sunucuya gönderiliyor...`);
-    setIsSaving(true);
-    try {
-      const result = await updateThemeSetting(selectedTheme); // Sadece tema adını gönderiyoruz
-      console.log(`${logPrefix} ADIM 2: updateThemeSetting ('${selectedTheme}' için) sunucu yanıtı:`, result);
-
-      if (result.success) {
-        setDbThemeName(selectedTheme); 
-        console.log(`${logPrefix} ADIM 3A: Sunucu güncellemesi başarılı. İstemci tarafı dbThemeName '${selectedTheme}' olarak ayarlandı.`);
-        
-        // Anlık önizleme zaten yapıldı, `router.refresh()` sunucu tarafı render'ı tetikleyecek.
-        toast({
-          title: "Başarılı!",
-          description: `${getThemeDisplayName(selectedTheme)} teması başarıyla uygulandı ve kaydedildi. Değişikliklerin tam olarak yansıması için sayfa yenileniyor...`,
-        });
-
-        console.log(`${logPrefix} ADIM 4: Sunucu tarafı Layout'u yenilemek için router.refresh() çağrılıyor ('${selectedTheme}' için)...`);
-        router.refresh();
-        console.log(`${logPrefix} ADIM 5: router.refresh() çağrıldı ('${selectedTheme}' için). Sunucu RootLayout'u yeniden render etmeli.`);
-      } else {
-        toast({
-          title: "Tema Güncellenemedi!",
-          description: result.message || "Tema güncellenirken bir hata oluştu.",
-          variant: "destructive",
-        });
-        console.error(`${logPrefix} Sunucu tarafında tema güncelleme BAŞARISIZ OLDU: ${result.message}`);
-        console.log(`${logPrefix} BAŞARISIZLIK: İstemci tarafı anlık önizleme '${dbThemeName}' (veritabanındaki tema adı) olarak geri alınıyor.`);
-        applyClientSideThemePreview(dbThemeName);
-        setSelectedTheme(dbThemeName);
-      }
-    } catch (error: any) {
-      console.error(`${logPrefix} Tema kaydetme sırasında İSTEMCİ TARAFINDA GENEL HATA yakalandı:`, error);
-      toast({
-        title: "İstemci Hatası!",
-        description: error.message || "Tema güncellenemedi.",
-        variant: "destructive",
-      });
-      console.log(`${logPrefix} GENEL HATA: İstemci tarafı anlık önizleme '${dbThemeName}' (veritabanındaki tema adı) olarak geri alınıyor.`);
-      applyClientSideThemePreview(dbThemeName);
-      setSelectedTheme(dbThemeName);
-    } finally {
-      setIsSaving(false);
-      console.log(`${logPrefix} ADIM 6: Tema seçim işlemi tamamlandı ('${selectedTheme}').`);
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <Card className="shadow-lg">
-        <CardHeader>
-          <CardTitle className="font-headline text-xl text-gradient flex items-center">
-            <Palette className="mr-3 h-6 w-6" /> Site Teması
-          </CardTitle>
-          <CardDescription>
-            Site genelinde kullanılacak temayı seçin.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex items-center justify-center min-h-[100px]">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="ml-2 text-muted-foreground">Tema ayarları yükleniyor...</p>
-        </CardContent>
-      </Card>
-    );
-  }
+export default function ThemeSettingsDropdownObsolete() {
 
   return (
-    <Card className="shadow-xl">
-      <CardHeader>
-        <CardTitle className="font-headline text-xl text-gradient flex items-center">
-          <Palette className="mr-3 h-6 w-6" /> Site Teması
-        </CardTitle>
-        <CardDescription>
-          Aşağıdaki listeden bir tema seçerek sitenizin görünümünü değiştirin. Değişiklikler anlık olarak önizlenir. Kalıcı olması için "Temayı Kaydet" butonuna tıklayın.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div>
-          <Label htmlFor="theme-select" className="text-sm font-medium">Tema Seçin</Label>
-          <Select
-            value={selectedTheme}
-            onValueChange={handleThemeChange}
-            disabled={isLoading || isSaving}
-          >
-            <SelectTrigger id="theme-select" className="w-full mt-1">
-              <SelectValue placeholder="Bir tema seçin..." />
-            </SelectTrigger>
-            <SelectContent>
-              {THEME_OPTIONS.map((themeKey) => (
-                <SelectItem key={themeKey} value={themeKey}>
-                  {getThemeDisplayName(themeKey)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <Button
-          onClick={handleSaveTheme}
-          disabled={isLoading || isSaving || selectedTheme === dbThemeName}
-          className="w-full"
-        >
-          {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          Temayı Kaydet
-        </Button>
-         {selectedTheme !== dbThemeName && !isSaving && (
-          <p className="text-xs text-center text-amber-600">
-            Seçili tema ('{getThemeDisplayName(selectedTheme)}') henüz kaydedilmedi.
+    <Card className="shadow-lg opacity-75">
+        <CardHeader>
+            <CardTitle className="font-headline text-xl text-destructive flex items-center">
+                <AlertTriangle className="mr-3 h-6 w-6" /> Site Teması (Devre Dışı)
+            </CardTitle>
+            <CardDescription className="flex items-start text-sm">
+              Bu bölüm artık kullanılmamaktadır. Site teması CSS ile sabitlenmiştir.
+            </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center min-h-[150px] text-center">
+          <Palette size={40} className="text-muted-foreground mb-3" />
+          <p className="text-muted-foreground mb-4">
+            Tema seçimi özelliği kaldırılmıştır.
           </p>
-        )}
-      </CardContent>
+           <Link href="/admin">
+            <Button variant="outline" size="sm">Ana Yönetim Paneline Dön</Button>
+          </Link>
+        </CardContent>
     </Card>
   );
 }
-    

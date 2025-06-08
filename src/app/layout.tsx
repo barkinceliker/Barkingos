@@ -4,12 +4,10 @@ import './globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
-// FloatingLogoutButton kaldırıldığı için importu silindi
 import { checkAuthStatus } from '@/lib/actions/auth';
-import { getThemeSetting, type ThemeSetting, getSiteGeneralSettings } from '@/lib/actions/settings-actions';
+import { getSiteGeneralSettings } from '@/lib/actions/settings-actions'; // getThemeSetting removed
 import { cn } from '@/lib/utils';
 import { PT_Sans, Playfair_Display, Source_Code_Pro } from 'next/font/google';
-// FloatingNavButton kaldırıldığı için importu silindi
 
 const ptSans = PT_Sans({
   subsets: ['latin', 'latin-ext'],
@@ -63,7 +61,6 @@ async function AuthAwareUIComponents() {
         initialIsAuthenticated={auth.isAuthenticated}
         initialSiteTitle={siteSettings.siteTitle}
       />
-      {/* FloatingLogoutButton ve FloatingNavButton kaldırıldı */}
     </>
   );
 }
@@ -75,21 +72,16 @@ export default async function RootLayout({
 }>) {
   const logPrefix = "[RootLayout SUNUCU]";
   console.log(`${logPrefix} ================== BAŞLANGIÇ ==================`);
-
-  const themeSetting = await getThemeSetting();
-  console.log(`${logPrefix} getThemeSetting() çağrıldı. Sonuç (veritabanı/cache):`, JSON.stringify(themeSetting));
-
-  const activeThemeName = themeSetting?.activeThemeName || 'default';
-  console.log(`${logPrefix} Sunucuda render için kullanılacak aktif tema: '${activeThemeName}'`);
   
-  const themeClassName = activeThemeName === 'default' ? '' : `theme-${activeThemeName}`;
-  console.log(`${logPrefix} HTML için hesaplanan tema sınıfı: '${themeClassName}'`);
+  // Tema ayarları kaldırıldığı için getThemeSetting çağrısı ve ilgili mantık kaldırıldı.
+  // Artık tema doğrudan globals.css ile :root üzerinden yönetiliyor.
 
   const fontVariableClasses = cn(ptSans.variable, playfairDisplay.variable, sourceCodePro.variable);
   console.log(`${logPrefix} HTML için font değişken sınıfları: '${fontVariableClasses}'`);
   
-  const finalHtmlClasses = cn(themeClassName, fontVariableClasses).trim();
-  const htmlKey = `${activeThemeName}-${fontVariableClasses}`; 
+  // HTML sınıfına tema sınıfı ekleme mantığı kaldırıldı.
+  const finalHtmlClasses = cn(fontVariableClasses).trim(); 
+  const htmlKey = `${fontVariableClasses}`; // Key de basitleştirildi.
 
   console.log(`${logPrefix} <html> etiketine uygulanacak className: '${finalHtmlClasses}'`);
   console.log(`${logPrefix} <html> etiketine uygulanacak key: '${htmlKey}'`);

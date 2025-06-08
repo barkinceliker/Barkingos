@@ -1,12 +1,12 @@
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Settings, LayoutDashboard, Newspaper, FolderKanban, Sparkles, Brain, Briefcase, FileText, MailIcon, ClipboardList, Palette } from 'lucide-react';
+import { Settings, LayoutDashboard, Newspaper, FolderKanban, Sparkles, Brain, Briefcase, FileText, MailIcon, ClipboardList } from 'lucide-react'; // Palette ikonu kaldırıldı
 
 // Data fetching functions for embedded forms
 import { getHomepageContent } from '@/lib/actions/page-content-actions';
 import { getHakkimdaContent } from '@/lib/actions/page-content-actions';
-import { getSiteGeneralSettings, getThemeSetting } from '@/lib/actions/settings-actions'; 
+import { getSiteGeneralSettings } from '@/lib/actions/settings-actions'; 
 import { getResumeContent } from '@/lib/actions/resume-actions'; 
 
 // Form Components to embed
@@ -14,7 +14,7 @@ import EditHomepageForm from '@/components/admin/forms/EditHomepageForm';
 import EditHakkimdaPageForm from '@/components/admin/forms/EditHakkimdaPageForm';
 import SiteGeneralSettingsForm from '@/components/admin/forms/SiteGeneralSettingsForm'; 
 import EditResumeForm from "@/components/admin/forms/EditResumeForm"; 
-import ThemeSelectorCard from '@/app/admin/themes/_components/ThemeSelectorCard'; // Tema seçici kartı eklendi
+// ThemeSelectorCard kaldırıldı
 
 // Management Content Components (Tables and links)
 import BlogManagementContent from '@/app/admin/manage-blog/_components/BlogManagementContent';
@@ -30,7 +30,7 @@ export default async function AdminUnifiedPage() {
   const hakkimdaContent = await getHakkimdaContent();
   const siteGeneralSettings = await getSiteGeneralSettings(); 
   const resumeContent = await getResumeContent(); 
-  // Tema ayarını burada çekmeye gerek yok, ThemeSelectorCard kendi içinde hallediyor.
+  // Tema ayarı çekmeye gerek yok.
 
   const accordionSections = [
     { 
@@ -103,13 +103,14 @@ export default async function AdminUnifiedPage() {
       description: "Sitenizin iletişim formundan gönderilen mesajları görüntüleyin.",
       content: <ContactMessagesTableCard />
     },
-    { 
-      value: "temalar", 
-      title: "Tema Yönetimi", 
-      icon: Palette,
-      description: "Sitenizin genel görünümünü ve renk şemasını buradan seçin.",
-      content: <ThemeSelectorCard /> // Tema seçici kartı buraya eklendi
-    },
+    // Tema yönetimi bölümü kaldırıldı.
+    // { 
+    //   value: "temalar", 
+    //   title: "Tema Yönetimi", 
+    //   icon: Palette,
+    //   description: "Sitenizin genel görünümünü ve renk şemasını buradan seçin.",
+    //   content: <ThemeSelectorCard /> 
+    // },
   ];
 
   return (
@@ -152,4 +153,3 @@ export default async function AdminUnifiedPage() {
     </div>
   );
 }
-    
