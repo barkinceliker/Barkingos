@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { Menu, Loader2, LogIn, Shield } from 'lucide-react'; // İkonları buradan alıyoruz
+import { Menu, Loader2, LogIn, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -28,16 +28,15 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
 import { signInWithEmailAndPassword, onAuthStateChanged, User as FirebaseUserType } from 'firebase/auth';
 import { auth as firebaseClientAuth } from '@/lib/firebase';
-import { createSession, checkAuthStatus } from '@/lib/actions/auth'; // checkAuthStatus eklendi
+import { createSession } from '@/lib/actions/auth';
 import { getAllNavItems, type NavItemInput } from '@/lib/actions/navigation-actions';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
-import type { LucideIcon } from 'lucide-react';
 
 const adminNavItemData = { label: 'Admin Panel', href: '/admin', iconName: 'Shield' };
 
 interface HeaderProps {
   initialIsAuthenticated: boolean;
-  initialSiteTitle: string; // Dinamik site başlığı için prop
+  initialSiteTitle: string;
 }
 
 export default function Header({ initialIsAuthenticated, initialSiteTitle }: HeaderProps) {
@@ -48,45 +47,48 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
-  const [siteTitle, setSiteTitle] = useState(initialSiteTitle); // State for site title
+  const [siteTitle, setSiteTitle] = useState(initialSiteTitle);
 
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
 
   useEffect(() => {
-    // Initial auth state from server component prop
-    // This will be quickly updated by onAuthStateChanged from client SDK
-    // No need to explicitly set currentUser based on initialIsAuthenticated
-    // as onAuthStateChanged will handle it and is the source of truth on client.
-  
+    console.log("[Header useEffect] Running. initialSiteTitle:", initialSiteTitle);
+    setSiteTitle(initialSiteTitle);
+
     const unsubscribeAuth = onAuthStateChanged(firebaseClientAuth, (user) => {
+      console.log("[Header onAuthStateChanged] Firebase user from SDK:", user ? user.uid : null);
       setCurrentUser(user);
     });
-  
+
     async function fetchNavItems() {
+      console.log("[Header fetchNavItems] Starting to fetch nav items...");
       setIsLoadingNav(true);
       try {
         const items = await getAllNavItems();
+        console.log("[Header fetchNavItems] Fetched nav items:", items);
         setNavItems(items);
       } catch (error) {
-        console.error("Navigasyon öğeleri çekilirken hata:", error);
-        setNavItems([]); // Hata durumunda boş dizi ata
+        console.error("[Header fetchNavItems] Error fetching navigation items:", error);
+        setNavItems([]);
       } finally {
         setIsLoadingNav(false);
+        console.log("[Header fetchNavItems] Finished fetching nav items. isLoadingNav:", false);
       }
     }
-  
+
     fetchNavItems();
-    // Site title is set from prop and can be updated if settings change elsewhere and re-fetched
-    setSiteTitle(initialSiteTitle);
-  
+
     return () => {
+      console.log("[Header useEffect Cleanup] Unsubscribing auth listener.");
       unsubscribeAuth();
     };
-  }, [initialIsAuthenticated, initialSiteTitle]); // initialSiteTitle bağımlılıklara eklendi
+  }, [initialSiteTitle]); // Sadece initialSiteTitle değiştiğinde site başlığını güncelle, nav item ve auth hep çalışsın.
 
   const isAuthenticated = currentUser !== null;
+  console.log("[Header Render] isAuthenticated:", isAuthenticated, "navItems count:", navItems.length, "isLoadingNav:", isLoadingNav);
+
 
   const NavLink = ({ href, children, onClick, className, disabled, iconName }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string, disabled?: boolean, iconName?: string }) => {
     const IconComponent = getLucideIcon(iconName);
@@ -131,12 +133,17 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
   };
 
   const renderNavItems = (items: typeof navItems, isMobile = false) => {
-    if (isLoadingNav && !isMobile) { // Sadece masaüstünde yükleniyor göstergesi
-      return Array(5).fill(0).map((_, index) => (
+    console.log(`[Header renderNavItems] Rendering for ${isMobile ? 'Mobile' : 'Desktop'}. Item count: ${items.length}`);
+    if (isLoadingNav && !isMobile) {
+      return Array(3).fill(0).map((_, index) => ( // Skeleton count reduced to 3 for quicker visual
         <Button key={`skeleton-${index}`} variant="ghost" size="sm" disabled className="opacity-50">
           <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> Yükleniyor...
         </Button>
       ));
+    }
+    if (items.length === 0 && !isLoadingNav) {
+        console.log(`[Header renderNavItems] No nav items to render for ${isMobile ? 'Mobile' : 'Desktop'}.`);
+        return isMobile ? null : <span className="text-sm text-muted-foreground px-2">Navigasyon Tanımlanmamış</span>;
     }
     return items.map((item) => {
       const itemKey = `${isMobile ? 'mobile' : 'desktop'}-${item.id}`;
@@ -200,14 +207,23 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     <>
       <header className="bg-card shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex justify-between items-center">
-          <Link href="/#anasayfa-section" className="text-2xl font-headline font-bold text-primary" onClick={() => setIsMobileMenuOpen(false)}>
-            {siteTitle} {/* Dinamik site başlığı */}
+          <Link 
+            href="/#anasayfa-section" 
+            className="text-2xl font-headline font-bold text-primary" 
+            onClick={() => setIsMobileMenuOpen(false)}
+            key={`site-title-${siteTitle}`}
+          >
+            {siteTitle}
           </Link>
 
           <nav className="hidden md:flex space-x-1 items-center flex-wrap">
             {renderNavItems(navItems, false)}
             {isAuthenticated ? (
-              <NavLink key={`admin-panel-link-desktop-${isAuthenticated.toString()}`} href={adminNavItemData.href} iconName={adminNavItemData.iconName}>
+              <NavLink 
+                key={`admin-panel-link-desktop-${isAuthenticated.toString()}-${currentUser?.uid}`} 
+                href={adminNavItemData.href} 
+                iconName={adminNavItemData.iconName}
+              >
                 {adminNavItemData.label}
               </NavLink>
             ) : (
@@ -228,14 +244,19 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
               <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-card">
                 <SheetHeader className="p-4 border-b">
                    <SheetTitle asChild>
-                      <Link href="/#anasayfa-section" className="text-xl font-headline font-bold text-primary" onClick={() => setIsMobileMenuOpen(false)}>
-                        {siteTitle} {/* Dinamik site başlığı */}
+                      <Link 
+                        href="/#anasayfa-section" 
+                        className="text-xl font-headline font-bold text-primary" 
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        key={`site-title-mobile-${siteTitle}`}
+                      >
+                        {siteTitle}
                       </Link>
                     </SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col space-y-1 px-2 py-4">
                   {isLoadingNav ? (
-                     Array(5).fill(0).map((_, index) => (
+                     Array(3).fill(0).map((_, index) => (
                         <Button key={`mobile-skeleton-${index}`} variant="ghost" className="text-base py-2 justify-start w-full opacity-50" disabled>
                           <Loader2 className="mr-3 h-5 w-5 animate-spin" /> Yükleniyor...
                         </Button>
@@ -243,7 +264,13 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                   ) : renderNavItems(navItems, true)}
                   {isAuthenticated ? (
                     <SheetClose asChild>
-                      <NavLink key={`admin-panel-link-mobile-${isAuthenticated.toString()}`} href={adminNavItemData.href} onClick={() => setIsMobileMenuOpen(false)} className="text-base py-2" iconName={adminNavItemData.iconName}>
+                      <NavLink 
+                        key={`admin-panel-link-mobile-${isAuthenticated.toString()}-${currentUser?.uid}`} 
+                        href={adminNavItemData.href} 
+                        onClick={() => setIsMobileMenuOpen(false)} 
+                        className="text-base py-2" 
+                        iconName={adminNavItemData.iconName}
+                       >
                         {adminNavItemData.label}
                       </NavLink>
                     </SheetClose>
@@ -300,3 +327,5 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     </>
   );
 }
+
+    
