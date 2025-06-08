@@ -5,10 +5,8 @@
 
 body {
   font-family: 'PT Sans', sans-serif;
-  /* Apply the gradient directly to the body */
-  background-image: linear-gradient(to bottom right, hsl(var(--gradient-body-start-hsl)), hsl(var(--gradient-body-end-hsl)));
-  background-attachment: fixed;
-  background-size: cover;
+  /* Removed gradient background, set to solid white */
+  background-color: hsl(var(--background)); /* Will be white */
 }
 
 html {
@@ -16,77 +14,77 @@ html {
 }
 
 @layer base {
-  :root { /* Deep Space & Nebula Dark Theme */
-    --background: 240 10% 4%; /* Very Dark, almost black blue */
-    --foreground: 240 10% 95%; /* Very Light Off-White */
-    --card: 240 10% 8%; /* Slightly lighter than background, still very dark blue */
+  :root { /* Light Theme - White Background */
+    --background: 0 0% 100%; /* White */
+    --foreground: 240 10% 3.9%; /* Very Dark Blue/Almost Black - for text */
+    --card: 0 0% 98%; /* Very Light Gray - for cards, slightly off-white */
     --card-foreground: hsl(var(--foreground));
-    --popover: 240 10% 6%; /* Darker than card for popovers */
+    --popover: 0 0% 100%; /* White */
     --popover-foreground: hsl(var(--foreground));
-    --primary: 190 80% 60%; /* Luminous Teal/Cyan */
-    --primary-foreground: 240 10% 98%; /* Almost White, for text on primary buttons */
-    --secondary: 240 10% 15%; /* Darker Muted Blue */
-    --secondary-foreground: 240 10% 80%; /* Lighter Muted Blue/Gray */
-    --muted: 240 10% 12%; /* Very Muted Dark Blue */
-    --muted-foreground: 240 10% 60%; /* Muted Blue/Gray for less important text */
-    --accent: 280 70% 65%; /* Vibrant Nebula Purple/Magenta */
-    --accent-foreground: 280 10% 98%; /* Almost White, for text on accent buttons */
-    --destructive: 0 70% 50%; /* Vivid Red for destructive actions */
+    --primary: 222 47% 11%; /* Dark Blue - for primary actions */
+    --primary-foreground: 0 0% 98%; /* Almost White - for text on primary buttons */
+    --secondary: 0 0% 96.1%; /* Light Gray - for secondary elements */
+    --secondary-foreground: 240 5.9% 10%; /* Dark Blue/Black - for text on secondary elements */
+    --muted: 0 0% 96.1%; /* Light Gray */
+    --muted-foreground: 240 3.8% 46.1%; /* Medium Gray - for less important text */
+    --accent: 190 70% 40%; /* A clear, darker Teal/Cyan - for accents */
+    --accent-foreground: 0 0% 98%; /* Almost White - for text on accent elements */
+    --destructive: 0 84.2% 60.2%; /* Standard Red */
     --destructive-foreground: 0 0% 98%;
-    --border: 240 10% 20%; /* Dark Blue Border */
-    --input: 240 10% 10%; /* Dark Blue Input Background */
-    --ring: 190 80% 65%; /* Luminous Teal/Cyan Ring, slightly brighter for focus */
+    --border: 0 0% 89.8%; /* Light Gray Border */
+    --input: 0 0% 89.8%; /* Light Gray Input Background */
+    --ring: 222 47% 11%; /* Dark Blue Ring - for focus */
     --radius: 0.5rem;
 
-    /* Body Background Gradient (Deep Space - Enhanced) */
-    --gradient-body-start-hsl: 230 50% 9%; /* Daha doygun Koyu Derin Mavi */
-    --gradient-body-end-hsl: 270 55% 12%;   /* Daha doygun ve biraz daha açık Koyu Derin Mor/Menekşe */
+    /* Body Background Gradient - Not used for solid white, but kept for text gradient */
+    --gradient-body-start-hsl: 0 0% 100%; /* White - for consistency if used elsewhere */
+    --gradient-body-end-hsl: 0 0% 100%;   /* White - for consistency if used elsewhere */
 
-    /* Text Gradient (Nebula Colors) */
-    --gradient-start-hsl: 190 85% 65%; /* Brighter Luminous Teal/Cyan */
-    --gradient-end-hsl: 280 75% 70%;   /* Brighter Nebula Purple */
+    /* Text Gradient (Adjusted for Light Theme) */
+    --gradient-start-hsl: hsl(var(--primary)); /* Dark Blue */
+    --gradient-end-hsl: hsl(var(--accent));   /* Dark Teal/Cyan */
 
-    /* Chart Colors (Cosmic Palette) */
-    --chart-1: hsl(var(--primary)); /* Luminous Teal */
-    --chart-2: hsl(var(--accent));  /* Nebula Purple */
-    --chart-3: 210 70% 55%; /* Star Blue */
-    --chart-4: 310 65% 60%;  /* Cosmic Pink */
-    --chart-5: 170 60% 50%; /* Distant Galaxy Green/Teal */
+    /* Chart Colors (Adjusted for Light Theme - need to be visible on white) */
+    --chart-1: hsl(var(--primary)); /* Dark Blue */
+    --chart-2: hsl(var(--accent));  /* Dark Teal/Cyan */
+    --chart-3: 210 70% 45%; /* Another Dark Blue */
+    --chart-4: 310 65% 50%;  /* Dark Pink/Purple */
+    --chart-5: 170 60% 40%; /* Dark Green/Teal */
 
-    /* Sidebar Colors (Deep Space Console) */
-    --sidebar-background: 240 10% 3%; /* Even darker than main background */
-    --sidebar-foreground: 240 10% 85%; /* Slightly dimmer white for sidebar text */
+    /* Sidebar Colors (Light Theme) */
+    --sidebar-background: 0 0% 99%; /* Very Light Gray/Almost White */
+    --sidebar-foreground: hsl(var(--foreground)); /* Dark text */
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 240 10% 10%; /* Dark blue for sidebar active items background */
-    --sidebar-accent-foreground: hsl(var(--accent)); /* Nebula Purple for icons/text on active sidebar items */
-    --sidebar-border: 240 10% 15%;
+    --sidebar-accent: 0 0% 94%; /* Light gray for active items background */
+    --sidebar-accent-foreground: hsl(var(--accent)); /* Dark Teal for icons/text */
+    --sidebar-border: hsl(var(--border));
     --sidebar-ring: hsl(var(--ring));
 
-    /* Fine-tuning and Specific Element Colors */
+    /* Fine-tuning and Specific Element Colors (Light Theme) */
     --link-text: hsl(var(--accent));
-    --link-hover-text: hsl(var(--accent) / 0.8);
+    --link-hover-text: hsl(var(--accent) / 0.8); /* Slightly darker accent on hover */
     --button-primary-bg: hsl(var(--primary));
     --button-primary-text: hsl(var(--primary-foreground));
     --button-primary-hover-bg: hsl(var(--primary) / 0.9);
     --button-secondary-bg: hsl(var(--secondary));
     --button-secondary-text: hsl(var(--secondary-foreground));
-    --button-secondary-hover-bg: hsl(var(--secondary) / 0.8);
-    --input-bg: hsl(var(--input));
+    --button-secondary-hover-bg: hsl(var(--secondary) / 0.8); /* Darken slightly */
+    --input-bg: hsl(var(--background)); /* White input background */
     --input-border: hsl(var(--border));
     --input-text: hsl(var(--foreground));
     --input-focus-ring: hsl(var(--ring));
-    --card-title-text: hsl(var(--card-foreground)); /* text-gradient handles this via global h tags */
+    --card-title-text: hsl(var(--foreground)); /* text-gradient handles this for CardTitle */
     --card-description-text: hsl(var(--muted-foreground));
 
-    --blockquote-bg: hsl(var(--secondary) / 0.5);
+    --blockquote-bg: hsl(var(--secondary));
     --blockquote-border: hsl(var(--accent));
     --blockquote-text: hsl(var(--foreground) / 0.85);
-    --code-bg: hsl(var(--muted));
+    --code-bg: hsl(var(--secondary));
     --code-text: hsl(var(--muted-foreground));
     --separator-color: hsl(var(--border));
-    --toast-bg: hsl(var(--card));
-    --toast-text: hsl(var(--card-foreground));
+    --toast-bg: hsl(var(--background)); /* Toasts on white background */
+    --toast-text: hsl(var(--foreground));
     --toast-border: hsl(var(--border));
   }
 }
