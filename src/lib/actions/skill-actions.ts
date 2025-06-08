@@ -42,8 +42,21 @@ export const getAllSkills = cache(async (): Promise<Array<SkillInput & { id: str
     if (snapshot.empty) {
       return [];
     }
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as SkillInput & { id: string }));
-  } catch (error) {
+    return snapshot.docs.map(doc => {
+        const data = doc.data();
+        // Explicitly construct the object to ensure only plain fields are included
+        const skill: SkillInput & { id: string } = {
+            id: doc.id,
+            name: data.name,
+            proficiency: data.proficiency,
+            category: data.category,
+        };
+        if (data.iconName) {
+            skill.iconName = data.iconName;
+        }
+        return skill;
+    });
+  } catch (error: any) {
     console.error("Error fetching all skills from DB:", error);
     return [];
   }
@@ -56,11 +69,25 @@ export const getSkillById = cache(async (id: string): Promise<(SkillInput & { id
     const docSnap = await docRef.get();
 
     if (docSnap.exists) {
-      return { id: docSnap.id, ...docSnap.data() } as SkillInput & { id: string };
+      const data = docSnap.data();
+      if (data) {
+          // Explicitly construct the object
+          const skill: SkillInput & { id: string } = {
+              id: docSnap.id,
+              name: data.name,
+              proficiency: data.proficiency,
+              category: data.category,
+          };
+          if (data.iconName) {
+              skill.iconName = data.iconName;
+          }
+          return skill;
+      }
+      return null; 
     } else {
       return null;
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Error fetching skill by ID ${id} from DB:`, error);
     return null;
   }
