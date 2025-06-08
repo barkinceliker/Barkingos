@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { Menu, Loader2, LogIn, Shield } from 'lucide-react';
+import { Menu, Loader2, LogIn, Shield, Home, User, Briefcase, Sparkles, BookOpenText, MessageSquare, FileText } from 'lucide-react'; // FileText eklendi
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -29,8 +29,18 @@ import { useRouter, usePathname } from 'next/navigation';
 import { signInWithEmailAndPassword, onAuthStateChanged, User as FirebaseUserType } from 'firebase/auth';
 import { auth as firebaseClientAuth } from '@/lib/firebase';
 import { createSession } from '@/lib/actions/auth';
-import { getAllNavItems, type NavItemInput } from '@/lib/actions/navigation-actions';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
+
+// Statik Navigasyon Öğeleri
+const staticNavItems = [
+  { id: 'home', label: 'Anasayfa', href: '/#anasayfa-section', iconName: 'Home' },
+  { id: 'about', label: 'Hakkımda', href: '/#hakkimda-section', iconName: 'User' },
+  { id: 'services', label: 'Hizmetler', href: '/#hizmetler-section', iconName: 'Sparkles' },
+  { id: 'projects', label: 'Projeler', href: '/#projeler-section', iconName: 'Briefcase' },
+  { id: 'resume', label: 'Özgeçmiş', href: '/#ozgecmis-section', iconName: 'FileText' },
+  { id: 'blog', label: 'Blog', href: '/#blog-section', iconName: 'BookOpenText' },
+  { id: 'contact', label: 'İletişim', href: '/#iletisim-section', iconName: 'MessageSquare' },
+];
 
 const adminNavItemData = { label: 'Admin Panel', href: '/admin', iconName: 'Shield' };
 
@@ -40,9 +50,7 @@ interface HeaderProps {
 }
 
 export default function Header({ initialIsAuthenticated, initialSiteTitle }: HeaderProps) {
-  const [navItems, setNavItems] = useState<Array<NavItemInput & { id: string }>>([]);
   const [currentUser, setCurrentUser] = useState<FirebaseUserType | null>(null);
-  const [isLoadingNav, setIsLoadingNav] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -50,7 +58,6 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
   const [siteTitle, setSiteTitle] = useState(initialSiteTitle);
 
   const router = useRouter();
-  const pathname = usePathname();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -62,64 +69,71 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       setCurrentUser(user);
     });
 
-    async function fetchNavItems() {
-      console.log("[Header fetchNavItems] Starting to fetch nav items...");
-      setIsLoadingNav(true);
-      try {
-        const items = await getAllNavItems();
-        console.log("[Header fetchNavItems] Fetched nav items:", items);
-        setNavItems(items);
-      } catch (error) {
-        console.error("[Header fetchNavItems] Error fetching navigation items:", error);
-        setNavItems([]);
-      } finally {
-        setIsLoadingNav(false);
-        console.log("[Header fetchNavItems] Finished fetching nav items. isLoadingNav:", false);
-      }
-    }
-
-    fetchNavItems();
-
     return () => {
       console.log("[Header useEffect Cleanup] Unsubscribing auth listener.");
       unsubscribeAuth();
     };
-  }, [initialSiteTitle]); // Sadece initialSiteTitle değiştiğinde site başlığını güncelle, nav item ve auth hep çalışsın.
+  }, [initialSiteTitle]);
 
   const isAuthenticated = currentUser !== null;
-  console.log("[Header Render] isAuthenticated:", isAuthenticated, "navItems count:", navItems.length, "isLoadingNav:", isLoadingNav);
-
+  console.log("[Header Render] isAuthenticated:", isAuthenticated, "Site Title:", siteTitle);
 
   const NavLink = ({ href, children, onClick, className, disabled, iconName }: { href: string; children: React.ReactNode; onClick?: () => void; className?: string, disabled?: boolean, iconName?: string }) => {
     const IconComponent = getLucideIcon(iconName);
-    const isActive = pathname === href || (pathname === '/' && href === '/#anasayfa-section');
+    const pathname = usePathname(); // Moved usePathname here to be a hook
+    const [isHashActive, setIsHashActive] = useState(false);
+
+    useEffect(() => {
+      const checkHash = () => {
+        if (href.startsWith('/#') && pathname === '/') {
+          // href is like '/#section-id', window.location.hash is like '#section-id'
+          setIsHashActive(window.location.hash === href.substring(1));
+        } else {
+          setIsHashActive(false);
+        }
+      };
+
+      if (typeof window !== 'undefined') {
+        checkHash(); // Initial check
+        window.addEventListener('hashchange', checkHash);
+        return () => window.removeEventListener('hashchange', checkHash);
+      }
+    }, [href, pathname]);
+
+
+    const isActive =
+      (pathname === '/' && href === '/#anasayfa-section') || // Specific case for homepage link on homepage
+      (href !== '/#anasayfa-section' && !href.startsWith('/#') && pathname === href) || // For non-hash links
+      (href.startsWith('/#') && pathname === '/' && isHashActive); // For hash links on homepage
+
 
     const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
         if (onClick) onClick();
-        if (href.includes('#') && typeof window !== 'undefined') {
+        if (href.startsWith('/#') && typeof window !== 'undefined') {
             const targetId = href.substring(href.indexOf('#') + 1);
             const targetElement = document.getElementById(targetId);
             if (targetElement) {
-                e.preventDefault(); 
+                e.preventDefault();
                 targetElement.scrollIntoView({ behavior: 'smooth' });
                 if (window.history.pushState) {
-                    window.history.pushState(null, '', href);
+                    const newPath = pathname === '/' ? href : `/${href}`;
+                    window.history.pushState(null, '', newPath);
                 } else {
-                    window.location.hash = href;
+                    window.location.hash = href.substring(1); // Fallback, ensure hash doesn't start with //
                 }
             }
         }
     };
 
     return (
-      <Button 
-        asChild 
-        variant="ghost" 
+      <Button
+        asChild
+        variant="ghost"
         size="sm"
         className={cn(
           "text-foreground hover:bg-accent/10 hover:text-accent-foreground",
-          "w-full justify-start", 
-          "md:w-auto md:justify-center", 
+          "w-full justify-start",
+          "md:w-auto md:justify-center",
           isActive && "bg-accent/10 text-accent-foreground font-semibold",
           className,
           disabled && "opacity-50 cursor-not-allowed"
@@ -132,16 +146,9 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     );
   };
 
-  const renderNavItems = (items: typeof navItems, isMobile = false) => {
+  const renderNavItems = (items: typeof staticNavItems, isMobile = false) => {
     console.log(`[Header renderNavItems] Rendering for ${isMobile ? 'Mobile' : 'Desktop'}. Item count: ${items.length}`);
-    if (isLoadingNav && !isMobile) {
-      return Array(3).fill(0).map((_, index) => ( // Skeleton count reduced to 3 for quicker visual
-        <Button key={`skeleton-${index}`} variant="ghost" size="sm" disabled className="opacity-50">
-          <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> Yükleniyor...
-        </Button>
-      ));
-    }
-    if (items.length === 0 && !isLoadingNav) {
+    if (items.length === 0) {
         console.log(`[Header renderNavItems] No nav items to render for ${isMobile ? 'Mobile' : 'Desktop'}.`);
         return isMobile ? null : <span className="text-sm text-muted-foreground px-2">Navigasyon Tanımlanmamış</span>;
     }
@@ -185,7 +192,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         setIsLoginDialogOpen(false);
         toast({ title: "Giriş Başarılı!", description: "Admin paneline yönlendiriliyorsunuz..." });
         router.push('/admin');
-        router.refresh(); 
+        router.refresh();
       } else {
         setLoginError(sessionResult.error || "Giriş yapılamadı. Lütfen tekrar deneyin.");
         toast({ title: "Giriş Başarısız", description: sessionResult.error || "Bir hata oluştu.", variant: "destructive" });
@@ -207,21 +214,38 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     <>
       <header className="bg-card shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex justify-between items-center">
-          <Link 
-            href="/#anasayfa-section" 
-            className="text-2xl font-headline font-bold text-primary" 
-            onClick={() => setIsMobileMenuOpen(false)}
+          <Link
+            href="/#anasayfa-section"
+            className="text-2xl font-headline font-bold text-primary"
+            onClick={(e) => {
+              setIsMobileMenuOpen(false);
+              if (typeof window !== 'undefined' && window.location.pathname === '/' && href.startsWith('/#')) {
+                 e.preventDefault();
+                 const targetId = href.substring(href.indexOf('#') + 1);
+                 document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth'});
+                 window.history.pushState(null, '', href);
+              } else if (typeof window !== 'undefined' && window.location.pathname === '/') {
+                 // Already on homepage, just scroll to top if #anasayfa-section is clicked or root path
+                 const targetElement = document.getElementById('anasayfa-section');
+                  if (targetElement) {
+                      e.preventDefault();
+                      targetElement.scrollIntoView({ behavior: 'smooth' });
+                      window.history.pushState(null, '', '/#anasayfa-section');
+                  }
+              }
+              // If not on homepage, standard Link behavior will navigate to / and then JS will scroll if needed
+            }}
             key={`site-title-${siteTitle}`}
           >
             {siteTitle}
           </Link>
 
           <nav className="hidden md:flex space-x-1 items-center flex-wrap">
-            {renderNavItems(navItems, false)}
+            {renderNavItems(staticNavItems, false)}
             {isAuthenticated ? (
-              <NavLink 
-                key={`admin-panel-link-desktop-${isAuthenticated.toString()}-${currentUser?.uid}`} 
-                href={adminNavItemData.href} 
+              <NavLink
+                key={`admin-panel-link-desktop-${isAuthenticated.toString()}-${currentUser?.uid}`}
+                href={adminNavItemData.href}
                 iconName={adminNavItemData.iconName}
               >
                 {adminNavItemData.label}
@@ -244,10 +268,25 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
               <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-card">
                 <SheetHeader className="p-4 border-b">
                    <SheetTitle asChild>
-                      <Link 
-                        href="/#anasayfa-section" 
-                        className="text-xl font-headline font-bold text-primary" 
-                        onClick={() => setIsMobileMenuOpen(false)}
+                      <Link
+                        href="/#anasayfa-section"
+                        className="text-xl font-headline font-bold text-primary"
+                         onClick={(e) => {
+                            setIsMobileMenuOpen(false);
+                             if (typeof window !== 'undefined' && window.location.pathname === '/' && href.startsWith('/#')) {
+                                e.preventDefault();
+                                const targetId = href.substring(href.indexOf('#') + 1);
+                                document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth'});
+                                window.history.pushState(null, '', href);
+                            } else if (typeof window !== 'undefined' && window.location.pathname === '/') {
+                                const targetElement = document.getElementById('anasayfa-section');
+                                if (targetElement) {
+                                    e.preventDefault();
+                                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                                     window.history.pushState(null, '', '/#anasayfa-section');
+                                }
+                            }
+                        }}
                         key={`site-title-mobile-${siteTitle}`}
                       >
                         {siteTitle}
@@ -255,20 +294,14 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                     </SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col space-y-1 px-2 py-4">
-                  {isLoadingNav ? (
-                     Array(3).fill(0).map((_, index) => (
-                        <Button key={`mobile-skeleton-${index}`} variant="ghost" className="text-base py-2 justify-start w-full opacity-50" disabled>
-                          <Loader2 className="mr-3 h-5 w-5 animate-spin" /> Yükleniyor...
-                        </Button>
-                      ))
-                  ) : renderNavItems(navItems, true)}
+                  {renderNavItems(staticNavItems, true)}
                   {isAuthenticated ? (
                     <SheetClose asChild>
-                      <NavLink 
-                        key={`admin-panel-link-mobile-${isAuthenticated.toString()}-${currentUser?.uid}`} 
-                        href={adminNavItemData.href} 
-                        onClick={() => setIsMobileMenuOpen(false)} 
-                        className="text-base py-2" 
+                      <NavLink
+                        key={`admin-panel-link-mobile-${isAuthenticated.toString()}-${currentUser?.uid}`}
+                        href={adminNavItemData.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="text-base py-2"
                         iconName={adminNavItemData.iconName}
                        >
                         {adminNavItemData.label}

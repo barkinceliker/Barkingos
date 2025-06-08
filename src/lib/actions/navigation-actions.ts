@@ -1,6 +1,11 @@
 
 'use server';
 
+// Bu dosya, dinamik navigasyon yönetiminden statik navigasyona geri dönüldüğü için
+// artık aktif olarak kullanılmamaktadır.
+// Gelecekte dinamik navigasyon tekrar gerekirse, bu dosya restore edilebilir.
+
+/*
 import { z } from 'zod';
 import { admin, getAdminInitializationError } from '@/lib/firebaseAdmin';
 import { cache } from 'react';
@@ -139,3 +144,13 @@ export async function deleteNavItem(id: string) {
     return { success: false, message: `Bir hata oluştu: ${error.message}` };
   }
 }
+*/
+
+// Eğer bu dosyaya ihtiyaç duyulursa, yukarıdaki yorumları kaldırın.
+console.warn("navigation-actions.ts dosyası çağrıldı ancak dinamik navigasyon kaldırıldığı için işlevsizdir.");
+
+export async function getAllNavItems() { 
+  console.warn("getAllNavItems çağrıldı ancak dinamik navigasyon kaldırıldı. Boş dizi döndürülüyor.");
+  return Promise.resolve([]); 
+}
+// Diğer fonksiyonlar için de benzer uyarılar eklenebilir veya tamamen kaldırılabilir.
