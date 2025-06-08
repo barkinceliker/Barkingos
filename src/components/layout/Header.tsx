@@ -52,7 +52,7 @@ const staticNavItems = [
   { id: 'contact', label: 'İletişim', href: '/#iletisim-section', iconName: 'MessageSquare' },
 ];
 
-const adminNavItemData = { label: 'Admin Panel', href: '/admin', iconName: 'Shield' };
+const adminNavItemData = { label: 'Admin', href: '/admin', iconName: 'Shield' };
 const logoutNavItemData = { label: 'Çıkış Yap', action: 'logout', iconName: 'LogOut' };
 
 
@@ -120,43 +120,41 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     const IconComponent = getLucideIcon(iconName);
     const currentPathnameFromHook = usePathname();
     const [isActiveClient, setIsActiveClient] = useState(false);
-  
-    const updateActiveState = useCallback(() => {
-      if (typeof window === 'undefined' || !href) {
-        setIsActiveClient(false);
-        return;
-      }
-  
-      let calculatedActivity = false;
-      const currentHash = window.location.hash;
-      const currentWindowPathname = window.location.pathname;
-  
-      if (href.startsWith('/#') && currentWindowPathname === '/') {
-        const targetHash = href.substring(href.indexOf('#'));
-        calculatedActivity = currentHash === targetHash;
-        if (href === '/#anasayfa-section' && (currentHash === '' || currentHash === '#')) {
-          calculatedActivity = true;
-        }
-      } else if (!href.startsWith('/#')) {
-        calculatedActivity = currentPathnameFromHook === href;
-      }
-      // For hash links not on the homepage, they are not "active" in the nav bar
-      // as clicking them would navigate to the homepage first.
-  
-      setIsActiveClient(prev => prev === calculatedActivity ? prev : calculatedActivity);
-    }, [href, currentPathnameFromHook]); // Dependencies for the memoized updateActiveState
-  
+
     useEffect(() => {
-      updateActiveState(); // Initial check
-  
-      window.addEventListener('hashchange', updateActiveState);
-      window.addEventListener('popstate', updateActiveState);
-  
-      return () => {
-        window.removeEventListener('hashchange', updateActiveState);
-        window.removeEventListener('popstate', updateActiveState);
+      const handleActivityUpdate = () => {
+        if (typeof window === 'undefined' || !href) {
+          setIsActiveClient(prev => prev === false ? prev : false);
+          return;
+        }
+
+        let calculatedIsActive = false;
+        const currentHash = window.location.hash;
+        const currentWindowPathname = window.location.pathname;
+
+        if (href.startsWith('/#') && currentWindowPathname === '/') {
+          const targetHash = href.substring(href.indexOf('#'));
+          calculatedIsActive = currentHash === targetHash;
+          if (href === '/#anasayfa-section' && (currentHash === '' || currentHash === '#')) {
+            calculatedIsActive = true;
+          }
+        } else if (!href.startsWith('/#')) {
+          calculatedIsActive = currentPathnameFromHook === href;
+        }
+        setIsActiveClient(prev => prev === calculatedIsActive ? prev : calculatedIsActive);
       };
-    }, [updateActiveState]); // Effect now depends on the memoized updateActiveState function
+
+      handleActivityUpdate(); // Initial check on mount and when dependencies change
+
+      window.addEventListener('hashchange', handleActivityUpdate);
+      window.addEventListener('popstate', handleActivityUpdate);
+
+      return () => {
+        window.removeEventListener('hashchange', handleActivityUpdate);
+        window.removeEventListener('popstate', handleActivityUpdate);
+      };
+    }, [href, currentPathnameFromHook]);
+
 
     const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement, MouseEvent>) => {
       let eventDefaultPrevented = false;
@@ -171,31 +169,20 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             eventDefaultPrevented = true;
           }
           targetElement.scrollIntoView({ behavior: 'smooth' });
-          if (window.history.pushState) {
-            // Only pushState if on the root path for same-page hash links
-            if (window.location.pathname === '/') { 
-              window.history.pushState(null, '', currentHref);
-            } else {
-              // If not on root, let Next.js router handle it (will navigate to / + hash)
-              router.push(currentHref);
-            }
+          // Only pushState if on the root path for same-page hash links
+          if (window.location.pathname === '/') { 
+            window.history.pushState(null, '', currentHref);
           } else {
-            window.location.hash = currentHref.substring(1);
+            // If not on root, let Next.js router handle it (will navigate to / + hash)
+            router.push(currentHref);
           }
         }
       }
     
       if (onClick) {
-        if (eventDefaultPrevented && e.defaultPrevented) {
-          // If we already prevented default, and onClick might be from SheetClose
-          // which also calls preventDefault, ensure we don't call it again on an already prevented event.
-          // This might be overly cautious, SheetClose usually handles this.
-          onClick(e);
-        } else {
-          onClick(e);
-        }
+         onClick(e);
       }
-    }, [href, router, onClick]); // Removed currentPathnameFromHook, window.location.pathname is used inside
+    }, [href, router, onClick]); 
     
   
     const commonClasses = cn(
@@ -212,7 +199,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           variant="ghost"
           size="sm"
           onClick={handleLinkClick}
-          className={cn(commonClasses, "gap-2")} 
+          className={cn(commonClasses)} 
           disabled={disabled}
         >
           {IconComponent && <IconComponent className="h-4 w-4" />}
@@ -226,7 +213,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         asChild
         variant="ghost"
         size="sm"
-        className={cn(commonClasses, "xl:text-sm lg:text-xs px-3 gap-2")}
+        className={cn(commonClasses, "xl:text-sm lg:text-xs px-3")}
         disabled={disabled}
       >
         <LinkFromNext href={href || '#'} onClick={handleLinkClick}>
@@ -243,7 +230,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       <>
         {staticNavItems.map((item) => (
           <SheetClose asChild key={`sheet-nav-${item.id}`}>
-            <NavLink href={item.href} iconName={item.iconName} className="text-base py-2.5 px-4 w-full gap-2">
+            <NavLink href={item.href} iconName={item.iconName} className="text-base py-2.5 px-4 w-full">
               {item.label}
             </NavLink>
           </SheetClose>
@@ -252,7 +239,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           <>
             <div className="my-2 border-t border-border" />
             <SheetClose asChild>
-              <NavLink href={adminNavItemData.href} iconName={adminNavItemData.iconName} className="text-base py-2.5 px-4 w-full gap-2">
+              <NavLink href={adminNavItemData.href} iconName={adminNavItemData.iconName} className="text-base py-2.5 px-4 w-full">
                 {adminNavItemData.label}
               </NavLink>
             </SheetClose>
@@ -261,9 +248,9 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         <div className="my-2 border-t border-border" />
         {isAuthenticated ? (
            <SheetClose asChild>
-             <Button variant="ghost" onClick={handleLogout} className="text-base py-2.5 px-4 text-destructive hover:bg-destructive/10 hover:text-destructive justify-start w-full gap-2" disabled={isSubmittingLogout}>
-               {isSubmittingLogout ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <LogOutIcon className="h-5 w-5" />}
-               <span>{logoutNavItemData.label}</span>
+             <Button variant="ghost" onClick={handleLogout} className="text-base py-2.5 px-4 text-destructive hover:bg-destructive/10 hover:text-destructive justify-start w-full" disabled={isSubmittingLogout}>
+               {isSubmittingLogout ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogOutIcon className="h-5 w-5" />}
+               <span className="ml-2">{logoutNavItemData.label}</span>
              </Button>
            </SheetClose>
         ) : (
@@ -333,7 +320,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                   const targetId = hrefAttr.substring(hrefAttr.indexOf('#') + 1);
                   document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth'});
                   window.history.pushState(null, '', hrefAttr);
-              } else if (typeof window !== 'undefined' && window.location.pathname === '/') {
+              } else if (typeof window !== 'undefined' && window.location.pathname === '/') { 
                   const targetElement = document.getElementById('anasayfa-section');
                   if (targetElement) {
                       e.preventDefault();
@@ -341,8 +328,6 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                        window.history.pushState(null, '', '/#anasayfa-section');
                   }
               } else {
-                // If not on the root page, or it's a non-hash link, let Next.js handle navigation.
-                // This case is primarily for when clicking the logo when already on a sub-page.
                 router.push('/#anasayfa-section'); 
               }
             }}
@@ -371,20 +356,20 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem asChild className="cursor-pointer w-full flex items-center gap-2">
-                      <LinkFromNext href={adminNavItemData.href} className="w-full flex items-center gap-2">
+                    <DropdownMenuItem asChild className="cursor-pointer">
+                      <LinkFromNext href={adminNavItemData.href} className="w-full flex items-center">
                         <Shield className="h-4 w-4" />
-                        <span>{adminNavItemData.label}</span>
+                        <span className="ml-2">{adminNavItemData.label}</span>
                       </LinkFromNext>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={handleLogout}
                       disabled={isSubmittingLogout}
-                      className="text-destructive focus:bg-destructive focus:text-destructive-foreground cursor-pointer flex items-center gap-2"
+                      className="text-destructive focus:bg-destructive focus:text-destructive-foreground cursor-pointer flex items-center"
                     >
                       {isSubmittingLogout ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogOutIcon className="h-4 w-4" />}
-                      <span>Çıkış Yap</span>
+                      <span className="ml-2">Çıkış Yap</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -395,7 +380,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                   onClick={() => setIsLoginDialogOpen(true)}
                   disabled={isSubmittingLogin}
                   className="p-2"
-                  aria-label="Giriş Yap"
+                  aria-label="Giriş Yap" 
                 >
                   {isSubmittingLogin ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="h-5 w-5" />}
                 </Button>
@@ -423,7 +408,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                                   const targetId = hrefAttr.substring(hrefAttr.indexOf('#') + 1);
                                   document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth'});
                                   window.history.pushState(null, '', hrefAttr);
-                              } else if (typeof window !== 'undefined' && window.location.pathname === '/') { // Clicking logo to go to top when on homepage
+                              } else if (typeof window !== 'undefined' && window.location.pathname === '/') { 
                                   const targetElement = document.getElementById('anasayfa-section');
                                   if (targetElement) {
                                       e.preventDefault();
