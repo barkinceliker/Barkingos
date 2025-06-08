@@ -41,7 +41,6 @@ import { createSession, logout as serverLogout } from '@/lib/actions/auth';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
 
 const staticNavItems = [
-  // { id: 'home', label: 'Anasayfa', href: '/#anasayfa-section', iconName: 'Home' }, // Anasayfa butonu kaldırıldı
   { id: 'about', label: 'Hakkımda', href: '/#hakkimda-section', iconName: 'User' },
   { id: 'services', label: 'Hizmetler', href: '/#hizmetler-section', iconName: 'Sparkles' },
   { id: 'projects', label: 'Projeler', href: '/#projeler-section', iconName: 'Briefcase' },
@@ -207,7 +206,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         asChild
         variant="ghost"
         size="sm"
-        className={cn(commonClasses, "xl:text-sm lg:text-xs px-3")}
+        className={cn(commonClasses, "text-sm px-3")} // Updated: removed xl:text-sm lg:text-xs
         disabled={disabled}
       >
         <LinkFromNext href={href || '#'} onClick={handleLinkClick}>
@@ -326,7 +325,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
 
           <nav className="hidden lg:flex items-center space-x-0">
             {staticNavItems.map((item) => (
-              <NavLink key={`desktop-nav-${item.id}`} href={item.href} iconName={item.iconName} className="xl:text-sm lg:text-xs px-3">
+              <NavLink key={`desktop-nav-${item.id}`} href={item.href} iconName={item.iconName} className="text-sm px-3">
                 {item.label}
               </NavLink>
             ))}
@@ -337,7 +336,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
               {isAuthenticated ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="xl:text-sm lg:text-xs px-3 gap-1">
+                    <Button variant="ghost" className="text-sm px-3 gap-1">
                       <Shield className="h-4 w-4" />
                       <span>{adminNavItemData.label}</span>
                       <ChevronDown className="ml-1 h-4 w-4" />
@@ -459,5 +458,3 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     </>
   );
 }
-
-    

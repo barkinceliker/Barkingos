@@ -5,10 +5,10 @@
 
 body {
   font-family: 'PT Sans', sans-serif;
-  background: hsl(var(--background)); /* Fallback koyu lacivert */
+  background: hsl(var(--background)); /* Fallback */
   background-image: linear-gradient(to bottom right,
     hsl(var(--gradient-body-start-hsl)) 0%,
-    hsl(var(--gradient-body-mid-hsl)) 40%, /* Orta rengin etkisini %50'den %40'a çektik */
+    hsl(var(--gradient-body-mid-hsl)) 40%,
     hsl(var(--gradient-body-end-hsl)) 100%
   );
   background-attachment: fixed;
@@ -21,70 +21,69 @@ html {
 }
 
 @layer base {
-  :root { /* Koyu Tema: Görkemli Sarı Lacivert */
+  :root { /* Royal Amethyst & Platinum Theme */
     /* Body Gradient Colors (Top-left to Bottom-right) */
-    --gradient-body-start-hsl: 220 70% 10%;  /* Çok Koyu, Zengin Lacivert */
-    --gradient-body-mid-hsl: 215 60% 15%;    /* Derin Lacivert */
-    --gradient-body-end-hsl: 210 50% 12%;    /* Biraz daha farklı tonda Koyu Lacivert */
+    --gradient-body-start-hsl: 270 60% 12%;  /* Deep Royal Purple */
+    --gradient-body-mid-hsl: 285 50% 18%;    /* Rich Amethyst */
+    --gradient-body-end-hsl: 260 55% 15%;    /* Slightly different Deep Purple */
 
-    --background: 220 70% 8%;              /* Çok Koyu Lacivert (Fallback) */
-    --foreground: 50 40% 96%;            /* Çok Açık, Altın Sarısına Çalan Kırık Beyaz (Text) */
+    --background: 270 60% 9%;              /* Very Dark Purple (Fallback) */
+    --foreground: 240 30% 96%;            /* Cool, bright Platinum/Silver (Text) */
 
-    --card: 220 65% 13%;                  /* Koyu Lacivert (Cards) */
+    --card: 270 55% 14%;                  /* Dark Purple (Cards) */
     --card-foreground: hsl(var(--foreground));
 
-    --popover: 220 60% 14%;               /* Koyu Lacivert Popover Background */
+    --popover: 270 50% 15%;               /* Dark Purple Popover Background */
     --popover-foreground: hsl(var(--foreground));
 
-    /* Primary (Sarı) ve Accent (Açık Sarı) */
-    --primary: 48 100% 55%;             /* Canlı, Zengin Altın Sarısı - Ana etkileşimler */
-    --primary-foreground: 48 100% 10%;    /* Koyu text (sarı butonlar için) */
+    /* Primary (Amethyst) ve Accent (Platinum/Silver) */
+    --primary: 275 70% 60%;             /* Vibrant Amethyst - Ana etkileşimler */
+    --primary-foreground: 275 70% 10%;    /* Koyu text (ametist butonlar için) */
 
-    --accent: 52 100% 60%;              /* Biraz daha açık, enerjik Sarı - Vurgular */
-    --accent-foreground: 52 100% 12%;     /* Koyu text (vurgu sarısı için) */
+    --accent: 220 60% 75%;              /* Bright, clear Silver/Light Steel Blue - Vurgular */
+    --accent-foreground: 220 60% 15%;     /* Koyu text (gümüş vurgular için) */
 
-    --secondary: 220 40% 20%;             /* Daha Koyu Desatüre Lacivert (ikincil elemanlar) */
-    --secondary-foreground: 220 20% 85%;  /* Daha Açık Gri/Lacivert text (ikincil elemanlar için) */
+    --secondary: 270 40% 25%;             /* Medium Dark Purple (ikincil elemanlar) */
+    --secondary-foreground: 270 20% 88%;  /* Lighter purple/silver text (ikincil için) */
 
-    --muted: 220 30% 18%;                 /* Mat Koyu Lacivert/Gri */
-    --muted-foreground: 220 15% 70%;      /* Mat Gri/Lacivert text */
+    --muted: 270 30% 20%;                 /* Muted Dark Purple */
+    --muted-foreground: 270 15% 75%;      /* Muted Silver/Purple text */
 
-    --destructive: 0 70% 50%;          /* Canlı Kırmızı (yıkıcı eylemler için) */
+    --destructive: 0 70% 55%;          /* Vivid Red (yıkıcı eylemler için için) */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 40% 30%;                /* Desatüre Lacivert Kenarlık */
-    --input: 220 50% 12%;                 /* Koyu Lacivert Input Background */
-    --ring: 48 100% 60%;                /* Parlak Sarı Ring (focus için) */
+    --border: 270 40% 35%;                /* Amethyst/Purple Border */
+    --input: 270 50% 10%;                 /* Very Dark Purple Input Background */
+    --ring: 275 75% 65%;                /* Bright Amethyst Ring (focus için) */
     --radius: 0.5rem;
 
-    /* Text Gradient - Parlak Sarıdan Altın Sarısına */
-    --gradient-start-hsl: 28 100% 60%; /* Canlı Turuncu */
-    --gradient-end-hsl: 20 90% 55%; /* Koyu Turuncu/Kırmızımsı Turuncu */
+    /* Text Gradient - Amethyst to Silver */
+    --gradient-start-hsl: 275 75% 68%; /* Brighter Amethyst */
+    --gradient-end-hsl: 220 65% 80%;   /* Brighter Silver/Steel Blue */
 
+    /* Hero Section Background Gradient Colors */
+    --hero-gradient-start-hsl: 270 50% 18%;    /* Lighter Deep Royal Purple */
+    --hero-gradient-mid-hsl: 285 45% 24%;     /* Lighter Rich Amethyst */
+    --hero-gradient-end-hsl: 260 50% 20%;     /* Lighter Deep Purple */
 
-    /* Hero Section Background Gradient Colors (Sarı Lacivert Tema ile uyumlu) */
-    --hero-gradient-start-hsl: 220 70% 14%;    /* Hero için Koyu Lacivert */
-    --hero-gradient-mid-hsl: 215 60% 18%;     /* Hero için Orta Ton Lacivert */
-    --hero-gradient-end-hsl: 210 55% 16%;     /* Hero için biraz farklı Koyu Lacivert */
+    /* Chart Colors (Amethyst & Platinum Tema için) */
+    --chart-1: hsl(var(--primary));     /* Vibrant Amethyst */
+    --chart-2: hsl(var(--accent));      /* Bright Silver/Steel Blue */
+    --chart-3: 290 60% 55%;             /* Slightly different Amethyst/Magenta */
+    --chart-4: 240 50% 70%;             /* Light Purple/Blue */
+    --chart-5: 210 40% 85%;             /* Contrasting Light Silver/Grey-Blue */
 
-    /* Chart Colors (Sarı Lacivert Tema için) */
-    --chart-1: hsl(var(--primary));     /* Canlı Sarı */
-    --chart-2: hsl(var(--accent));      /* Açık Sarı */
-    --chart-3: 45 80% 50%;             /* Biraz daha koyu Sarı */
-    --chart-4: 210 50% 60%;             /* Açık Lacivert/Mavi */
-    --chart-5: 220 30% 75%;             /* Kontrast Açık Gri/Mavi */
-
-    /* Sidebar Colors (Sarı Lacivert Tema) */
-    --sidebar-background: 220 68% 11%;       /* Kart arka planına benzer, biraz daha koyu lacivert */
+    /* Sidebar Colors (Amethyst & Platinum Tema) */
+    --sidebar-background: 270 58% 11%;       /* Card background like, slightly darker purple */
     --sidebar-foreground: hsl(var(--foreground));
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 220 50% 16%;          /* Aktif öğe arka planı - biraz daha açık lacivert */
-    --sidebar-accent-foreground: hsl(var(--accent)); /* İkonlar/text için Sarı vurgu */
+    --sidebar-accent: 270 50% 16%;          /* Active item background - slightly lighter purple */
+    --sidebar-accent-foreground: hsl(var(--accent)); /* Silver/Steel Blue accent for icons/text */
     --sidebar-border: hsl(var(--border));
     --sidebar-ring: hsl(var(--ring));
 
-    /* Fine-tune and Custom Element Colors (Sarı Lacivert Tema) */
+    /* Fine-tune and Custom Element Colors */
     --link-text: hsl(var(--accent));
     --link-hover-text: hsl(var(--accent) / 0.8);
     --button-primary-bg: hsl(var(--primary));
@@ -97,7 +96,7 @@ html {
     --input-border: hsl(var(--border));
     --input-text: hsl(var(--foreground));
     --input-focus-ring: hsl(var(--ring));
-    --card-title-text: hsl(var(--foreground)); 
+    --card-title-text: hsl(var(--foreground));
     --card-description-text: hsl(var(--muted-foreground));
 
     --blockquote-bg: hsl(var(--secondary));
@@ -130,4 +129,3 @@ html {
     text-fill-color: transparent;
   }
 }
-
