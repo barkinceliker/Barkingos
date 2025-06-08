@@ -1,7 +1,7 @@
 
 "use server";
 
-import { cookies } from 'next/headers';
+import { cookies } from 'next/headers'; // Ensure this import is present
 // Using relative path from src/lib/actions/auth.ts to src/lib/firebaseAdmin.ts
 import { admin, getAdminInitializationError } from '../firebaseAdmin'; 
 
@@ -69,7 +69,8 @@ export async function logout() {
 
 export async function checkAuthStatus() {
   console.log("[AuthActions checkAuthStatus] Called.");
-  const cookieStore = cookies();
+  // Modify this line based on the error message
+  const cookieStore = await cookies(); 
   const token = cookieStore.get(COOKIE_NAME)?.value;
   console.log(`[AuthActions checkAuthStatus] Cookie token found: ${token ? token.substring(0,20)+'...' : 'null'}`);
 
@@ -109,9 +110,8 @@ export async function checkAuthStatus() {
       detailedErrorMessage = `Code: ${error.code}, Message: ${detailedErrorMessage}`;
     }
     // Log the detailed error message and the full error object for more context
-    console.warn(`[AuthActions checkAuthStatus] Error during auth token check: ${detailedErrorMessage}. Invalidating session. Full error object:`, JSON.stringify(error, Object.getOwnPropertyNames(error)));
+    console.warn(`[AuthActions checkAuthStatus] Error during auth token check: ${detailedErrorMessage}. Invalidating session. Full error object:`, JSON.stringify(error, Object.getOwnPropertyNames(error).concat(['cause'])));
     cookies().delete(COOKIE_NAME);
     return { isAuthenticated: false };
   }
 }
-
