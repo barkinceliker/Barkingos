@@ -1,7 +1,7 @@
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Settings, LayoutDashboard, Newspaper, FolderKanban, Sparkles, Brain, Briefcase, FileText, Palette, Paintbrush, MailIcon } from 'lucide-react'; // ListCollapse kaldırıldı
+import { Settings, LayoutDashboard, Newspaper, FolderKanban, Sparkles, Brain, Briefcase, FileText, Palette, MailIcon, ListCollapse, Paintbrush } from 'lucide-react';
 
 // Data fetching functions for embedded forms
 import { getHomepageContent } from '@/lib/actions/page-content-actions';
@@ -19,12 +19,13 @@ import ProjectManagementContent from '@/app/admin/manage-projects/_components/Pr
 import ServiceManagementContent from '@/app/admin/manage-services/_components/ServiceManagementContent';
 import SkillManagementContent from '@/app/admin/manage-skills/_components/SkillManagementContent';
 import ExperienceManagementContent from '@/app/admin/manage-experiences/_components/ExperienceManagementContent';
-// import NavigationManagementContent from '@/app/admin/manage-navigation/_components/NavigationManagementContent'; // Kaldırıldı
+import NavigationManagementContentObsolete from '@/app/admin/manage-navigation/_components/NavigationManagementContent'; // Artık Obsolete
 
 // Settings and Other Content Components
-import ThemeSettingsFormCard from '@/app/admin/manage-settings/theme/_components/ThemeSettingsFormCard'; // Client Component
-import CustomThemesTableCard from '@/app/admin/manage-settings/custom-themes/_components/CustomThemesTableCard'; // Server Component
-import ContactMessagesTableCard from '@/app/admin/contact-messages/_components/ContactMessagesTableCard'; // Server Component
+// import ThemeSettingsFormCard from '@/app/admin/manage-settings/theme/_components/ThemeSettingsFormCard'; // Kaldırıldı
+// import CustomThemesTableCard from '@/app/admin/manage-settings/custom-themes/_components/CustomThemesTableCard'; // Kaldırıldı
+import ThemeSelectorCard from "@/app/admin/themes/_components/ThemeSelectorCard"; // Yeni tema seçici
+import ContactMessagesTableCard from '@/app/admin/contact-messages/_components/ContactMessagesTableCard';
 
 
 export default async function AdminUnifiedPage() {
@@ -82,34 +83,35 @@ export default async function AdminUnifiedPage() {
       description: "Profesyonel deneyimlerinizi ve iş geçmişinizi yönetin.",
       content: <ExperienceManagementContent /> 
     },
-    // { // Navigasyon Yönetimi kaldırıldı
-    //   value: "navigasyon-yonetimi",
-    //   title: "Navigasyon Yönetimi",
-    //   icon: ListCollapse, 
-    //   description: "Sitenizin ana navigasyon menüsündeki öğeleri (linkler, etiketler, sıra) yönetin.",
-    //   content: <NavigationManagementContent />
-    // },
+    { 
+      value: "navigasyon-yonetimi",
+      title: "Navigasyon Yönetimi (Devre Dışı)", // Güncellendi
+      icon: ListCollapse, 
+      description: "Navigasyon menüsü artık Header.tsx dosyasından statik olarak yönetilmektedir.", // Güncellendi
+      content: <NavigationManagementContentObsolete /> // Güncellendi
+    },
     {
       value: "genel-site-ayarlari",
       title: "Genel Site Ayarları",
       icon: Settings,
-      description: "Sitenizin genel başlığını buradan yönetin.", // Açıklama güncellendi
+      description: "Sitenizin genel başlığını buradan yönetin.",
       content: <SiteGeneralSettingsForm initialData={siteGeneralSettings} />
     },
     { 
-      value: "tema-ayarlari", 
-      title: "Site Tema Ayarları", 
+      value: "temalar", // Yeni sekme
+      title: "Site Teması Seçimi", 
       icon: Palette,
       description: "Sitenizin genel görünümünü ve renk paletini seçin.",
-      content: <ThemeSettingsFormCard /> 
+      content: <ThemeSelectorCard /> // Yeni bileşen
     },
-    { 
-      value: "ozel-temalar", 
-      title: "Özel Tema Yönetimi", 
-      icon: Paintbrush,
-      description: "Oluşturduğunuz özel temaları görüntüleyin, düzenleyin veya yenilerini ekleyin.",
-      content: <CustomThemesTableCard />
-    },
+    // Kaldırılan Özel Tema Yönetimi
+    // { 
+    //   value: "ozel-temalar", 
+    //   title: "Özel Tema Yönetimi (Devre Dışı)", 
+    //   icon: Paintbrush,
+    //   description: "Bu bölüm devre dışı bırakılmıştır. Tema seçimi 'Temalar' bölümünden yapılmaktadır.",
+    //   content: <p>Özel tema oluşturma/düzenleme özelliği kaldırılmıştır. Lütfen 'Temalar' bölümünden önceden tanımlanmış bir tema seçin.</p> 
+    // },
      { 
       value: "gelen-mesajlar", 
       title: "Gelen İletişim Mesajları", 

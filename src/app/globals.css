@@ -67,18 +67,18 @@ html {
     --card-title-text: hsl(var(--card-foreground));
     --card-description-text: hsl(var(--muted-foreground));
 
-    --blockquote-bg: hsl(var(--secondary) / 0.5); /* Example: 220 10% 90% / 0.5 */
-    --blockquote-border: hsl(var(--accent)); /* Example: 174 100% 29% */
-    --blockquote-text: hsl(var(--foreground) / 0.85); /* Example: 220 10% 20% / 0.85 */
-    --code-bg: hsl(var(--muted)); /* Example: 220 10% 85% */
-    --code-text: hsl(var(--muted-foreground)); /* Example: 220 10% 45% */
-    --separator-color: hsl(var(--border)); /* Example: 220 10% 80% */
-    --toast-bg: hsl(var(--card)); /* Example: 0 0% 100% */
-    --toast-text: hsl(var(--card-foreground)); /* Example: 220 10% 20% */
-    --toast-border: hsl(var(--border)); /* Example: 220 10% 80% */
+    --blockquote-bg: hsl(var(--secondary) / 0.5); 
+    --blockquote-border: hsl(var(--accent)); 
+    --blockquote-text: hsl(var(--foreground) / 0.85); 
+    --code-bg: hsl(var(--muted)); 
+    --code-text: hsl(var(--muted-foreground)); 
+    --separator-color: hsl(var(--border)); 
+    --toast-bg: hsl(var(--card)); 
+    --toast-text: hsl(var(--card-foreground)); 
+    --toast-border: hsl(var(--border)); 
   }
 
-  .dark {
+  .dark { /* Default Dark Theme (can be overridden by specific dark themes) */
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
@@ -130,15 +130,15 @@ html {
     --card-title-text: hsl(var(--card-foreground));
     --card-description-text: hsl(var(--muted-foreground));
 
-    --blockquote-bg: hsl(var(--secondary) / 0.5); /* Example: 0 0% 14.9% / 0.5 */
-    --blockquote-border: hsl(var(--accent)); /* Example: 0 0% 14.9% */
-    --blockquote-text: hsl(var(--foreground) / 0.9); /* Example: 0 0% 98% / 0.9 */
-    --code-bg: hsl(var(--muted)); /* Example: 0 0% 14.9% */
-    --code-text: hsl(var(--muted-foreground)); /* Example: 0 0% 63.9% */
-    --separator-color: hsl(var(--border)); /* Example: 0 0% 14.9% */
-    --toast-bg: hsl(var(--card)); /* Example: 0 0% 3.9% */
-    --toast-text: hsl(var(--card-foreground)); /* Example: 0 0% 98% */
-    --toast-border: hsl(var(--border)); /* Example: 0 0% 14.9% */
+    --blockquote-bg: hsl(var(--secondary) / 0.5); 
+    --blockquote-border: hsl(var(--accent)); 
+    --blockquote-text: hsl(var(--foreground) / 0.9); 
+    --code-bg: hsl(var(--muted)); 
+    --code-text: hsl(var(--muted-foreground)); 
+    --separator-color: hsl(var(--border)); 
+    --toast-bg: hsl(var(--card)); 
+    --toast-text: hsl(var(--card-foreground)); 
+    --toast-border: hsl(var(--border)); 
   }
 
   .theme-ocean-depth {
@@ -161,14 +161,12 @@ html {
     --border: 205 40% 30%; 
     --input: 205 40% 20%; 
     --ring: 180 70% 65%; 
-    --radius: 0.75rem; /* Ocean Depth specific radius */
-    /* Chart Colors */
+    --radius: 0.75rem; 
     --chart-1: 30 85% 60%; 
     --chart-2: 180 65% 55%; 
     --chart-3: 210 50% 70%; 
     --chart-4: 50 70% 60%; 
     --chart-5: 150 60% 45%; 
-    /* Sidebar Theming */
     --sidebar-background: 205 50% 10%; 
     --sidebar-foreground: 200 20% 80%; 
     --sidebar-primary: 180 65% 55%; 
@@ -177,8 +175,6 @@ html {
     --sidebar-accent-foreground: 180 65% 75%; 
     --sidebar-border: 205 40% 25%; 
     --sidebar-ring: 180 70% 65%; 
-
-    /* Fine-tuning & Specific Element Colors for Ocean Depth */
     --link-text: hsl(var(--primary));
     --link-hover-text: hsl(180 70% 65%);
     --button-primary-bg: hsl(var(--primary));
@@ -193,16 +189,15 @@ html {
     --input-focus-ring: hsl(var(--ring));
     --card-title-text: hsl(var(--primary)); 
     --card-description-text: hsl(var(--muted-foreground));
-
-    --blockquote-bg: hsl(var(--secondary) / 0.7); /* 210 40% 25% / 0.7 */
-    --blockquote-border: hsl(var(--accent)); /* 30 85% 60% */
-    --blockquote-text: hsl(var(--foreground) / 0.9); /* 200 20% 88% / 0.9 */
+    --blockquote-bg: hsl(var(--secondary) / 0.7); 
+    --blockquote-border: hsl(var(--accent)); 
+    --blockquote-text: hsl(var(--foreground) / 0.9); 
     --code-bg: hsl(205 40% 15%); 
     --code-text: hsl(200 20% 80%);
-    --separator-color: hsl(var(--border) / 0.5); /* 205 40% 30% / 0.5 */
-    --toast-bg: hsl(var(--card) / 0.9); /* 205 45% 18% / 0.9 */
-    --toast-text: hsl(var(--card-foreground)); /* 200 20% 88% */
-    --toast-border: hsl(var(--border)); /* 205 40% 30% */
+    --separator-color: hsl(var(--border) / 0.5); 
+    --toast-bg: hsl(var(--card) / 0.9); 
+    --toast-text: hsl(var(--card-foreground)); 
+    --toast-border: hsl(var(--border)); 
   }
 
   .theme-cyber-punk {
@@ -225,14 +220,12 @@ html {
     --border: 270 50% 25%; 
     --input: 270 50% 15%; 
     --ring: 300 100% 75%; 
-    --radius: 0.25rem; /* Cyberpunk specific sharp radius */
-    /* Chart Colors */
+    --radius: 0.25rem; 
     --chart-1: 300 100% 70%; 
     --chart-2: 180 100% 50%; 
     --chart-3: 240 100% 70%; 
     --chart-4: 60 100% 55%;  
     --chart-5: 120 100% 50%; 
-    /* Sidebar Theming */
     --sidebar-background: 270 70% 5%; 
     --sidebar-foreground: 300 100% 80%; 
     --sidebar-primary: 180 100% 50%; 
@@ -241,8 +234,6 @@ html {
     --sidebar-accent-foreground: 180 100% 75%; 
     --sidebar-border: 270 50% 20%; 
     --sidebar-ring: 300 100% 75%; 
-
-    /* Fine-tuning & Specific Element Colors for Cyber Punk */
     --link-text: hsl(var(--accent)); 
     --link-hover-text: hsl(60 100% 65%); 
     --button-primary-bg: hsl(var(--primary)); 
@@ -257,16 +248,176 @@ html {
     --input-focus-ring: hsl(var(--accent)); 
     --card-title-text: hsl(var(--accent)); 
     --card-description-text: hsl(var(--muted-foreground));
-
-    --blockquote-bg: hsl(270 60% 12%); /* Darker purple */
-    --blockquote-border: hsl(var(--primary)); /* Neon Cyan border */
-    --blockquote-text: hsl(300 100% 80%); /* Bright pinkish text */
+    --blockquote-bg: hsl(270 60% 12%); 
+    --blockquote-border: hsl(var(--primary)); 
+    --blockquote-text: hsl(300 100% 80%); 
     --code-bg: hsl(270 50% 8%); 
     --code-text: hsl(180 100% 70%); 
-    --separator-color: hsl(var(--border) / 0.7); /* 270 50% 25% / 0.7 */
-    --toast-bg: hsl(var(--card) / 0.95); /* 270 60% 10% / 0.95 */
-    --toast-text: hsl(var(--accent)); /* Neon Yellow text */
-    --toast-border: hsl(var(--primary)); /* Neon Cyan border */
+    --separator-color: hsl(var(--border) / 0.7); 
+    --toast-bg: hsl(var(--card) / 0.95); 
+    --toast-text: hsl(var(--accent)); 
+    --toast-border: hsl(var(--primary)); 
+  }
+
+  .theme-midnight-gradient { /* "Gradient Güzel Dark" */
+    --background: 240 10% 4%; /* Very Dark Blue/Black */
+    --foreground: 240 8% 90%; /* Light Gray/White */
+    --card: 240 10% 8%; /* Slightly Lighter Dark Blue */
+    --card-foreground: 240 8% 85%;
+    --popover: 240 10% 7%;
+    --popover-foreground: 240 8% 85%;
+    --primary: 280 80% 65%; /* Vibrant Purple */
+    --primary-foreground: 240 5% 95%;
+    --secondary: 260 50% 15%; /* Darker Purple/Blue */
+    --secondary-foreground: 280 80% 75%;
+    --muted: 240 8% 12%;
+    --muted-foreground: 240 5% 55%;
+    --accent: 180 90% 50%; /* Bright Cyan/Teal - for gradient feel with primary */
+    --accent-foreground: 240 10% 5%;
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 10% 15%;
+    --input: 240 10% 12%;
+    --ring: 280 80% 70%;
+    --radius: 0.5rem;
+  }
+
+  .theme-forest-green { /* "Yeşil" */
+    --background: 120 20% 96%; /* Very Light Green/Off-white */
+    --foreground: 120 60% 10%; /* Dark Green */
+    --card: 120 10% 100%;
+    --card-foreground: 120 60% 10%;
+    --popover: 120 10% 100%;
+    --popover-foreground: 120 60% 10%;
+    --primary: 130 55% 45%; /* Forest Green */
+    --primary-foreground: 120 20% 98%;
+    --secondary: 125 30% 88%; /* Light Green */
+    --secondary-foreground: 130 55% 35%;
+    --muted: 120 20% 92%;
+    --muted-foreground: 120 30% 40%;
+    --accent: 90 60% 50%; /* Lime Green */
+    --accent-foreground: 120 60% 10%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 120 20% 85%;
+    --input: 120 20% 90%;
+    --ring: 130 55% 50%;
+    --radius: 0.5rem;
+  }
+
+  .theme-deep-navy { /* "Lacivert" */
+    --background: 220 40% 10%; /* Deep Navy Blue */
+    --foreground: 220 20% 85%; /* Light Gray/Cyanish White */
+    --card: 220 40% 15%;
+    --card-foreground: 220 20% 85%;
+    --popover: 220 40% 12%;
+    --popover-foreground: 220 20% 85%;
+    --primary: 200 80% 60%; /* Bright Cyan/Light Blue */
+    --primary-foreground: 220 40% 5%;
+    --secondary: 220 30% 25%;
+    --secondary-foreground: 200 80% 75%;
+    --muted: 220 30% 20%;
+    --muted-foreground: 220 15% 60%;
+    --accent: 250 70% 65%; /* Indigo/Light Purple */
+    --accent-foreground: 220 40% 5%;
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 30% 30%;
+    --input: 220 30% 22%;
+    --ring: 200 80% 65%;
+    --radius: 0.5rem;
+  }
+
+  .theme-blush-pink { /* "Pembe" */
+    --background: 340 80% 97%; /* Very Light Pink */
+    --foreground: 340 50% 25%; /* Dark Muted Pink/Maroon */
+    --card: 340 60% 100%;
+    --card-foreground: 340 50% 25%;
+    --popover: 340 60% 100%;
+    --popover-foreground: 340 50% 25%;
+    --primary: 330 70% 55%; /* Strong Pink */
+    --primary-foreground: 340 60% 98%;
+    --secondary: 335 60% 90%; /* Lighter Pink */
+    --secondary-foreground: 330 70% 45%;
+    --muted: 340 60% 94%;
+    --muted-foreground: 340 30% 50%;
+    --accent: 300 70% 60%; /* Magenta/Purpleish Pink */
+    --accent-foreground: 340 60% 98%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 340 60% 88%;
+    --input: 340 60% 92%;
+    --ring: 330 70% 60%;
+    --radius: 0.75rem; /* Softer feel */
+  }
+  
+  .theme-royal-purple { /* "Mor" */
+    --background: 270 50% 15%; /* Dark Purple */
+    --foreground: 270 30% 88%; /* Light Lavender/Gray */
+    --card: 270 50% 20%;
+    --card-foreground: 270 30% 88%;
+    --popover: 270 50% 18%;
+    --popover-foreground: 270 30% 88%;
+    --primary: 280 70% 60%; /* Royal Purple */
+    --primary-foreground: 270 30% 95%;
+    --secondary: 275 40% 30%;
+    --secondary-foreground: 280 70% 80%;
+    --muted: 270 40% 25%;
+    --muted-foreground: 270 20% 65%;
+    --accent: 310 80% 65%; /* Bright Pink/Magenta */
+    --accent-foreground: 270 30% 95%;
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 270 40% 35%;
+    --input: 270 40% 28%;
+    --ring: 280 70% 65%;
+    --radius: 0.5rem;
+  }
+
+  .theme-burnt-orange { /* "Turuncu" */
+    --background: 30 60% 95%; /* Light Cream/Peach */
+    --foreground: 25 60% 20%; /* Dark Brown */
+    --card: 30 50% 100%;
+    --card-foreground: 25 60% 20%;
+    --popover: 30 50% 100%;
+    --popover-foreground: 25 60% 20%;
+    --primary: 20 85% 55%; /* Burnt Orange */
+    --primary-foreground: 30 50% 98%;
+    --secondary: 30 70% 88%; /* Light Orange/Peach */
+    --secondary-foreground: 20 85% 45%;
+    --muted: 30 60% 92%;
+    --muted-foreground: 25 40% 45%;
+    --accent: 40 90% 60%; /* Bright Yellow/Gold */
+    --accent-foreground: 25 60% 15%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 30 60% 85%;
+    --input: 30 60% 90%;
+    --ring: 20 85% 60%;
+    --radius: 0.5rem;
+  }
+
+  .theme-crimson-red { /* "Kırmızı" */
+    --background: 0 0% 12%; /* Dark Gray/Almost Black */
+    --foreground: 0 0% 90%; /* Light Gray */
+    --card: 0 0% 18%;
+    --card-foreground: 0 0% 90%;
+    --popover: 0 0% 15%;
+    --popover-foreground: 0 0% 90%;
+    --primary: 0 70% 50%; /* Crimson Red */
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 50% 25%; /* Darker Red */
+    --secondary-foreground: 0 70% 75%;
+    --muted: 0 0% 22%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 30 80% 60%; /* Orange/Fiery Accent */
+    --accent-foreground: 0 0% 10%;
+    --destructive: 0 80% 55%; /* Slightly brighter red for destructive */
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 30%;
+    --input: 0 0% 25%;
+    --ring: 0 70% 55%;
+    --radius: 0.5rem;
   }
 }
 
@@ -278,5 +429,3 @@ html {
     @apply bg-background text-foreground;
   }
 }
-
-    

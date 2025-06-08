@@ -1,23 +1,30 @@
 
-import CustomThemeForm from '@/components/admin/forms/CustomThemeForm';
-import { createCustomTheme, type CustomThemeInput } from '@/lib/actions/custom-theme-actions';
+import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle, Palette } from 'lucide-react';
 
-export default function NewCustomThemePage() {
-  
-  async function handleCreateCustomTheme(_idIgnored: string | undefined, data: CustomThemeInput) {
-    "use server"; 
-    // createCustomTheme zaten tüm veriyi (name dahil) data içinde bekliyor.
-    // Formdan gelen 'name' alanı, Firestore'da document ID olarak değil, bir field olarak saklanacak.
-    // Firestore ID'si otomatik oluşacak.
-    return createCustomTheme(data); 
-  }
-
+export default function NewCustomThemePageObsolete() {
   return (
-    <div className="space-y-6">
-      <CustomThemeForm 
-        onSubmitAction={handleCreateCustomTheme} 
-        isEditing={false} 
-      />
+    <div className="space-y-6 p-4 md:p-8">
+      <Card className="shadow-md max-w-2xl mx-auto opacity-75">
+        <CardHeader className="text-center">
+          <AlertTriangle className="mx-auto h-12 w-12 text-destructive mb-4" />
+          <CardTitle className="text-2xl font-headline text-primary">Yeni Özel Tema Oluşturma (Devre Dışı)</CardTitle>
+          <CardDescription>
+           Özel tema oluşturma özelliği kaldırılmıştır. Tema seçimi ana yönetim panelindeki "Temalar" bölümünden yapılmaktadır.
+          </CardDescription>
+        </CardHeader>
+         <CardContent className="text-center py-8">
+            <Palette size={48} className="mx-auto text-muted-foreground mb-4" />
+             <p className="text-muted-foreground mb-6">
+              Lütfen sitenizin temasını ana yönetim panelindeki "Temalar" bölümünden seçiniz.
+            </p>
+            <Link href="/admin">
+              <Button variant="outline">Ana Yönetim Paneline Dön</Button>
+            </Link>
+        </CardContent>
+      </Card>
     </div>
   );
 }

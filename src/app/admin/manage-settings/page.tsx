@@ -1,22 +1,22 @@
 
-// Bu sayfa artık kullanılmıyor. 
-// Tema ayarları ve özel tema yönetimi doğrudan /src/app/admin/page.tsx içindeki
-// akordeon bölümlerine taşındı.
-
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Palette, Settings, Paintbrush } from 'lucide-react'; 
+import { Palette, Settings, Paintbrush, AlertTriangle } from 'lucide-react'; 
 
 export default function ManageSettingsPageObsolete() {
   
   return (
-    <div className="space-y-8">
-      <section>
-        <h1 className="text-3xl font-headline font-bold text-primary">Site Ayarları Yönetimi (Artık Kullanılmıyor)</h1>
-        <p className="text-muted-foreground">
-            Site ayarları artık ana yönetim panelindeki ilgili akordeon bölümlerinden yönetilmektedir.
-        </p>
+    <div className="space-y-8 p-4 md:p-8">
+      <section className="flex items-start space-x-3">
+        <AlertTriangle className="h-8 w-8 text-destructive flex-shrink-0 mt-1" />
+        <div>
+          <h1 className="text-3xl font-headline font-bold text-primary">Site Ayarları Yönetimi (Artık Kullanılmıyor)</h1>
+          <p className="text-muted-foreground mt-2">
+              Bu sayfa artık doğrudan kullanılmamaktadır. Site ayarları (Genel Ayarlar ve Tema Seçimi) ana yönetim panelindeki ilgili akordeon bölümlerinden yönetilmektedir.
+              Özel tema oluşturma/düzenleme özelliği kaldırılmıştır.
+          </p>
+        </div>
       </section>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -42,8 +42,8 @@ export default function ManageSettingsPageObsolete() {
                   <Paintbrush className="h-6 w-6 text-accent" />
                 </div>
                 <div>
-                  <CardTitle className="font-headline text-xl">Özel Temaları Yönet</CardTitle>
-                  <CardDescription className="text-sm mt-1">Ana yönetim panelinden yönetin.</CardDescription>
+                  <CardTitle className="font-headline text-xl">Özel Temaları Yönet (Devre Dışı)</CardTitle>
+                  <CardDescription className="text-sm mt-1">Bu özellik kaldırıldı.</CardDescription>
                 </div>
               </CardHeader>
               <CardContent>
