@@ -107,13 +107,13 @@ export default async function SinglePageApp() {
           </p>
           <div className="space-x-4">
             <Link href="/#projeler-section" passHref>
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
                 Projelerim <Briefcase className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <Link href="/#iletisim-section" passHref>
-              <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary/10">
-                İletişime Geç
+              <Button size="lg" variant="secondary" className="font-bold">
+                İletişime Geç <MessageSquare className="ml-2 h-5 w-5" />
               </Button>
             </Link>
           </div>
@@ -566,3 +566,5 @@ export default async function SinglePageApp() {
   );
 }
     
+
+      
