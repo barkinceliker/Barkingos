@@ -26,9 +26,11 @@ export interface ContactSubmission {
 async function getDb() {
   const adminInitError = getAdminInitializationError();
   if (adminInitError) {
+    console.error("[ContactAction getDb] Admin SDK initialization error:", adminInitError);
     throw new Error(`Sunucu yapılandırma hatası (Admin SDK): ${adminInitError}`);
   }
   if (!admin || !admin.firestore) {
+    console.error("[ContactAction getDb] Firebase Admin SDK (admin.firestore) not properly initialized.");
     throw new Error("Firebase Admin SDK (admin.firestore) düzgün başlatılamadı.");
   }
   return admin.firestore();
@@ -37,23 +39,36 @@ async function getDb() {
 const CONTACT_SUBMISSIONS_COLLECTION = 'contactSubmissions';
 
 export async function submitContactForm(values: z.infer<typeof contactFormSchema>) {
+  console.log("[ContactAction] submitContactForm called with values:", JSON.stringify(values));
   const validation = contactFormSchema.safeParse(values);
   if (!validation.success) {
+    console.error("[ContactAction] Validation failed:", JSON.stringify(validation.error.flatten().fieldErrors));
     return { success: false, message: "Form verileri geçersiz.", errors: validation.error.flatten().fieldErrors };
   }
 
+  console.log("[ContactAction] Validation successful. Data to save:", JSON.stringify(validation.data));
+
   try {
     const db = await getDb();
-    await db.collection(CONTACT_SUBMISSIONS_COLLECTION).add({
+    console.log("[ContactAction] Firestore DB instance obtained.");
+
+    const docRef = await db.collection(CONTACT_SUBMISSIONS_COLLECTION).add({
       ...validation.data,
       submittedAt: admin.firestore.FieldValue.serverTimestamp(),
       isRead: false,
     });
-    // Optionally revalidate admin path if messages are displayed there immediately
+    console.log(`[ContactAction] Document successfully added to Firestore with ID: ${docRef.id}`);
+    
+    // Revalidate paths to update the admin panel display
+    // Since contact messages are now in an accordion on the main admin page
+    revalidatePath('/admin'); 
+    // If you had a separate page for contact messages, you'd revalidate it too:
     // revalidatePath('/admin/contact-messages'); 
+
+
     return { success: true, message: "Mesajınız başarıyla alındı! En kısa sürede geri dönüş yapacağız." };
   } catch (error: any) {
-    console.error("Error submitting contact form to Firestore:", error);
+    console.error("[ContactAction] Error submitting contact form to Firestore. Message:", error.message, "Stack:", error.stack, "Full Error:", JSON.stringify(error, Object.getOwnPropertyNames(error)));
     return { success: false, message: `Mesajınız gönderilirken bir hata oluştu: ${error.message}` };
   }
 }
@@ -70,14 +85,13 @@ export const getContactMessages = cache(async (): Promise<Array<ContactSubmissio
       return {
         id: doc.id,
         ...data,
-        // Convert Firestore Timestamp to ISO string for client components
         submittedAt: data.submittedAt && typeof data.submittedAt.toDate === 'function' 
                      ? (data.submittedAt as admin.firestore.Timestamp).toDate().toISOString() 
-                     : new Date().toISOString(), // Fallback or handle as needed
+                     : new Date().toISOString(), 
       } as ContactSubmission & { id: string };
     });
   } catch (error) {
-    console.error("Error fetching contact messages:", error);
+    console.error("[ContactAction] Error fetching contact messages:", error);
     return [];
   }
 });
