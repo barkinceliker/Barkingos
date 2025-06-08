@@ -36,6 +36,22 @@ const getThemePreviewColors = (themeKey: ThemeName): { primary: string; accent: 
   }
 };
 
+function applyThemeToHtml(themeName: ThemeName) {
+  if (typeof window !== "undefined") {
+    const htmlEl = document.documentElement;
+    // Mevcut tüm tema sınıflarını kaldır (theme-* ile başlayanlar)
+    const classesToRemove = Array.from(htmlEl.classList).filter(cls => cls.startsWith('theme-'));
+    classesToRemove.forEach(cls => htmlEl.classList.remove(cls));
+
+    // Gerekirse yeni tema sınıfını ekle
+    if (themeName !== 'default') {
+      htmlEl.classList.add(`theme-${themeName}`);
+    }
+    console.log(`[ThemeSelectorCard applyThemeToHtml] Client-side theme applied: '${themeName}'. HTML classes: '${htmlEl.className}'`);
+  }
+}
+
+
 export default function ThemeSelectorCard() {
   const [currentTheme, setCurrentTheme] = useState<ThemeName>('default');
   const [isLoading, setIsLoading] = useState(true);
@@ -47,24 +63,10 @@ export default function ThemeSelectorCard() {
     async function fetchCurrentTheme() {
       setIsLoading(true);
       try {
-        const setting = await getThemeSetting();
+        const setting = await getThemeSetting(); // Server action call
         setCurrentTheme(setting.activeTheme);
         console.log("[ThemeSelectorCard useEffect] Initial theme fetched on client:", setting.activeTheme);
-        // Apply initial theme from DB to HTML element on client mount
-        // This ensures the client is in sync with server-rendered theme
-        if (typeof window !== "undefined") {
-          const htmlEl = document.documentElement;
-          // Preserve existing non-theme classes (like font variables)
-          const existingClasses = Array.from(htmlEl.classList).filter(cls => !cls.startsWith('theme-') && cls !== 'dark');
-          
-          htmlEl.className = ''; // Clear all classes first
-          existingClasses.forEach(cls => htmlEl.classList.add(cls)); // Re-add non-theme classes
-
-          if (setting.activeTheme !== 'default') {
-            htmlEl.classList.add(`theme-${setting.activeTheme}`);
-          }
-          console.log(`[ThemeSelectorCard useEffect] Applied initial theme '${setting.activeTheme}' to <html>. Current classes: '${htmlEl.className}'`);
-        }
+        applyThemeToHtml(setting.activeTheme); // Apply initial theme to HTML
       } catch (error) {
         console.error("[ThemeSelectorCard useEffect] Error fetching current theme:", error);
         toast({
@@ -77,40 +79,27 @@ export default function ThemeSelectorCard() {
       }
     }
     fetchCurrentTheme();
-  }, [toast]);
+  }, [toast]); // useEffect runs once on mount
 
   const handleThemeSelect = async (themeName: ThemeName) => {
-    if (themeName === currentTheme) return;
+    if (themeName === currentTheme && !isSaving) return; // Prevent re-saving same theme or if already saving
     setIsSaving(themeName);
     console.log(`[ThemeSelectorCard handleThemeSelect] Attempting to set theme to: ${themeName}`);
     try {
-      const result = await updateThemeSetting(themeName);
+      const result = await updateThemeSetting(themeName); // Server action call
       console.log(`[ThemeSelectorCard handleThemeSelect] updateThemeSetting result for '${themeName}':`, result);
 
       if (result.success) {
         setCurrentTheme(themeName); 
+        applyThemeToHtml(themeName); // Apply theme immediately on client for responsiveness
+        
         toast({
           title: "Başarılı!",
-          description: `${getThemeDisplayName(themeName)} teması başarıyla uygulandı. Değişikliklerin yansıması için sayfa yenileniyor...`,
+          description: `${getThemeDisplayName(themeName)} teması başarıyla uygulandı. Sayfa yenileniyor...`,
         });
         
-        console.log(`[ThemeSelectorCard handleThemeSelect] İstemci tarafı: ${themeName} teması seçildi. HTML sınıfı güncelleniyor.`);
-        if (typeof window !== "undefined") {
-          const htmlEl = document.documentElement;
-          const existingClasses = Array.from(htmlEl.classList).filter(cls => !cls.startsWith('theme-') && cls !== 'dark');
-          
-          htmlEl.className = ''; 
-          existingClasses.forEach(cls => htmlEl.classList.add(cls));
-
-          if (themeName !== 'default') {
-            htmlEl.classList.add(`theme-${themeName}`);
-            console.log(`[ThemeSelectorCard handleThemeSelect] İstemci tarafı: 'theme-${themeName}' sınıfı <html>'e eklendi. Current classes: '${htmlEl.className}'`);
-          } else {
-            console.log(`[ThemeSelectorCard handleThemeSelect] İstemci tarafı: 'default' tema seçildi, özel 'theme-*' sınıfı eklenmedi. Current classes: '${htmlEl.className}'`);
-          }
-        }
         router.refresh(); 
-        console.log("[ThemeSelectorCard handleThemeSelect] router.refresh() çağrıldı.");
+        console.log("[ThemeSelectorCard handleThemeSelect] router.refresh() called. Server will re-render RootLayout.");
       } else {
         toast({
           title: "Hata!",
@@ -119,7 +108,7 @@ export default function ThemeSelectorCard() {
         });
       }
     } catch (error: any) {
-      console.error("[ThemeSelectorCard handleThemeSelect] Hata Yakalandı:", error);
+      console.error("[ThemeSelectorCard handleThemeSelect] Client-side Hata Yakalandı:", error);
       toast({
         title: "İstemci Hatası!",
         description: error.message || "Tema güncellenemedi.",
@@ -173,7 +162,7 @@ export default function ThemeSelectorCard() {
                 "hover:shadow-2xl hover:scale-105",
                 isActive ? "ring-2 ring-primary shadow-2xl scale-105" : "shadow-md"
               )}
-              onClick={() => handleThemeSelect(themeKey)}
+              onClick={() => !isLoading && handleThemeSelect(themeKey)} // Prevent click while loading/saving
             >
               <CardHeader className="p-4">
                 <div className="flex items-center justify-between">
@@ -191,7 +180,11 @@ export default function ThemeSelectorCard() {
                   variant={isActive ? "default" : "outline"}
                   size="sm"
                   className="w-full mt-4"
-                  disabled={isSaving === themeKey || isActive}
+                  disabled={isSaving === themeKey || isActive || isLoading}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent card click if button is clicked
+                    handleThemeSelect(themeKey);
+                  }}
                 >
                   {isSaving === themeKey ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {isActive ? "Aktif Tema" : "Bu Temayı Seç"}
@@ -204,4 +197,3 @@ export default function ThemeSelectorCard() {
     </Card>
   );
 }
-

@@ -93,12 +93,12 @@ export default async function SinglePageApp() {
 
   return (
     <div className="space-y-16 md:space-y-24 lg:space-y-32">
-      {/* Hero Section - Full Width */}
+      {/* Hero Section - Full Width Background, Contained Content */}
       <section
         id="anasayfa-section"
-        className="w-full pt-24 md:pt-36 lg:pt-48 pb-20 md:pb-24 lg:pb-32 bg-gradient-to-br from-primary/10 via-background to-background rounded-b-xl shadow-xl"
+        className="w-full bg-gradient-to-br from-primary/10 via-background to-background shadow-xl"
       >
-        <div className="container mx-auto px-4 text-center">
+        <div className="container mx-auto px-4 py-24 md:py-36 lg:py-48 text-center">
           <h1 className="text-4xl md:text-6xl font-headline font-bold text-primary mb-6">
             {homepageContent.heroTitle}
           </h1>
@@ -565,5 +565,4 @@ export default async function SinglePageApp() {
     </div>
   );
 }
-
     
