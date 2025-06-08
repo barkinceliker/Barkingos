@@ -3,8 +3,15 @@
 
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { Menu as MenuIcon, Loader2, LogIn, Shield, MoreVertical } from 'lucide-react';
-import XIcon from 'lucide-react/dist/esm/icons/x';
+import {
+  Menu as MenuIcon,
+  Loader2,
+  LogIn,
+  Shield,
+  MoreVertical,
+  X, // Correctly import X here
+  LogOut, // Ensure LogOut is imported if used
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -47,6 +54,7 @@ const staticNavItems = [
 const adminNavItemData = { label: 'Admin Panel', href: '/admin', iconName: 'Shield' };
 const logoutNavItemData = { label: 'Çıkış Yap', action: 'logout', iconName: 'LogOut' };
 
+
 interface HeaderProps {
   initialIsAuthenticated: boolean;
   initialSiteTitle: string;
@@ -88,7 +96,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       if (pathname.startsWith('/admin')) {
         router.push('/');
       }
-      setIsMobileMenuOpen(false); 
+      setIsMobileMenuOpen(false);
       router.refresh();
     } catch (error) {
       toast({ title: "Çıkış Hatası", description: "Bir hata oluştu.", variant: "destructive" });
@@ -141,12 +149,12 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           }
         }
       }
-      setIsMobileMenuOpen(false); 
+      setIsMobileMenuOpen(false);
     };
 
     const commonClasses = cn(
       "text-foreground hover:bg-accent/10 hover:text-accent-foreground",
-      "justify-start text-sm py-2 px-3 rounded-md", 
+      "justify-start text-sm py-2 px-3 rounded-md",
       isActive && !isAction && "bg-accent/20 text-accent-foreground font-semibold",
       className,
       disabled && "opacity-50 cursor-not-allowed"
@@ -182,7 +190,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       </Button>
     );
   };
-  
+
   const renderNavItemsForSheet = () => {
     return (
       <>
@@ -207,7 +215,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         {isAuthenticated ? (
            <SheetClose asChild>
              <NavLink onClick={handleLogout} isAction iconName={logoutNavItemData.iconName} className="text-base py-2.5 px-4 text-destructive hover:bg-destructive/10 hover:text-destructive w-full" disabled={isSubmittingLogout}>
-               {isSubmittingLogout ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+               {isSubmittingLogout ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOut className="mr-2 h-4 w-4" />}
                {logoutNavItemData.label}
              </NavLink>
            </SheetClose>
@@ -287,7 +295,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             {siteTitle}
           </Link>
 
-          {/* Desktop Navigation Links */}
+          {/* Desktop Navigation Links - Hidden on lg and smaller, visible on lg and up */}
           <nav className="hidden lg:flex space-x-1 items-center">
             {staticNavItems.map((item) => (
               <NavLink key={`desktop-nav-${item.id}`} href={item.href} iconName={item.iconName} className="px-3">
@@ -297,8 +305,8 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           </nav>
 
           <div className="flex items-center space-x-2">
-            {/* Admin/Login Button - visible on lg and up */}
-            <div className="hidden lg:flex"> 
+            {/* Admin/Login Button - visible on lg and up. For smaller screens, it's in the Sheet menu. */}
+             <div className="hidden lg:flex">
               {isAuthenticated ? (
                 <NavLink
                   key={`admin-panel-link-desktop-${isAuthenticated.toString()}-${currentUser?.uid}`}
@@ -316,8 +324,9 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
               )}
             </div>
 
+
             {/* Mobile Hamburger Menu - only on screens smaller than lg */}
-            <div className="lg:hidden"> 
+            <div className="lg:hidden">
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(true)} aria-label="Menüyü Aç">
@@ -353,7 +362,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                         </Link>
                       </SheetTitle>
                        <SheetClose className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 data-[state=open]:bg-secondary">
-                          <XIcon className="h-5 w-5" />
+                          <X className="h-5 w-5" /> {/* Use X (not XIcon) here */}
                           <span className="sr-only">Kapat</span>
                       </SheetClose>
                   </SheetHeader>
