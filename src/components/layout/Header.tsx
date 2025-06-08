@@ -206,7 +206,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         asChild
         variant="ghost"
         size="sm"
-        className={cn(commonClasses, "text-sm px-3")} // Updated: removed xl:text-sm lg:text-xs
+        className={cn(commonClasses, "text-sm px-3")}
         disabled={disabled}
       >
         <LinkFromNext href={href || '#'} onClick={handleLinkClick}>
@@ -301,7 +301,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
 
   return (
     <>
-      <header className="bg-card shadow-md sticky top-0 z-50">
+      <header className="bg-navbar-gradient shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex justify-between items-center">
           <LinkFromNext
             href="/#anasayfa-section"
@@ -336,7 +336,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
               {isAuthenticated ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="text-sm px-3 gap-1">
+                    <Button variant="ghost" className="text-sm px-3 gap-1 text-foreground hover:bg-accent/10 hover:text-accent-foreground">
                       <Shield className="h-4 w-4" />
                       <span>{adminNavItemData.label}</span>
                       <ChevronDown className="ml-1 h-4 w-4" />
@@ -362,11 +362,11 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                 </DropdownMenu>
               ) : (
                 <Button
-                  variant="default"
+                  variant="ghost"
                   size="icon"
                   onClick={() => setIsLoginDialogOpen(true)}
                   disabled={isSubmittingLogin}
-                  className="p-2"
+                  className="p-2 text-foreground hover:bg-accent/10 hover:text-accent-foreground"
                   aria-label="Giriş Yap"
                 >
                   {isSubmittingLogin ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="h-5 w-5" />}
@@ -377,12 +377,12 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             <div className="lg:hidden">
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(true)} aria-label="Menüyü Aç">
+                  <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(true)} aria-label="Menüyü Aç" className="text-foreground hover:bg-accent/10 hover:text-accent-foreground">
                     <MenuIcon className="h-6 w-6" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[300px] sm:w-[320px] bg-card p-0 flex flex-col">
-                  <SheetHeader className="p-4 border-b flex flex-row justify-between items-center">
+                <SheetContent side="right" className="w-[300px] sm:w-[320px] bg-navbar-gradient p-0 flex flex-col">
+                  <SheetHeader className="p-4 border-b border-border/30 flex flex-row justify-between items-center">
                      <SheetTitle asChild>
                         <LinkFromNext
                           href="/#anasayfa-section"
@@ -405,7 +405,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                         </LinkFromNext>
                       </SheetTitle>
                        <SheetClose asChild>
-                          <Button variant="ghost" size="icon" aria-label="Menüyü Kapat">
+                          <Button variant="ghost" size="icon" aria-label="Menüyü Kapat" className="text-foreground hover:bg-accent/10 hover:text-accent-foreground">
                             <X className="h-5 w-5" />
                           </Button>
                       </SheetClose>

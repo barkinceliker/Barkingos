@@ -21,65 +21,69 @@ html {
 }
 
 @layer base {
-  :root { /* Royal Amethyst & Platinum Theme */
+  :root { /* Obsidian & Forged Steel Theme */
     /* Body Gradient Colors (Top-left to Bottom-right) */
-    --gradient-body-start-hsl: 270 60% 12%;  /* Deep Royal Purple */
-    --gradient-body-mid-hsl: 285 50% 18%;    /* Rich Amethyst */
-    --gradient-body-end-hsl: 260 55% 15%;    /* Slightly different Deep Purple */
+    --gradient-body-start-hsl: 220 10% 8%;  /* Very Dark Desaturated Blue/Charcoal */
+    --gradient-body-mid-hsl: 210 8% 12%;    /* Dark Cool Gray */
+    --gradient-body-end-hsl: 30 10% 10%;    /* Hint of Dark Bronze/Brown in dark gray */
 
-    --background: 270 60% 9%;              /* Very Dark Purple (Fallback) */
-    --foreground: 240 30% 96%;            /* Cool, bright Platinum/Silver (Text) */
+    --background: 220 10% 5%;              /* Obsidian Black (Fallback) */
+    --foreground: 210 15% 92%;            /* Light Steel Gray/Off-white (Text) */
 
-    --card: 270 55% 14%;                  /* Dark Purple (Cards) */
+    --card: 220 10% 10%;                  /* Dark Charcoal Card */
     --card-foreground: hsl(var(--foreground));
 
-    --popover: 270 50% 15%;               /* Dark Purple Popover Background */
+    --popover: 220 10% 11%;               /* Dark Charcoal Popover Background */
     --popover-foreground: hsl(var(--foreground));
 
-    /* Primary (Amethyst) ve Accent (Platinum/Silver) */
-    --primary: 275 70% 60%;             /* Vibrant Amethyst - Ana etkileşimler */
-    --primary-foreground: 275 70% 10%;    /* Koyu text (ametist butonlar için) */
+    /* Primary (Burnished Bronze/Deep Orange) ve Accent (Steely Blue) */
+    --primary: 30 60% 50%;                /* Burnished Bronze/Deep Orange - Ana etkileşimler */
+    --primary-foreground: 30 60% 95%;     /* Light color (primary butonlar için) */
 
-    --accent: 220 60% 75%;              /* Bright, clear Silver/Light Steel Blue - Vurgular */
-    --accent-foreground: 220 60% 15%;     /* Koyu text (gümüş vurgular için) */
+    --accent: 210 60% 65%;                /* Steely Blue - Vurgular */
+    --accent-foreground: 210 60% 10%;     /* Koyu text (çelik mavisi vurgular için) */
 
-    --secondary: 270 40% 25%;             /* Medium Dark Purple (ikincil elemanlar) */
-    --secondary-foreground: 270 20% 88%;  /* Lighter purple/silver text (ikincil için) */
+    --secondary: 220 10% 18%;             /* Medium Dark Gray (ikincil elemanlar) */
+    --secondary-foreground: 210 15% 85%;  /* Lighter gray text (ikincil için) */
 
-    --muted: 270 30% 20%;                 /* Muted Dark Purple */
-    --muted-foreground: 270 15% 75%;      /* Muted Silver/Purple text */
+    --muted: 220 10% 15%;                 /* Muted Dark Gray */
+    --muted-foreground: 210 10% 65%;      /* Muted Gray text */
 
-    --destructive: 0 70% 55%;          /* Vivid Red (yıkıcı eylemler için için) */
+    --destructive: 0 70% 50%;             /* Vivid Red (yıkıcı eylemler için) */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 270 40% 35%;                /* Amethyst/Purple Border */
-    --input: 270 50% 10%;                 /* Very Dark Purple Input Background */
-    --ring: 275 75% 65%;                /* Bright Amethyst Ring (focus için) */
+    --border: 220 10% 25%;                /* Gray/Steel Border */
+    --input: 220 10% 7%;                  /* Very Dark Gray Input Background */
+    --ring: 30 65% 58%;                   /* Bright Bronze Ring (focus için) */
     --radius: 0.5rem;
 
-    /* Text Gradient - Amethyst to Silver */
-    --gradient-start-hsl: 275 75% 68%; /* Brighter Amethyst */
-    --gradient-end-hsl: 220 65% 80%;   /* Brighter Silver/Steel Blue */
+    /* Text Gradient - Bronze to Steely Blue */
+    --gradient-start-hsl: 30 65% 55%;     /* Brighter Bronze */
+    --gradient-end-hsl: 210 65% 70%;   /* Brighter Steely Blue */
 
     /* Hero Section Background Gradient Colors */
-    --hero-gradient-start-hsl: 270 50% 18%;    /* Lighter Deep Royal Purple */
-    --hero-gradient-mid-hsl: 285 45% 24%;     /* Lighter Rich Amethyst */
-    --hero-gradient-end-hsl: 260 50% 20%;     /* Lighter Deep Purple */
+    --hero-gradient-start-hsl: 220 12% 14%;
+    --hero-gradient-mid-hsl: 210 10% 18%;
+    --hero-gradient-end-hsl: 30 15% 16%;
 
-    /* Chart Colors (Amethyst & Platinum Tema için) */
-    --chart-1: hsl(var(--primary));     /* Vibrant Amethyst */
-    --chart-2: hsl(var(--accent));      /* Bright Silver/Steel Blue */
-    --chart-3: 290 60% 55%;             /* Slightly different Amethyst/Magenta */
-    --chart-4: 240 50% 70%;             /* Light Purple/Blue */
-    --chart-5: 210 40% 85%;             /* Contrasting Light Silver/Grey-Blue */
+    /* Navbar Background Gradient Colors */
+    --navbar-gradient-start-hsl: 220 15% 15%; /* Darker Steel */
+    --navbar-gradient-end-hsl: 30 25% 20%;    /* Darker, desaturated Bronze */
 
-    /* Sidebar Colors (Amethyst & Platinum Tema) */
-    --sidebar-background: 270 58% 11%;       /* Card background like, slightly darker purple */
+    /* Chart Colors (Obsidian & Forged Steel Tema için) */
+    --chart-1: hsl(var(--primary));     /* Burnished Bronze */
+    --chart-2: hsl(var(--accent));      /* Steely Blue */
+    --chart-3: 15 70% 45%;              /* Deep Red/Orange */
+    --chart-4: 200 50% 55%;             /* Medium Blue/Gray */
+    --chart-5: 40 40% 70%;              /* Muted Gold/Light Bronze */
+
+    /* Sidebar Colors (Obsidian & Forged Steel Tema) */
+    --sidebar-background: 220 10% 9%;        /* Card background like, slightly darker */
     --sidebar-foreground: hsl(var(--foreground));
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 270 50% 16%;          /* Active item background - slightly lighter purple */
-    --sidebar-accent-foreground: hsl(var(--accent)); /* Silver/Steel Blue accent for icons/text */
+    --sidebar-accent: 220 12% 14%;           /* Active item background - slightly lighter gray */
+    --sidebar-accent-foreground: hsl(var(--accent)); /* Steely Blue accent for icons/text */
     --sidebar-border: hsl(var(--border));
     --sidebar-ring: hsl(var(--ring));
 
@@ -128,4 +132,8 @@ html {
     background-clip: text;
     text-fill-color: transparent;
   }
+  .bg-navbar-gradient {
+    background-image: linear-gradient(to right, hsl(var(--navbar-gradient-start-hsl)), hsl(var(--navbar-gradient-end-hsl)));
+  }
 }
+
