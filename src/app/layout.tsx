@@ -38,16 +38,17 @@ export async function generateMetadata(): Promise<Metadata> {
   const siteSettings = await getSiteGeneralSettings();
   return {
     title: siteSettings.siteTitle || 'BenimSitem | Portfolyo ve Blog',
-    description: staticMetadataDescription,
+    description: staticMetadataDescription, // siteSettings.siteDescription kaldırıldı, statik kullanılıyor
     icons: {
-      icon: '/favicon.ico',
+      icon: '/favicon.ico', // Varsayılan favicon yolu
     },
   };
 }
 
 async function AuthAwareUIComponents() {
+  // Bu bileşenin içindeki checkAuthStatus çağrısı sunucu tarafında çalışır.
   const auth = await checkAuthStatus();
-  const siteSettings = await getSiteGeneralSettings();
+  const siteSettings = await getSiteGeneralSettings(); // Site başlığı için
   return (
     <>
       <Header
@@ -66,17 +67,26 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const themeSetting = await getThemeSetting();
-  console.log("[RootLayout] Aktif Tema Ayarı:", themeSetting.activeTheme);
+  // SUNUCU TARAFI LOG: Bu log, her sayfa isteğinde veya revalidate sonrası sunucuda görünecektir.
+  console.log(`[RootLayout SERVER RENDER] Aktif Tema Veritabanından: '${themeSetting.activeTheme}'`);
+  
   const themeClass = themeSetting.activeTheme === 'default' ? '' : `theme-${themeSetting.activeTheme}`;
   const fontVariableClasses = cn(ptSans.variable, playfairDisplay.variable, sourceCodePro.variable);
+  
+  console.log(`[RootLayout SERVER RENDER] Uygulanacak HTML Sınıfı (themeClass): '${themeClass}'`);
+  console.log(`[RootLayout SERVER RENDER] Uygulanacak HTML Sınıfı (fontVariableClasses): '${fontVariableClasses}'`);
+  const finalHtmlClasses = cn(themeClass, fontVariableClasses);
+  console.log(`[RootLayout SERVER RENDER] Nihai HTML Sınıfları: '${finalHtmlClasses}'`);
+
 
   return (
-    <html lang="tr" className={cn(themeClass, fontVariableClasses)}>
+    <html lang="tr" className={finalHtmlClasses}>
       <head>
+        {/* Favicon linkleri generateMetadata içinde yönetiliyor */}
       </head>
       <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
         <AuthAwareUIComponents />
-        <main className="flex-grow">
+        <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {children}
         </main>
         <Footer />
