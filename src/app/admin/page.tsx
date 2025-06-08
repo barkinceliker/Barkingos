@@ -1,15 +1,17 @@
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Settings, LayoutDashboard, Newspaper, FolderKanban, Sparkles, Brain, Briefcase, FileText, Palette, Paintbrush, MailIcon } from 'lucide-react';
+import { Settings, LayoutDashboard, Newspaper, FolderKanban, Sparkles, Brain, Briefcase, FileText, Palette, Paintbrush, MailIcon, ListCollapse } from 'lucide-react';
 
 // Data fetching functions for embedded forms
 import { getHomepageContent } from '@/lib/actions/page-content-actions';
 import { getHakkimdaContent } from '@/lib/actions/page-content-actions';
+import { getSiteGeneralSettings } from '@/lib/actions/settings-actions'; // For SiteGeneralSettingsForm
 
 // Form Components to embed
 import EditHomepageForm from '@/components/admin/forms/EditHomepageForm';
 import EditHakkimdaPageForm from '@/components/admin/forms/EditHakkimdaPageForm';
+import SiteGeneralSettingsForm from '@/components/admin/forms/SiteGeneralSettingsForm'; // For SiteGeneralSettingsForm
 
 // Management Content Components (Tables and links)
 import BlogManagementContent from '@/app/admin/manage-blog/_components/BlogManagementContent';
@@ -17,6 +19,7 @@ import ProjectManagementContent from '@/app/admin/manage-projects/_components/Pr
 import ServiceManagementContent from '@/app/admin/manage-services/_components/ServiceManagementContent';
 import SkillManagementContent from '@/app/admin/manage-skills/_components/SkillManagementContent';
 import ExperienceManagementContent from '@/app/admin/manage-experiences/_components/ExperienceManagementContent';
+import NavigationManagementContent from '@/app/admin/manage-navigation/_components/NavigationManagementContent';
 
 // Settings and Other Content Components
 import ThemeSettingsFormCard from '@/app/admin/manage-settings/theme/_components/ThemeSettingsFormCard'; // Client Component
@@ -27,6 +30,7 @@ import ContactMessagesTableCard from '@/app/admin/contact-messages/_components/C
 export default async function AdminUnifiedPage() {
   const homepageContent = await getHomepageContent();
   const hakkimdaContent = await getHakkimdaContent();
+  const siteGeneralSettings = await getSiteGeneralSettings(); // Fetch general site settings
 
   const accordionSections = [
     { 
@@ -78,26 +82,40 @@ export default async function AdminUnifiedPage() {
       description: "Profesyonel deneyimlerinizi ve iş geçmişinizi yönetin.",
       content: <ExperienceManagementContent /> 
     },
+    {
+      value: "navigasyon-yonetimi",
+      title: "Navigasyon Yönetimi",
+      icon: ListCollapse, 
+      description: "Sitenizin ana navigasyon menüsündeki öğeleri (linkler, etiketler, sıra) yönetin.",
+      content: <NavigationManagementContent />
+    },
+    {
+      value: "genel-site-ayarlari",
+      title: "Genel Site Ayarları",
+      icon: Settings,
+      description: "Sitenizin genel başlığını ve meta açıklamasını buradan yönetin.",
+      content: <SiteGeneralSettingsForm initialData={siteGeneralSettings} />
+    },
     { 
       value: "tema-ayarlari", 
       title: "Site Tema Ayarları", 
       icon: Palette,
       description: "Sitenizin genel görünümünü ve renk paletini seçin.",
-      content: <ThemeSettingsFormCard /> // Client Component
+      content: <ThemeSettingsFormCard /> 
     },
     { 
       value: "ozel-temalar", 
       title: "Özel Tema Yönetimi", 
       icon: Paintbrush,
       description: "Oluşturduğunuz özel temaları görüntüleyin, düzenleyin veya yenilerini ekleyin.",
-      content: <CustomThemesTableCard /> // Server Component
+      content: <CustomThemesTableCard />
     },
      { 
       value: "gelen-mesajlar", 
       title: "Gelen İletişim Mesajları", 
       icon: MailIcon,
       description: "Sitenizin iletişim formundan gönderilen mesajları görüntüleyin.",
-      content: <ContactMessagesTableCard /> // Server Component
+      content: <ContactMessagesTableCard />
     },
   ];
 
