@@ -21,7 +21,7 @@ const themeSettingSchema = z.object({
 });
 
 const DEFAULT_THEME_SETTING: ThemeSetting = {
-  activeThemeName: 'ocean-depth', // Varsayılan tema 'ocean-depth' olarak değiştirildi
+  activeThemeName: 'midnight-gradient', // Varsayılan tema 'midnight-gradient' olarak değiştirildi
 };
 
 // --- Site General Settings ---
