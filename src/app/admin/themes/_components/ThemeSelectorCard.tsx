@@ -26,7 +26,7 @@ const getThemePreviewColors = (themeKey: ThemeName): { primary: string; accent: 
     case 'default': return { primary: 'hsl(231 48% 48%)', accent: 'hsl(174 100% 29%)', background: 'hsl(220 17% 95%)' }; 
     case 'ocean-depth': return { primary: 'hsl(180 65% 55%)', accent: 'hsl(30 85% 60%)', background: 'hsl(205 50% 12%)' }; 
     case 'cyber-punk': return { primary: 'hsl(180 100% 50%)', accent: 'hsl(60 100% 55%)', background: 'hsl(270 70% 7%)' }; 
-    case 'midnight-gradient': return { primary: 'hsl(280 80% 65%)', accent: 'hsl(180 90% 50%)', background: 'hsl(240 10% 4%)' }; 
+    case 'midnight-gradient': return { primary: 'hsl(0 0% 98%)', accent: 'hsl(0 0% 70%)', background: 'hsl(0 0% 3.9%)' }; // Updated for black theme
     case 'forest-green': return { primary: 'hsl(130 55% 45%)', accent: 'hsl(90 60% 50%)', background: 'hsl(120 20% 96%)' }; 
     case 'deep-navy': return { primary: 'hsl(200 80% 60%)', accent: 'hsl(250 70% 65%)', background: 'hsl(220 40% 10%)' }; 
     case 'blush-pink': return { primary: 'hsl(330 70% 55%)', accent: 'hsl(300 70% 60%)', background: 'hsl(340 80% 97%)' }; 
@@ -76,7 +76,7 @@ export default function ThemeSelectorCard() {
       console.log("[ThemeSelectorCard useEffect] İLK YÜKLEME: Sunucudan başlangıç teması çekiliyor...");
       try {
         const setting = await getThemeSetting(); 
-        const themeToApply = setting?.activeTheme || 'default';
+        const themeToApply = setting?.activeThemeName || 'default'; // CORRECTED: activeTheme -> activeThemeName
         setCurrentTheme(themeToApply);
         console.log(`[ThemeSelectorCard useEffect] İLK YÜKLEME: Sunucudan gelen tema: '${themeToApply}'. Şimdi applyThemeToHtml çağrılıyor.`);
         applyThemeToHtml(themeToApply); 
