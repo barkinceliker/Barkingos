@@ -35,9 +35,12 @@ const sourceCodePro = Source_Code_Pro({
 const staticMetadataDescription = 'Kişisel portfolyo, blog, hizmetler, projeler ve daha fazlası tek bir sayfada.';
 
 export async function generateMetadata(): Promise<Metadata> {
+  console.log("[RootLayout generateMetadata] SUNUCU: Site başlığı için genel ayarlar çekiliyor...");
   const siteSettings = await getSiteGeneralSettings();
+  const title = siteSettings?.siteTitle || 'BenimSitem | Portfolyo ve Blog';
+  console.log(`[RootLayout generateMetadata] SUNUCU: Oluşturulan başlık: '${title}'`);
   return {
-    title: siteSettings.siteTitle || 'BenimSitem | Portfolyo ve Blog',
+    title: title,
     description: staticMetadataDescription, 
     icons: {
       icon: '/favicon.ico', 
@@ -46,8 +49,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 async function AuthAwareUIComponents() {
+  console.log("[RootLayout AuthAwareUIComponents] SUNUCU: Kimlik doğrulama ve site ayarları çekiliyor...");
   const auth = await checkAuthStatus();
   const siteSettings = await getSiteGeneralSettings(); 
+  console.log(`[RootLayout AuthAwareUIComponents] SUNUCU: Kimlik durumu: ${auth.isAuthenticated}, Site Başlığı: ${siteSettings.siteTitle}`);
   return (
     <>
       <Header
@@ -65,24 +70,31 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  console.log(`[RootLayout SUNUCU] =================== BAŞLANGIÇ ===================`);
-  const themeSetting = await getThemeSetting();
+  console.log("[RootLayout SERVER RENDER] ================== BAŞLANGIÇ ==================");
+  
+  const themeSetting = await getThemeSetting(); // Bu fonksiyon zaten cache'li
   const activeTheme = themeSetting?.activeTheme || 'default';
   
-  console.log(`[RootLayout SUNUCU] getThemeSetting() çağrıldı. Sonuç:`, JSON.stringify(themeSetting));
-  console.log(`[RootLayout SUNUCU] Kullanılacak aktif tema: '${activeTheme}'`);
+  console.log(`[RootLayout SERVER RENDER] getThemeSetting() çağrıldı. Sonuç (veritabanı/cache):`, JSON.stringify(themeSetting));
+  console.log(`[RootLayout SERVER RENDER] Sunucuda render için kullanılacak aktif tema: '${activeTheme}'`);
   
   const themeClass = activeTheme === 'default' ? '' : `theme-${activeTheme}`;
-  console.log(`[RootLayout SUNUCU] HTML için hesaplanan tema sınıfı: '${themeClass}'`);
+  console.log(`[RootLayout SERVER RENDER] HTML için hesaplanan tema sınıfı: '${themeClass}'`);
 
   const fontVariableClasses = cn(ptSans.variable, playfairDisplay.variable, sourceCodePro.variable);
+  console.log(`[RootLayout SERVER RENDER] HTML için font değişken sınıfları: '${fontVariableClasses}'`);
   
+  // `key` prop'u için en önemli olan temanın değişmesi. Font sınıfları genellikle sabit kalır.
+  // Bu yüzden `activeTheme`'i `key`'e dahil etmek yeterli ve daha nettir.
   const finalHtmlClasses = cn(themeClass, fontVariableClasses).trim();
-  console.log(`[RootLayout SUNUCU] <html> etiketine uygulanacak nihai sınıflar (className ve key için): '${finalHtmlClasses}'`);
-  console.log(`[RootLayout SUNUCU] ===================== BİTİŞ =====================`);
+  const htmlKey = `${activeTheme}-${fontVariableClasses}`; // Key'i tema ve fontlara bağlı yapalım
+
+  console.log(`[RootLayout SERVER RENDER] <html> etiketine uygulanacak className: '${finalHtmlClasses}'`);
+  console.log(`[RootLayout SERVER RENDER] <html> etiketine uygulanacak key: '${htmlKey}'`);
+  console.log("[RootLayout SERVER RENDER] ==================== BİTİŞ ====================");
 
   return (
-    <html lang="tr" className={finalHtmlClasses} key={finalHtmlClasses}>
+    <html lang="tr" className={finalHtmlClasses} key={htmlKey}>
       <head>
       </head>
       <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
@@ -96,7 +108,6 @@ export default async function RootLayout({
     </html>
   );
 }
-
     
 
     
