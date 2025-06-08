@@ -20,7 +20,6 @@ const getThemeDisplayName = (themeKey: ThemeName): string => {
 };
 
 const getThemePreviewColors = (themeKey: ThemeName): { primary: string; accent: string; background: string } => {
-  // Bu renkler globals.css'deki HSL değerleriyle eşleşmeli veya temsil etmeli
   switch (themeKey) {
     case 'default': return { primary: 'hsl(231 48% 48%)', accent: 'hsl(174 100% 29%)', background: 'hsl(220 17% 95%)' }; 
     case 'ocean-depth': return { primary: 'hsl(180 65% 55%)', accent: 'hsl(30 85% 60%)', background: 'hsl(205 50% 12%)' }; 
@@ -47,7 +46,7 @@ function applyThemeToHtml(themeName: ThemeName) {
     if (themeName !== 'default') {
       htmlEl.classList.add(`theme-${themeName}`);
     }
-    console.log(`[ThemeSelectorCard applyThemeToHtml] Client-side theme applied: '${themeName}'. HTML classes: '${htmlEl.className}'`);
+    console.log(`[ThemeSelectorCard applyThemeToHtml] İstemci tarafı: '${themeName}' teması uygulandı. HTML sınıfları: '${htmlEl.className}'`);
   }
 }
 
@@ -63,12 +62,12 @@ export default function ThemeSelectorCard() {
     async function fetchCurrentTheme() {
       setIsLoading(true);
       try {
-        const setting = await getThemeSetting(); // Server action call
+        const setting = await getThemeSetting(); 
         setCurrentTheme(setting.activeTheme);
-        console.log("[ThemeSelectorCard useEffect] Initial theme fetched on client:", setting.activeTheme);
-        applyThemeToHtml(setting.activeTheme); // Apply initial theme to HTML
+        console.log("[ThemeSelectorCard useEffect] Sunucudan gelen başlangıç teması:", setting.activeTheme);
+        applyThemeToHtml(setting.activeTheme); 
       } catch (error) {
-        console.error("[ThemeSelectorCard useEffect] Error fetching current theme:", error);
+        console.error("[ThemeSelectorCard useEffect] Mevcut tema yüklenirken hata:", error);
         toast({
           title: "Hata",
           description: "Mevcut tema ayarı yüklenemedi.",
@@ -79,19 +78,19 @@ export default function ThemeSelectorCard() {
       }
     }
     fetchCurrentTheme();
-  }, [toast]); // useEffect runs once on mount
+  }, [toast]); 
 
   const handleThemeSelect = async (themeName: ThemeName) => {
-    if (themeName === currentTheme && !isSaving) return; // Prevent re-saving same theme or if already saving
+    if (themeName === currentTheme && !isSaving) return; 
     setIsSaving(themeName);
-    console.log(`[ThemeSelectorCard handleThemeSelect] Attempting to set theme to: ${themeName}`);
+    console.log(`[ThemeSelectorCard handleThemeSelect] Tema ayarlanmaya çalışılıyor: ${themeName}`);
     try {
-      const result = await updateThemeSetting(themeName); // Server action call
-      console.log(`[ThemeSelectorCard handleThemeSelect] updateThemeSetting result for '${themeName}':`, result);
+      const result = await updateThemeSetting(themeName); 
+      console.log(`[ThemeSelectorCard handleThemeSelect] updateThemeSetting sonucu ('${themeName}' için):`, result);
 
       if (result.success) {
         setCurrentTheme(themeName); 
-        applyThemeToHtml(themeName); // Apply theme immediately on client for responsiveness
+        applyThemeToHtml(themeName); 
         
         toast({
           title: "Başarılı!",
@@ -99,7 +98,7 @@ export default function ThemeSelectorCard() {
         });
         
         router.refresh(); 
-        console.log("[ThemeSelectorCard handleThemeSelect] router.refresh() called. Server will re-render RootLayout.");
+        console.log("[ThemeSelectorCard handleThemeSelect] router.refresh() çağrıldı. Sunucu RootLayout'u yeniden render edecek.");
       } else {
         toast({
           title: "Hata!",
@@ -108,7 +107,7 @@ export default function ThemeSelectorCard() {
         });
       }
     } catch (error: any) {
-      console.error("[ThemeSelectorCard handleThemeSelect] Client-side Hata Yakalandı:", error);
+      console.error("[ThemeSelectorCard handleThemeSelect] İstemci tarafında hata yakalandı:", error);
       toast({
         title: "İstemci Hatası!",
         description: error.message || "Tema güncellenemedi.",
@@ -162,7 +161,7 @@ export default function ThemeSelectorCard() {
                 "hover:shadow-2xl hover:scale-105",
                 isActive ? "ring-2 ring-primary shadow-2xl scale-105" : "shadow-md"
               )}
-              onClick={() => !isLoading && handleThemeSelect(themeKey)} // Prevent click while loading/saving
+              onClick={() => !isLoading && !isSaving && handleThemeSelect(themeKey)} 
             >
               <CardHeader className="p-4">
                 <div className="flex items-center justify-between">
@@ -182,7 +181,7 @@ export default function ThemeSelectorCard() {
                   className="w-full mt-4"
                   disabled={isSaving === themeKey || isActive || isLoading}
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent card click if button is clicked
+                    e.stopPropagation(); 
                     handleThemeSelect(themeKey);
                   }}
                 >

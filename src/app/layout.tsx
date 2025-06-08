@@ -72,15 +72,14 @@ export default async function RootLayout({
   console.log(`[RootLayout SERVER RENDER] Alınan aktif tema: '${themeSetting.activeTheme}'`);
   
   const themeClass = themeSetting.activeTheme === 'default' ? '' : `theme-${themeSetting.activeTheme}`;
-  const fontVariableClasses = cn(ptSans.variable, playfairDisplay.variable, sourceCodePro.variable);
-  
   console.log(`[RootLayout SERVER RENDER] Oluşturulan tema sınıfı: '${themeClass}'`);
+
+  const fontVariableClasses = cn(ptSans.variable, playfairDisplay.variable, sourceCodePro.variable);
   console.log(`[RootLayout SERVER RENDER] Font değişken sınıfları: '${fontVariableClasses}'`);
   
   const finalHtmlClasses = cn(themeClass, fontVariableClasses);
   console.log(`[RootLayout SERVER RENDER] <html>'e uygulanacak nihai sınıflar: '${finalHtmlClasses}'`);
   console.log(`[RootLayout SERVER RENDER] ==========================================`);
-
 
   return (
     <html lang="tr" className={finalHtmlClasses} key={finalHtmlClasses}>
@@ -97,4 +96,3 @@ export default async function RootLayout({
     </html>
   );
 }
-
