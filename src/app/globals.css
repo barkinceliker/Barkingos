@@ -55,9 +55,9 @@ html {
     --ring: 40 90% 60%;               /* Odak için Altın Halka */
     --radius: 0.5rem;
 
-    /* Metin Gradienti - Altından Turuncuya */
-    --gradient-start-hsl: hsl(var(--primary)); /* Altın */
-    --gradient-end-hsl: hsl(var(--accent));    /* Turuncu */
+    /* Metin Gradienti - Belirgin Turuncu Tonları */
+    --gradient-start-hsl: 28 100% 60%; /* Canlı Turuncu */
+    --gradient-end-hsl: 20 90% 55%;    /* Koyu/Kırmızımsı Turuncu */
 
     /* Grafik Renkleri (Altın/Turuncu ile Koyu Tema için Ayarlandı) */
     --chart-1: hsl(var(--primary));    /* Altın */
