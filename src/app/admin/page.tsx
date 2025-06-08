@@ -65,23 +65,6 @@ export default async function AdminDashboardPage() {
             </Link>
           </CardContent>
         </Card>
-
-        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300"> 
-          <CardHeader>
-             <div className="flex justify-center mb-4">
-                <FileText className="h-12 w-12 text-accent" />
-            </div>
-            <CardTitle className="font-headline text-2xl text-center">Sayfa İçerik Yönetimi</CardTitle>
-            <CardDescription className="text-center">
-             Site sayfalarının (Hakkımda vb.) statik içeriklerini düzenleyin.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Link href="/admin/manage-content" passHref>
-              <Button className="w-full">Sayfaları Yönet</Button>
-            </Link>
-          </CardContent>
-        </Card>
         
         <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
           <CardHeader>
