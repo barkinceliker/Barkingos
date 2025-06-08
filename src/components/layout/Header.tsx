@@ -120,46 +120,46 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     const IconComponent = getLucideIcon(iconName);
     const currentPathnameFromHook = usePathname();
     const [isActiveClient, setIsActiveClient] = useState(false);
-
+  
+    const handleActivityUpdate = useCallback(() => {
+      if (typeof window === 'undefined' || !href) {
+        setIsActiveClient(prev => prev === false ? prev : false);
+        return;
+      }
+  
+      let calculatedIsActive = false;
+      const currentHash = window.location.hash;
+      const currentWindowPathname = window.location.pathname;
+  
+      if (href.startsWith('/#') && currentWindowPathname === '/') {
+        const targetHash = href.substring(href.indexOf('#'));
+        calculatedIsActive = currentHash === targetHash;
+        if (href === '/#anasayfa-section' && (currentHash === '' || currentHash === '#')) {
+          calculatedIsActive = true;
+        }
+      } else if (!href.startsWith('/#')) {
+        // For non-hash links, compare with currentPathnameFromHook
+        calculatedIsActive = currentPathnameFromHook === href;
+      }
+      setIsActiveClient(prev => prev === calculatedIsActive ? prev : calculatedIsActive);
+    }, [href, currentPathnameFromHook]);
+  
     useEffect(() => {
-      const handleActivityUpdate = () => {
-        if (typeof window === 'undefined' || !href) {
-          setIsActiveClient(prev => prev === false ? prev : false);
-          return;
-        }
-
-        let calculatedIsActive = false;
-        const currentHash = window.location.hash;
-        const currentWindowPathname = window.location.pathname;
-
-        if (href.startsWith('/#') && currentWindowPathname === '/') {
-          const targetHash = href.substring(href.indexOf('#'));
-          calculatedIsActive = currentHash === targetHash;
-          if (href === '/#anasayfa-section' && (currentHash === '' || currentHash === '#')) {
-            calculatedIsActive = true;
-          }
-        } else if (!href.startsWith('/#')) {
-          calculatedIsActive = currentPathnameFromHook === href;
-        }
-        setIsActiveClient(prev => prev === calculatedIsActive ? prev : calculatedIsActive);
-      };
-
-      handleActivityUpdate(); // Initial check on mount and when dependencies change
-
+      handleActivityUpdate(); // Initial check
+  
       window.addEventListener('hashchange', handleActivityUpdate);
-      window.addEventListener('popstate', handleActivityUpdate);
-
+      window.addEventListener('popstate', handleActivityUpdate); // For browser back/forward
+  
       return () => {
         window.removeEventListener('hashchange', handleActivityUpdate);
         window.removeEventListener('popstate', handleActivityUpdate);
       };
-    }, [href, currentPathnameFromHook]);
-
-
+    }, [href, currentPathnameFromHook, handleActivityUpdate]); // Added handleActivityUpdate
+  
     const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement, MouseEvent>) => {
       let eventDefaultPrevented = false;
       const currentHref = href || '';
-    
+  
       if (currentHref.startsWith('/#')) {
         const targetId = currentHref.substring(currentHref.indexOf('#') + 1);
         const targetElement = document.getElementById(targetId);
@@ -169,21 +169,19 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             eventDefaultPrevented = true;
           }
           targetElement.scrollIntoView({ behavior: 'smooth' });
-          // Only pushState if on the root path for same-page hash links
-          if (window.location.pathname === '/') { 
+          
+          if (window.location.pathname === '/') {
             window.history.pushState(null, '', currentHref);
           } else {
-            // If not on root, let Next.js router handle it (will navigate to / + hash)
-            router.push(currentHref);
+            router.push(currentHref); // Navigate to root then scroll for other pages
           }
         }
       }
-    
+  
       if (onClick) {
-         onClick(e);
+        onClick(e);
       }
-    }, [href, router, onClick]); 
-    
+    }, [href, router, onClick]);
   
     const commonClasses = cn(
       "text-foreground hover:bg-accent/10 hover:text-accent-foreground",
@@ -199,7 +197,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           variant="ghost"
           size="sm"
           onClick={handleLinkClick}
-          className={cn(commonClasses)} 
+          className={cn(commonClasses)}
           disabled={disabled}
         >
           {IconComponent && <IconComponent className="h-4 w-4" />}
@@ -217,7 +215,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         disabled={disabled}
       >
         <LinkFromNext href={href || '#'} onClick={handleLinkClick}>
-          {IconComponent && <IconComponent className="h-4 w-4" />} 
+          {IconComponent && <IconComponent className="h-4 w-4" />}
           <span>{children}</span>
         </LinkFromNext>
       </Button>
@@ -257,8 +255,9 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
            <SheetClose asChild>
               <Button
                 variant="default"
+                size="icon"
                 onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }}
-                className="text-base py-2.5 px-4 justify-center w-full mt-2" 
+                className="p-2 w-full mt-2" 
                 disabled={isSubmittingLogin}
                 aria-label="Giriş Yap" 
               >
@@ -349,9 +348,9 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
               {isAuthenticated ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="xl:text-sm lg:text-xs px-3">
+                    <Button variant="ghost" className="xl:text-sm lg:text-xs px-3 gap-1"> {/* Added gap-1 */}
                       <Shield className="h-4 w-4" />
-                      <span className="ml-2">{adminNavItemData.label}</span>
+                      <span>{adminNavItemData.label}</span> {/* Removed ml-2 */}
                       <ChevronDown className="ml-1 h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -359,7 +358,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                     <DropdownMenuItem asChild className="cursor-pointer">
                       <LinkFromNext href={adminNavItemData.href} className="w-full flex items-center">
                         <Shield className="h-4 w-4" />
-                        <span className="ml-2">{adminNavItemData.label}</span>
+                        <span>{adminNavItemData.label}</span> {/* Removed ml-2 */}
                       </LinkFromNext>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
