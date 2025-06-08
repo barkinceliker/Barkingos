@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = 'force-dynamic';
+// export const dynamic = 'force-dynamic'; // Kaldırıldı
 
 async function AuthAwareUIComponents() {
   const auth = await checkAuthStatus();
@@ -64,7 +64,7 @@ export default async function RootLayout({
   return (
     <html lang="tr" className={cn(themeClass, ptSans.variable, playfairDisplay.variable, sourceCodePro.variable)}>
       <head>
-        {/* Google Fonts linkleri kaldırıldı, next/font kullanılacak */}
+        {/* next/font kullandığımız için Google Fonts linkleri kaldırıldı */}
       </head>
       <body className="font-body antialiased flex flex-col min-h-screen">
         <AuthAwareUIComponents />
