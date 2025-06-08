@@ -5,10 +5,14 @@ import { Briefcase, Award, Users } from 'lucide-react';
 import { getHakkimdaContent, HakkimdaPageContent } from '@/lib/actions/page-content-actions';
 import { notFound } from 'next/navigation';
 
+export const dynamic = 'force-dynamic'; // İçerik her zaman güncel olsun
+
 export default async function HakkimdaPage() {
   const content = await getHakkimdaContent();
 
   if (!content) {
+    // getHakkimdaContent her zaman bir şeyler döndürmeli (varsayılan dahil)
+    // Eğer bir şekilde null dönerse notFound() çağırılabilir.
     notFound();
   }
 
@@ -38,7 +42,7 @@ export default async function HakkimdaPage() {
             <CardHeader>
               <CardTitle className="font-headline text-2xl text-primary">Ben Kimim?</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 text-lg">
+            <CardContent className="space-y-4 text-lg text-foreground/90">
               {content.whoAmI_p1 && <p>{content.whoAmI_p1}</p>}
               {content.whoAmI_p2 && <p>{content.whoAmI_p2}</p>}
               {content.whoAmI_p3_hobbies && <p>{content.whoAmI_p3_hobbies}</p>}
@@ -70,7 +74,7 @@ export default async function HakkimdaPage() {
             <CardHeader>
               <CardTitle className="font-headline text-2xl text-primary">{content.mission_title}</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 text-lg">
+            <CardContent className="space-y-4 text-lg text-foreground/90">
               {content.mission_p1 && <p>{content.mission_p1}</p>}
             </CardContent>
           </Card>
@@ -80,14 +84,16 @@ export default async function HakkimdaPage() {
 }
 
 export async function generateMetadata() {
-  const content = await getHakkimdaContent();
+  const content = await getHakkimdaContent(); // Dinamik olarak çek
   if (!content) {
     return {
       title: 'Hakkımda | Sayfa Bulunamadı',
     }
   }
   return {
-    title: `${content.pageTitle} | BenimSitem`,
-    description: content.pageSubtitle,
+    title: `${content.pageTitle || 'Hakkımda'} | BenimSitem`,
+    description: content.pageSubtitle || 'Hakkımda sayfası açıklaması.',
   }
 }
+
+    

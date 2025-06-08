@@ -4,6 +4,7 @@
 import { z } from 'zod';
 import { admin, getAdminInitializationError } from '@/lib/firebaseAdmin'; // Using existing firebaseAdmin
 import { cache } from 'react';
+import { revalidatePath } from 'next/cache';
 
 export interface HakkimdaPageContent {
   id?: string; // Firestore document ID, should be 'hakkimda'
@@ -19,14 +20,14 @@ export interface HakkimdaPageContent {
   stat_teamwork_value: string;
   mission_title: string;
   mission_p1: string;
-  updatedAt?: string; // Changed from admin.firestore.Timestamp to string
+  updatedAt?: string; // Firestore Timestamp'i ISO string olarak
 }
 
 const hakkimdaPageContentSchema = z.object({
   pageTitle: z.string().min(1, "Sayfa başlığı gereklidir."),
   pageSubtitle: z.string().min(1, "Sayfa alt başlığı gereklidir."),
-  profileImageUrl: z.string().url("Geçerli bir profil resmi URL'si giriniz.").or(z.literal('')),
-  profileImageAiHint: z.string().optional(),
+  profileImageUrl: z.string().url("Geçerli bir profil resmi URL'si giriniz.").or(z.literal('')).optional(),
+  profileImageAiHint: z.string().max(50, "AI ipucu en fazla 50 karakter olabilir.").optional(),
   whoAmI_p1: z.string().min(1, "Ben kimim? ilk paragraf gereklidir."),
   whoAmI_p2: z.string().optional(),
   whoAmI_p3_hobbies: z.string().optional(),
@@ -88,44 +89,64 @@ export const getHakkimdaContent = cache(async (): Promise<HakkimdaPageContent> =
         mission_p1: dataFromDb?.mission_p1 || DEFAULT_HAKKIMDA_CONTENT.mission_p1,
         updatedAt: dataFromDb?.updatedAt && typeof dataFromDb.updatedAt.toDate === 'function' 
                    ? (dataFromDb.updatedAt as admin.firestore.Timestamp).toDate().toISOString() 
-                   : undefined,
+                   : new Date().toISOString(), // Fallback veya mevcut değilse yeni tarih
       };
       return content;
     } else {
-      // Create default content if it doesn't exist
-      // Note: DEFAULT_HAKKIMDA_CONTENT does not include 'updatedAt', serverTimestamp is set on write
-      await docRef.set({ 
+      const defaultDataToSave = { 
         ...DEFAULT_HAKKIMDA_CONTENT, 
         updatedAt: admin.firestore.FieldValue.serverTimestamp() 
-      });
+      };
+      await docRef.set(defaultDataToSave);
       console.log("Created default 'hakkimda' page content in Firestore.");
-      // Return default content without updatedAt, as it's freshly created and serverTimestamp needs to resolve
-      return { ...DEFAULT_HAKKIMDA_CONTENT, id: 'hakkimda', updatedAt: undefined };
+      // Return default content, updatedAt will be a server timestamp object initially
+      return { 
+        ...DEFAULT_HAKKIMDA_CONTENT, 
+        id: 'hakkimda', 
+        updatedAt: new Date().toISOString() // For immediate use, show current time
+      };
     }
   } catch (error) {
     console.error("Error fetching/creating Hakkimda page content:", error);
-    // Fallback to default content in case of error, but log it.
-    return { ...DEFAULT_HAKKIMDA_CONTENT, id: 'hakkimda', updatedAt: undefined };
+    return { 
+      ...DEFAULT_HAKKIMDA_CONTENT, 
+      id: 'hakkimda', 
+      updatedAt: new Date().toISOString() 
+    };
   }
 });
 
 export async function updateHakkimdaContent(data: Omit<HakkimdaPageContent, 'id' | 'updatedAt'>) {
   const validation = hakkimdaPageContentSchema.safeParse(data);
   if (!validation.success) {
-    // Make sure to return a structure that matches the expected Promise<{success: boolean, message?: string, errors?: any}>
     return { success: false, message: "Doğrulama hatası.", errors: validation.error.flatten().fieldErrors };
   }
+
+  const dataToSave = { ...validation.data };
+  if (dataToSave.profileImageUrl === '') {
+    dataToSave.profileImageUrl = 'https://placehold.co/400x400.png';
+  }
+  if (dataToSave.profileImageAiHint === '' && dataToSave.profileImageUrl === 'https://placehold.co/400x400.png') {
+    dataToSave.profileImageAiHint = 'placeholder image';
+  }
+
 
   try {
     const db = await getDb();
     const docRef = db.collection('sitePages').doc('hakkimda');
     await docRef.set({ 
-      ...validation.data, 
+      ...dataToSave, 
       updatedAt: admin.firestore.FieldValue.serverTimestamp() 
     }, { merge: true });
+    
+    revalidatePath('/hakkimda');
+    revalidatePath('/admin/manage-content/hakkimda');
+
     return { success: true, message: 'Hakkımda sayfası başarıyla güncellendi.' };
   } catch (error: any) {
     console.error("Error updating Hakkimda page content:", error);
     return { success: false, message: `Bir hata oluştu: ${error.message}` };
   }
 }
+
+    

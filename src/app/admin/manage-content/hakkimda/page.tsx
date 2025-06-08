@@ -7,7 +7,9 @@ export default async function EditHakkimdaContentPage() {
   const hakkimdaContent = await getHakkimdaContent();
 
   if (!hakkimdaContent) {
-    return <p>Hakkımda sayfası içeriği yüklenemedi veya bulunamadı.</p>;
+    // getHakkimdaContent varsayılan içerik döndüreceği için bu blok normalde çalışmamalı.
+    // Ama bir sorun olursa diye bir fallback.
+    return <p>Hakkımda sayfası içeriği yüklenemedi veya bulunamadı. Lütfen veritabanı bağlantınızı ve 'sitePages/hakkimda' dokümanını kontrol edin.</p>;
   }
 
   return (
@@ -26,3 +28,4 @@ export default async function EditHakkimdaContentPage() {
   );
 }
 
+    

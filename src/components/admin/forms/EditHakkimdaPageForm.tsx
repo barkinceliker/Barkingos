@@ -25,7 +25,7 @@ import { useRouter } from "next/navigation";
 const formSchema = z.object({
   pageTitle: z.string().min(1, "Sayfa başlığı gereklidir."),
   pageSubtitle: z.string().min(1, "Sayfa alt başlığı gereklidir."),
-  profileImageUrl: z.string().url("Geçerli bir profil resmi URL'si giriniz.").or(z.literal('')).or(z.string().optional()),
+  profileImageUrl: z.string().url("Geçerli bir profil resmi URL'si giriniz.").or(z.literal('')).optional(),
   profileImageAiHint: z.string().max(50, "AI hint en fazla 50 karakter olabilir.").optional(),
   whoAmI_p1: z.string().min(1, "Ben kimim? ilk paragraf gereklidir."),
   whoAmI_p2: z.string().optional(),
@@ -69,13 +69,20 @@ export default function EditHakkimdaPageForm({ initialData }: EditHakkimdaPageFo
 
   async function onSubmit(values: EditHakkimdaPageFormValues) {
     try {
-      const result = await updateHakkimdaContent(values as HakkimdaPageContent);
+      // Server action'a gönderilecek veriyi hazırla (id ve updatedAt hariç)
+      const dataToSubmit: Omit<HakkimdaPageContent, 'id' | 'updatedAt'> = {
+        ...values,
+        profileImageUrl: values.profileImageUrl || 'https://placehold.co/400x400.png',
+        profileImageAiHint: values.profileImageAiHint || (values.profileImageUrl ? 'professional portrait' : 'placeholder image'),
+      };
+      
+      const result = await updateHakkimdaContent(dataToSubmit);
       if (result.success) {
         toast({
           title: "Başarılı!",
           description: result.message,
         });
-        router.refresh(); // Refresh server components to reflect changes
+        router.refresh(); // Sunucu bileşenlerini yenile
       } else {
         toast({
           title: "Hata!",
@@ -84,9 +91,9 @@ export default function EditHakkimdaPageForm({ initialData }: EditHakkimdaPageFo
         });
         if (result.errors) {
           Object.entries(result.errors).forEach(([field, messages]) => {
-            if (messages && messages.length > 0) {
-              form.setError(field as keyof EditHakkimdaPageFormValues, { type: "manual", message: messages.join(', ') });
-            }
+            const fieldName = field as keyof EditHakkimdaPageFormValues; // Tip güvencesi
+            const message = Array.isArray(messages) ? messages.join(', ') : typeof messages === 'string' ? messages : 'Bilinmeyen hata';
+            form.setError(fieldName, { type: "manual", message });
           });
         }
       }
@@ -129,7 +136,7 @@ export default function EditHakkimdaPageForm({ initialData }: EditHakkimdaPageFo
               <FormItem>
                 <FormLabel>Profil Resmi URL</FormLabel>
                 <FormControl><Input {...field} placeholder="https://placehold.co/400x400.png" /></FormControl>
-                <FormDescription>Tam bir URL girin (örn: https://...). Boş bırakırsanız, varsayılan placeholder kullanılabilir.</FormDescription>
+                <FormDescription>Tam bir URL girin. Boş bırakırsanız varsayılan placeholder kullanılır.</FormDescription>
                 <FormMessage />
               </FormItem>
             )} />
@@ -137,7 +144,7 @@ export default function EditHakkimdaPageForm({ initialData }: EditHakkimdaPageFo
               <FormItem>
                 <FormLabel>Profil Resmi AI İpucu (data-ai-hint)</FormLabel>
                 <FormControl><Input {...field} placeholder="professional portrait" /></FormControl>
-                <FormDescription>Resim için 1-2 anahtar kelime (boşlukla ayrılmış).</FormDescription>
+                <FormDescription>Resim için 1-2 anahtar kelime (boşlukla ayrılmış). Örn: "professional headshot"</FormDescription>
                 <FormMessage />
               </FormItem>
             )} />
@@ -221,3 +228,4 @@ export default function EditHakkimdaPageForm({ initialData }: EditHakkimdaPageFo
   );
 }
 
+    
