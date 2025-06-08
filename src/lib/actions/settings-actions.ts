@@ -26,18 +26,15 @@ const DEFAULT_THEME_SETTING: ThemeSetting = {
 // --- Site General Settings ---
 export interface SiteGeneralSettings {
   siteTitle: string;
-  // siteDescription kaldırıldı
   updatedAt?: string;
 }
 
 const siteGeneralSettingsSchema = z.object({
   siteTitle: z.string().min(1, "Site başlığı gereklidir."),
-  // siteDescription kaldırıldı
 });
 
 const DEFAULT_SITE_GENERAL_SETTINGS: SiteGeneralSettings = {
   siteTitle: 'BenimSitem',
-  // siteDescription kaldırıldı
 };
 
 
@@ -59,6 +56,7 @@ const GENERAL_SETTINGS_DOCUMENT_ID = 'general';
 
 // --- Theme Setting Actions ---
 export const getThemeSetting = cache(async (): Promise<ThemeSetting> => {
+  console.log("[settings-actions] getThemeSetting called");
   try {
     const db = await getDb();
     const docRef = db.collection(SITE_SETTINGS_COLLECTION).doc(THEME_DOCUMENT_ID);
@@ -67,12 +65,13 @@ export const getThemeSetting = cache(async (): Promise<ThemeSetting> => {
     if (docSnap.exists) {
       const data = docSnap.data();
       const parsedTheme = THEME_OPTIONS.includes(data?.activeTheme as ThemeName) ? data?.activeTheme as ThemeName : 'default';
+      console.log("[settings-actions] getThemeSetting: Found theme in DB -", parsedTheme);
       return {
         activeTheme: parsedTheme,
         updatedAt: data?.updatedAt?.toDate()?.toISOString() || new Date().toISOString(),
       };
     } else {
-      // Document doesn't exist, create it with default values
+      console.log("[settings-actions] getThemeSetting: No theme doc, creating default.");
       await docRef.set({
         ...DEFAULT_THEME_SETTING,
         updatedAt: admin.firestore.FieldValue.serverTimestamp()
@@ -80,15 +79,16 @@ export const getThemeSetting = cache(async (): Promise<ThemeSetting> => {
       return { ...DEFAULT_THEME_SETTING, updatedAt: new Date().toISOString() };
     }
   } catch (error) {
-    console.error("Error fetching theme setting:", error);
-    // Fallback to default values in case of an error
+    console.error("[settings-actions] Error fetching theme setting:", error);
     return { ...DEFAULT_THEME_SETTING, updatedAt: new Date().toISOString() };
   }
 });
 
 export async function updateThemeSetting(themeName: ThemeName) {
+  console.log(`[settings-actions] updateThemeSetting called with themeName: ${themeName}`);
   const validation = themeSettingSchema.safeParse({ activeTheme: themeName });
   if (!validation.success) {
+    console.error("[settings-actions] updateThemeSetting validation failed:", validation.error.flatten().fieldErrors);
     return { success: false, message: "Geçersiz tema adı.", errors: validation.error.flatten().fieldErrors };
   }
 
@@ -100,11 +100,13 @@ export async function updateThemeSetting(themeName: ThemeName) {
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
 
-    revalidatePath('/', 'layout'); // Revalidate layout to reflect new theme
-    revalidatePath('/admin'); // Revalidate admin page
+    console.log(`[settings-actions] Theme updated in DB to: ${validation.data.activeTheme}. Revalidating paths...`);
+    revalidatePath('/', 'layout'); 
+    revalidatePath('/admin'); 
+    console.log("[settings-actions] Paths revalidated.");
     return { success: true, message: 'Tema başarıyla güncellendi.' };
   } catch (error: any) {
-    console.error("Error updating theme setting:", error);
+    console.error("[settings-actions] Error updating theme setting:", error);
     return { success: false, message: `Bir hata oluştu: ${error.message}` };
   }
 }
@@ -118,13 +120,12 @@ export const getSiteGeneralSettings = cache(async (): Promise<SiteGeneralSetting
     const docSnap = await docRef.get();
 
     if (docSnap.exists) {
-      const data = docSnap.data() as Partial<SiteGeneralSettings>; // Type assertion, description olabilir
+      const data = docSnap.data() as Partial<SiteGeneralSettings>; 
       return {
         siteTitle: data?.siteTitle || DEFAULT_SITE_GENERAL_SETTINGS.siteTitle,
         updatedAt: (docSnap.data()?.updatedAt as admin.firestore.Timestamp)?.toDate()?.toISOString() || new Date().toISOString(),
       };
     } else {
-      // Document doesn't exist, create it with default values
       await docRef.set({
         ...DEFAULT_SITE_GENERAL_SETTINGS,
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -133,13 +134,11 @@ export const getSiteGeneralSettings = cache(async (): Promise<SiteGeneralSetting
     }
   } catch (error) {
     console.error("Error fetching site general settings:", error);
-    // Fallback to default values in case of an error
     return { ...DEFAULT_SITE_GENERAL_SETTINGS, updatedAt: new Date().toISOString() };
   }
 });
 
 export async function updateSiteGeneralSettings(data: Partial<Omit<SiteGeneralSettings, 'updatedAt'>>) {
-  // siteDescription alanını validasyondan ve data objesinden çıkar
   const { ...restData } = data; 
   const validation = siteGeneralSettingsSchema.partial().safeParse(restData);
   if (!validation.success) {
@@ -150,12 +149,12 @@ export async function updateSiteGeneralSettings(data: Partial<Omit<SiteGeneralSe
     const db = await getDb();
     const docRef = db.collection(SITE_SETTINGS_COLLECTION).doc(GENERAL_SETTINGS_DOCUMENT_ID);
     await docRef.set({
-      ...validation.data, // Sadece siteTitle'ı içerir
+      ...validation.data, 
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     }, { merge: true });
 
-    revalidatePath('/', 'layout'); // Revalidate layout to reflect new title/description
-    revalidatePath('/admin'); // Revalidate admin page
+    revalidatePath('/', 'layout'); 
+    revalidatePath('/admin'); 
     return { success: true, message: 'Genel site ayarları başarıyla güncellendi.' };
   } catch (error: any) {
     console.error("Error updating site general settings:", error);

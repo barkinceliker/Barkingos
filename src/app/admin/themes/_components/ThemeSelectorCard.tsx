@@ -11,7 +11,6 @@ import { THEME_OPTIONS, type ThemeName } from "@/lib/theme-config";
 import { CheckCircle, Palette, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Helper to generate a display name from a theme key
 const getThemeDisplayName = (themeKey: ThemeName): string => {
   if (themeKey === 'default') return 'Varsayılan (Açık)';
   return themeKey
@@ -20,10 +19,7 @@ const getThemeDisplayName = (themeKey: ThemeName): string => {
     .join(' ');
 };
 
-// Helper to get preview colors (approximations)
 const getThemePreviewColors = (themeKey: ThemeName): { primary: string; accent: string; background: string } => {
-  // These are rough HSL string approximations for preview.
-  // For precise previews, you'd need to parse globals.css or have a JS mapping.
   switch (themeKey) {
     case 'default': return { primary: 'hsl(231 48% 48%)', accent: 'hsl(174 100% 29%)', background: 'hsl(220 17% 95%)' };
     case 'ocean-depth': return { primary: 'hsl(180 65% 55%)', accent: 'hsl(30 85% 60%)', background: 'hsl(205 50% 12%)' };
@@ -71,23 +67,32 @@ export default function ThemeSelectorCard() {
     try {
       const result = await updateThemeSetting(themeName);
       if (result.success) {
+        setCurrentTheme(themeName); // Update client state first
         toast({
           title: "Başarılı!",
           description: `${getThemeDisplayName(themeName)} teması başarıyla uygulandı.`,
         });
-        setCurrentTheme(themeName);
-        // Applying theme class to html for instant preview without full reload,
-        // but layout.tsx will handle it on next full navigation.
+        
+        // Apply theme class to html for instant preview
         if (typeof window !== "undefined") {
-          document.documentElement.className = ''; // Clear existing theme classes
+          const htmlEl = document.documentElement;
+          // Remove only old theme-* classes
           THEME_OPTIONS.forEach(opt => {
-            document.documentElement.classList.remove(`theme-${opt}`);
+              if (opt !== 'default') { 
+                  htmlEl.classList.remove(`theme-${opt}`);
+              }
           });
+          // The 'dark' class might be a base for 'default' dark mode - handle if necessary
+          // htmlEl.classList.remove('dark'); 
+
+          // Add new theme class if not default
           if (themeName !== 'default') {
-            document.documentElement.classList.add(`theme-${themeName}`);
+            htmlEl.classList.add(`theme-${themeName}`);
           }
+          // For 'default', ensure no `theme-*` class is present.
+          // The :root selector in globals.css handles the 'default' (light) theme.
         }
-        router.refresh(); // Re-fetches data and re-renders Server Components
+        router.refresh(); // Re-fetches data and re-renders Server Components for persistent change
       } else {
         toast({
           title: "Hata!",
@@ -163,9 +168,9 @@ export default function ThemeSelectorCard() {
                   <div className="w-1/3 h-full" style={{ backgroundColor: previewColors.primary }} title={`Birincil: ${previewColors.primary}`}></div>
                   <div className="w-1/3 h-full" style={{ backgroundColor: previewColors.accent }} title={`Vurgu: ${previewColors.accent}`}></div>
                 </div>
-                <Button 
-                  variant={isActive ? "default" : "outline"} 
-                  size="sm" 
+                <Button
+                  variant={isActive ? "default" : "outline"}
+                  size="sm"
                   className="w-full mt-4"
                   disabled={isSaving === themeKey || isActive}
                 >

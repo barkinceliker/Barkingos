@@ -6,7 +6,7 @@ import Footer from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
 import FloatingLogoutButton from '@/components/layout/FloatingLogoutButton';
 import { checkAuthStatus } from '@/lib/actions/auth';
-import { getThemeSetting, type ThemeName, getSiteGeneralSettings } from '@/lib/actions/settings-actions'; // getSiteGeneralSettings eklendi
+import { getThemeSetting, type ThemeName, getSiteGeneralSettings } from '@/lib/actions/settings-actions';
 import { cn } from '@/lib/utils';
 import { PT_Sans, Playfair_Display, Source_Code_Pro } from 'next/font/google';
 
@@ -32,14 +32,13 @@ const sourceCodePro = Source_Code_Pro({
   display: 'swap',
 });
 
-// Statik metadata, generateMetadata tarafından üzerine yazılacak değerler için bir temel sağlar
 const staticMetadataDescription = 'Kişisel portfolyo, blog, hizmetler, projeler ve daha fazlası tek bir sayfada.';
 
 export async function generateMetadata(): Promise<Metadata> {
   const siteSettings = await getSiteGeneralSettings();
   return {
-    title: siteSettings.siteTitle || 'BenimSitem | Portfolyo ve Blog', // Varsayılan bir başlık eklendi
-    description: staticMetadataDescription, // Açıklama artık statik veya settings'den gelmiyor
+    title: siteSettings.siteTitle || 'BenimSitem | Portfolyo ve Blog',
+    description: staticMetadataDescription,
     icons: {
       icon: '/favicon.ico',
     },
@@ -48,13 +47,13 @@ export async function generateMetadata(): Promise<Metadata> {
 
 async function AuthAwareUIComponents() {
   const auth = await checkAuthStatus();
-  const siteSettings = await getSiteGeneralSettings(); // Header için site başlığını al
+  const siteSettings = await getSiteGeneralSettings();
   return (
     <>
-      <Header 
-        key={`header-${auth.isAuthenticated.toString()}-${siteSettings.siteTitle}`} 
+      <Header
+        key={`header-${auth.isAuthenticated.toString()}-${siteSettings.siteTitle}`}
         initialIsAuthenticated={auth.isAuthenticated}
-        initialSiteTitle={siteSettings.siteTitle} 
+        initialSiteTitle={siteSettings.siteTitle}
       />
       <FloatingLogoutButton key={`logout-btn-${auth.isAuthenticated.toString()}`} initialIsAuthenticated={auth.isAuthenticated} />
     </>
@@ -67,12 +66,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const themeSetting = await getThemeSetting();
+  console.log("[RootLayout] Aktif Tema Ayarı:", themeSetting.activeTheme);
   const themeClass = themeSetting.activeTheme === 'default' ? '' : `theme-${themeSetting.activeTheme}`;
+  const fontVariableClasses = cn(ptSans.variable, playfairDisplay.variable, sourceCodePro.variable);
 
   return (
-    <html lang="tr" className={cn(themeClass, ptSans.variable, playfairDisplay.variable, sourceCodePro.variable)}>
+    <html lang="tr" className={cn(themeClass, fontVariableClasses)}>
       <head>
-        {/* next/font kullandığımız için Google Fonts linkleri kaldırıldı */}
       </head>
       <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
         <AuthAwareUIComponents />
