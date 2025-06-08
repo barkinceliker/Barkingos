@@ -38,8 +38,8 @@ html {
     --radius: 0.5rem;
 
     /* Body Gradient Colors */
-    --gradient-body-start-hsl: 190 100% 90%; /* Very Light Cyan */
-    --gradient-body-end-hsl: 160 80% 85%;   /* Very Light Mint */
+    --gradient-body-start-hsl: 195 75% 88%; /* Light Sky Blue-ish */
+    --gradient-body-end-hsl: 165 50% 75%; /* Soft Emerald/Mint */
 
     /* Gradient Colors for text-gradient utility */
     --gradient-start-hsl: var(--primary);
@@ -111,8 +111,8 @@ html {
     --ring: 0 0% 83.1%;
 
     /* Body Gradient Colors for Dark Theme */
-    --gradient-body-start-hsl: 200 50% 22%; /* Slightly lighter dark blue */
-    --gradient-body-end-hsl: 170 40% 18%;   /* Slightly lighter dark emerald */
+    --gradient-body-start-hsl: 200 40% 18%; /* Darker Blue */
+    --gradient-body-end-hsl: 160 35% 12%;   /* Dark Emerald/Teal */
 
     /* Gradient Colors for text-gradient utility */
     --gradient-start-hsl: var(--primary);
@@ -183,8 +183,8 @@ html {
     --ring: 180 70% 65%;
     --radius: 0.75rem;
 
-    --gradient-body-start-hsl: 205 60% 20%; /* Lighter Darker Ocean Start */
-    --gradient-body-end-hsl: 180 50% 30%;   /* Lighter Darker Ocean End */
+    --gradient-body-start-hsl: 205 55% 22%; /* More vibrant Ocean Start */
+    --gradient-body-end-hsl: 180 50% 28%;   /* More vibrant Ocean End */
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -249,8 +249,8 @@ html {
     --ring: 300 100% 75%;
     --radius: 0.25rem;
 
-    --gradient-body-start-hsl: 270 80% 12%;   /* Lighter Dark Purple Cyber */
-    --gradient-body-end-hsl: 240 90% 15%;   /* Lighter Dark Blue Cyber */
+    --gradient-body-start-hsl: 270 75% 10%;   /* More vibrant Dark Purple Cyber */
+    --gradient-body-end-hsl: 240 85% 12%;   /* More vibrant Dark Blue Cyber */
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -315,8 +315,8 @@ html {
     --ring: 280 80% 70%;
     --radius: 0.5rem;
 
-    --gradient-body-start-hsl: 240 20% 10%;   /* Lighter Midnight Start */
-    --gradient-body-end-hsl: 270 25% 8%;   /* Lighter Midnight End */
+    --gradient-body-start-hsl: 270 40% 12%; /* Deep Dark Purple - More "ihtişamlı" */
+    --gradient-body-end-hsl: 190 45% 10%;   /* Rich Dark Teal/Cyan - More "ihtişamlı" */
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -344,8 +344,8 @@ html {
     --ring: 130 55% 50%;
     --radius: 0.5rem;
 
-    --gradient-body-start-hsl: 120 40% 90%; /* Lighter Forest Start */
-    --gradient-body-end-hsl: 100 50% 82%;   /* Lighter Forest End */
+    --gradient-body-start-hsl: 120 45% 88%; /* Lighter Forest Start */
+    --gradient-body-end-hsl: 100 55% 80%;   /* Lighter Forest End */
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -373,8 +373,8 @@ html {
     --ring: 200 80% 65%;
     --radius: 0.5rem;
 
-    --gradient-body-start-hsl: 220 50% 15%; /* Lighter Deep Navy Start */
-    --gradient-body-end-hsl: 200 40% 22%;   /* Lighter Deep Navy End */
+    --gradient-body-start-hsl: 220 45% 18%; /* Lighter Deep Navy Start */
+    --gradient-body-end-hsl: 200 45% 25%;   /* Lighter Deep Navy End */
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -402,8 +402,8 @@ html {
     --ring: 330 70% 60%;
     --radius: 0.75rem; /* Softer feel */
 
-    --gradient-body-start-hsl: 340 90% 92%; /* Lighter Blush Pink Start */
-    --gradient-body-end-hsl: 320 80% 88%;   /* Lighter Blush Pink End */
+    --gradient-body-start-hsl: 340 85% 90%; /* Lighter Blush Pink Start */
+    --gradient-body-end-hsl: 320 85% 85%;   /* Lighter Blush Pink End */
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -431,8 +431,8 @@ html {
     --ring: 280 70% 65%;
     --radius: 0.5rem;
 
-    --gradient-body-start-hsl: 270 60% 20%; /* Lighter Royal Purple Start */
-    --gradient-body-end-hsl: 290 55% 25%;   /* Lighter Royal Purple End */
+    --gradient-body-start-hsl: 270 55% 22%; /* Lighter Royal Purple Start */
+    --gradient-body-end-hsl: 290 60% 28%;   /* Lighter Royal Purple End */
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -460,8 +460,8 @@ html {
     --ring: 20 85% 60%;
     --radius: 0.5rem;
 
-    --gradient-body-start-hsl: 30 80% 90%; /* Lighter Burnt Orange Start */
-    --gradient-body-end-hsl: 15 75% 85%;   /* Lighter Burnt Orange End */
+    --gradient-body-start-hsl: 30 75% 88%; /* Lighter Burnt Orange Start */
+    --gradient-body-end-hsl: 15 80% 82%;   /* Lighter Burnt Orange End */
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
@@ -489,8 +489,8 @@ html {
     --ring: 0 70% 55%;
     --radius: 0.5rem;
 
-    --gradient-body-start-hsl: 0 15% 18%;  /* Lighter Crimson Start */
-    --gradient-body-end-hsl: 350 20% 22%;  /* Lighter Crimson End */
+    --gradient-body-start-hsl: 0 20% 20%;  /* Lighter Crimson Start */
+    --gradient-body-end-hsl: 350 25% 25%;  /* Lighter Crimson End */
 
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
