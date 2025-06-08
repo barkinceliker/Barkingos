@@ -3,15 +3,8 @@
 
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import {
-  Menu as MenuIcon,
-  Loader2,
-  LogIn,
-  Shield,
-  MoreVertical,
-  X, // Correctly import X here
-  LogOut, // Ensure LogOut is imported if used
-} from 'lucide-react';
+import { Menu as MenuIcon, Loader2, LogIn, Shield, MoreVertical, X, LogOut, ChevronDown, FileText, BookOpenText, User, Home, Award, Lightbulb, Briefcase, Sparkles, MessageSquare } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -29,6 +22,14 @@ import {
   DialogDescription,
   DialogFooter
 } from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
@@ -96,7 +97,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       if (pathname.startsWith('/admin')) {
         router.push('/');
       }
-      setIsMobileMenuOpen(false);
+      setIsMobileMenuOpen(false); // Mobil menüyü kapat
       router.refresh();
     } catch (error) {
       toast({ title: "Çıkış Hatası", description: "Bir hata oluştu.", variant: "destructive" });
@@ -214,10 +215,10 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         <div className="my-2 border-t border-border" />
         {isAuthenticated ? (
            <SheetClose asChild>
-             <NavLink onClick={handleLogout} isAction iconName={logoutNavItemData.iconName} className="text-base py-2.5 px-4 text-destructive hover:bg-destructive/10 hover:text-destructive w-full" disabled={isSubmittingLogout}>
-               {isSubmittingLogout ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOut className="mr-2 h-4 w-4" />}
+             <Button variant="ghost" onClick={handleLogout} className="text-base py-2.5 px-4 text-destructive hover:bg-destructive/10 hover:text-destructive justify-start w-full" disabled={isSubmittingLogout}>
+               {isSubmittingLogout ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <LogOut className="mr-2 h-5 w-5" />}
                {logoutNavItemData.label}
-             </NavLink>
+             </Button>
            </SheetClose>
         ) : (
            <SheetClose asChild>
@@ -295,7 +296,6 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             {siteTitle}
           </Link>
 
-          {/* Desktop Navigation Links - Hidden on lg and smaller, visible on lg and up */}
           <nav className="hidden lg:flex space-x-1 items-center">
             {staticNavItems.map((item) => (
               <NavLink key={`desktop-nav-${item.id}`} href={item.href} iconName={item.iconName} className="px-3">
@@ -305,17 +305,34 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           </nav>
 
           <div className="flex items-center space-x-2">
-            {/* Admin/Login Button - visible on lg and up. For smaller screens, it's in the Sheet menu. */}
-             <div className="hidden lg:flex">
+            <div className="hidden lg:flex items-center">
               {isAuthenticated ? (
-                <NavLink
-                  key={`admin-panel-link-desktop-${isAuthenticated.toString()}-${currentUser?.uid}`}
-                  href={adminNavItemData.href}
-                  iconName={adminNavItemData.iconName}
-                  className="px-3"
-                >
-                  {adminNavItemData.label}
-                </NavLink>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="px-3">
+                      <Shield className="mr-2 h-4 w-4" />
+                      {adminNavItemData.label}
+                      <ChevronDown className="ml-1 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuItem asChild>
+                      <Link href={adminNavItemData.href} className="cursor-pointer">
+                        <Shield className="mr-2 h-4 w-4" />
+                        <span>Admin Paneline Git</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={handleLogout}
+                      disabled={isSubmittingLogout}
+                      className="text-destructive focus:bg-destructive focus:text-destructive-foreground cursor-pointer"
+                    >
+                      {isSubmittingLogout ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOut className="mr-2 h-4 w-4" />}
+                      <span>Çıkış Yap</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               ) : (
                 <Button variant="default" size="sm" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin}>
                   {isSubmittingLogin ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogIn className="mr-2 h-4 w-4" />}
@@ -325,7 +342,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             </div>
 
 
-            {/* Mobile Hamburger Menu - only on screens smaller than lg */}
+            {/* Mobile Hamburger Menu */}
             <div className="lg:hidden">
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
@@ -362,7 +379,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                         </Link>
                       </SheetTitle>
                        <SheetClose className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 data-[state=open]:bg-secondary">
-                          <X className="h-5 w-5" /> {/* Use X (not XIcon) here */}
+                          <X className="h-5 w-5" />
                           <span className="sr-only">Kapat</span>
                       </SheetClose>
                   </SheetHeader>
@@ -414,3 +431,4 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     </>
   );
 }
+
