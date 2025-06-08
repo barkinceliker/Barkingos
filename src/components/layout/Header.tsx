@@ -35,7 +35,7 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, usePathname } from 'next/navigation';
-import { signInWithEmailAndPassword, onAuthStateChanged, User as FirebaseUserType, signOut as firebaseSignOut } from 'firebase/auth';
+import { signInWithEmailAndPassword, User as FirebaseUserType, signOut as firebaseSignOut } from 'firebase/auth';
 import { auth as firebaseClientAuth } from '@/lib/firebase';
 import { createSession, logout as serverLogout } from '@/lib/actions/auth';
 import { getLucideIcon } from '@/components/icons/lucide-icon-map';
@@ -123,7 +123,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
   
     const handleActivityUpdate = useCallback(() => {
       if (typeof window === 'undefined' || !href) {
-        setIsActiveClient(prev => prev === false ? prev : false);
+        setIsActiveClient(prev => !prev ? prev : false); // Ensure it becomes false if no href
         return;
       }
   
@@ -138,7 +138,6 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           calculatedIsActive = true;
         }
       } else if (!href.startsWith('/#')) {
-        // For non-hash links, compare with currentPathnameFromHook
         calculatedIsActive = currentPathnameFromHook === href;
       }
       setIsActiveClient(prev => prev === calculatedIsActive ? prev : calculatedIsActive);
@@ -148,32 +147,28 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       handleActivityUpdate(); // Initial check
   
       window.addEventListener('hashchange', handleActivityUpdate);
-      window.addEventListener('popstate', handleActivityUpdate); // For browser back/forward
+      window.addEventListener('popstate', handleActivityUpdate);
   
       return () => {
         window.removeEventListener('hashchange', handleActivityUpdate);
         window.removeEventListener('popstate', handleActivityUpdate);
       };
-    }, [href, currentPathnameFromHook, handleActivityUpdate]); // Added handleActivityUpdate
+    }, [href, currentPathnameFromHook, handleActivityUpdate]);
   
     const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement, MouseEvent>) => {
-      let eventDefaultPrevented = false;
       const currentHref = href || '';
   
       if (currentHref.startsWith('/#')) {
         const targetId = currentHref.substring(currentHref.indexOf('#') + 1);
         const targetElement = document.getElementById(targetId);
         if (targetElement) {
-          if (e && typeof e.preventDefault === 'function') {
-            e.preventDefault();
-            eventDefaultPrevented = true;
-          }
+          e.preventDefault();
           targetElement.scrollIntoView({ behavior: 'smooth' });
           
           if (window.location.pathname === '/') {
             window.history.pushState(null, '', currentHref);
           } else {
-            router.push(currentHref); // Navigate to root then scroll for other pages
+            router.push(currentHref); 
           }
         }
       }
@@ -200,7 +195,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           className={cn(commonClasses)}
           disabled={disabled}
         >
-          {IconComponent && <IconComponent className="h-4 w-4" />}
+          {IconComponent && <IconComponent className="h-4 w-4 mr-2" />}
           <span>{children}</span>
         </Button>
       );
@@ -215,7 +210,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         disabled={disabled}
       >
         <LinkFromNext href={href || '#'} onClick={handleLinkClick}>
-          {IconComponent && <IconComponent className="h-4 w-4" />}
+          {IconComponent && <IconComponent className="h-4 w-4 mr-2" />}
           <span>{children}</span>
         </LinkFromNext>
       </Button>
@@ -247,21 +242,21 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         {isAuthenticated ? (
            <SheetClose asChild>
              <Button variant="ghost" onClick={handleLogout} className="text-base py-2.5 px-4 text-destructive hover:bg-destructive/10 hover:text-destructive justify-start w-full" disabled={isSubmittingLogout}>
-               {isSubmittingLogout ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogOutIcon className="h-5 w-5" />}
-               <span className="ml-2">{logoutNavItemData.label}</span>
+               {isSubmittingLogout ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <LogOutIcon className="h-5 w-5 mr-2" />}
+               <span>{logoutNavItemData.label}</span>
              </Button>
            </SheetClose>
         ) : (
            <SheetClose asChild>
               <Button
                 variant="default"
-                size="icon"
                 onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }}
-                className="p-2 w-full mt-2" 
+                className="w-full mt-2 py-2.5 px-4 text-base" 
                 disabled={isSubmittingLogin}
                 aria-label="Giriş Yap" 
               >
-                {isSubmittingLogin ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="h-5 w-5" />}
+                {isSubmittingLogin ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <LogIn className="h-5 w-5 mr-2" />}
+                Giriş Yap
               </Button>
             </SheetClose>
         )}
@@ -348,17 +343,17 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
               {isAuthenticated ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="xl:text-sm lg:text-xs px-3 gap-1"> {/* Added gap-1 */}
+                    <Button variant="ghost" className="xl:text-sm lg:text-xs px-3 gap-1">
                       <Shield className="h-4 w-4" />
-                      <span>{adminNavItemData.label}</span> {/* Removed ml-2 */}
+                      <span>{adminNavItemData.label}</span>
                       <ChevronDown className="ml-1 h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuItem asChild className="cursor-pointer">
                       <LinkFromNext href={adminNavItemData.href} className="w-full flex items-center">
-                        <Shield className="h-4 w-4" />
-                        <span>{adminNavItemData.label}</span> {/* Removed ml-2 */}
+                        <Shield className="h-4 w-4 mr-2" />
+                        <span>{adminNavItemData.label}</span>
                       </LinkFromNext>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -367,8 +362,8 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                       disabled={isSubmittingLogout}
                       className="text-destructive focus:bg-destructive focus:text-destructive-foreground cursor-pointer flex items-center"
                     >
-                      {isSubmittingLogout ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogOutIcon className="h-4 w-4" />}
-                      <span className="ml-2">Çıkış Yap</span>
+                      {isSubmittingLogout ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <LogOutIcon className="h-4 w-4 mr-2" />}
+                      <span>Çıkış Yap</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

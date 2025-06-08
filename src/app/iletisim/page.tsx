@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, Phone, MapPin, Send, Loader2 } from 'lucide-react';
+import { Mail, MapPin, Send, Loader2, Github, Linkedin } from 'lucide-react'; // Phone ikonu kaldırıldı
 import { submitContactForm } from "@/lib/actions/contact"; 
 
 const formSchema = z.object({
@@ -88,21 +88,15 @@ export default function IletisimPage() {
                 <Mail className="h-6 w-6 mr-3 text-accent flex-shrink-0 mt-1" />
                 <div>
                   <h3 className="font-semibold">E-posta</h3>
-                  <a href="mailto:örnek@mail.com" className="text-foreground hover:text-primary">örnek@mail.com</a>
+                  <a href="mailto:mail.barkinclkr@gmail.com" className="text-foreground hover:text-primary">mail.barkinclkr@gmail.com</a>
                 </div>
               </div>
-              <div className="flex items-start">
-                <Phone className="h-6 w-6 mr-3 text-accent flex-shrink-0 mt-1" />
-                <div>
-                  <h3 className="font-semibold">Telefon</h3>
-                  <a href="tel:+905551234567" className="text-foreground hover:text-primary">+90 555 123 45 67</a>
-                </div>
-              </div>
+              {/* Telefon bölümü kaldırıldı */}
               <div className="flex items-start">
                 <MapPin className="h-6 w-6 mr-3 text-accent flex-shrink-0 mt-1" />
                 <div>
                   <h3 className="font-semibold">Adres</h3>
-                  <p className="text-foreground">Örnek Mahallesi, Test Sokak No:123, İstanbul, Türkiye</p>
+                  <p className="text-foreground">İzmir, Türkiye</p>
                 </div>
               </div>
             </CardContent>
@@ -111,10 +105,30 @@ export default function IletisimPage() {
             <CardHeader>
               <CardTitle className="font-headline text-2xl text-gradient">Sosyal Medya</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              {/* Add social media links here later */}
-              <p className="text-muted-foreground">Yakında eklenecek...</p>
-            </CardContent>
+            <CardContent className="space-y-4">
+                <div className="flex items-center">
+                  <Github className="h-6 w-6 mr-3 text-accent flex-shrink-0" />
+                  <a 
+                    href="https://github.com/barkinceliker" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-foreground hover:text-primary transition-colors"
+                  >
+                    GitHub Profilim
+                  </a>
+                </div>
+                <div className="flex items-center">
+                  <Linkedin className="h-6 w-6 mr-3 text-accent flex-shrink-0" />
+                  <a 
+                    href="https://www.linkedin.com/in/celikerbarkin/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-foreground hover:text-primary transition-colors"
+                  >
+                    LinkedIn Profilim
+                  </a>
+                </div>
+              </CardContent>
           </Card>
         </div>
 
