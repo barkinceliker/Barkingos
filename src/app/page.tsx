@@ -1,20 +1,26 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BookOpen, Briefcase } from "lucide-react";
+import { getHomepageContent } from "@/lib/actions/page-content-actions";
 
-export default function Home() {
+export const dynamic = 'force-dynamic';
+
+export default async function Home() {
+  const content = await getHomepageContent();
+
   return (
     <div className="space-y-16">
       {/* Hero Section */}
       <section className="text-center py-16 md:py-24 bg-gradient-to-br from-primary/10 via-background to-background rounded-lg shadow-lg">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl md:text-6xl font-headline font-bold text-primary mb-6">
-            Merhaba, Ben İsim Soyisim
+            {content.heroTitle}
           </h1>
           <p className="text-lg md:text-xl text-foreground mb-8 max-w-2xl mx-auto">
-            Tutkulu bir geliştirici ve tasarımcıyım. Web teknolojileriyle harika kullanıcı deneyimleri oluşturuyorum. Portfolyomu keşfedin ve projelerim hakkında daha fazla bilgi edinin.
+            {content.heroSubtitle}
           </p>
           <div className="space-x-4">
             <Link href="/portfoy" passHref>
@@ -35,11 +41,11 @@ export default function Home() {
       <section className="py-12">
         <Card className="max-w-3xl mx-auto shadow-xl">
           <CardHeader>
-            <CardTitle className="font-headline text-3xl text-center text-primary">Kısaca Ben</CardTitle>
+            <CardTitle className="font-headline text-3xl text-center text-primary">{content.aboutSnippetTitle}</CardTitle>
           </CardHeader>
           <CardContent className="text-center text-lg">
             <p className="mb-4">
-              Yenilikçi çözümler üretmeye ve karmaşık problemleri çözmeye adanmış biriyim. Sürekli öğrenmeye ve kendimi geliştirmeye odaklanıyorum.
+              {content.aboutSnippetDescription}
             </p>
             <Link href="/hakkimda" passHref>
               <Button variant="link" className="text-accent hover:text-accent/80 text-lg">
@@ -52,7 +58,7 @@ export default function Home() {
 
       {/* Recent Projects Placeholder */}
       <section className="py-12">
-        <h2 className="text-3xl md:text-4xl font-headline font-semibold text-center mb-10 text-primary">Son Projelerim</h2>
+        <h2 className="text-3xl md:text-4xl font-headline font-semibold text-center mb-10 text-primary">{content.recentProjectsTitle}</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {[1, 2, 3].map((item) => (
             <Card key={item} className="overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
@@ -69,7 +75,7 @@ export default function Home() {
                 <CardDescription>Bu projenin kısa bir açıklaması burada yer alacak. Kullanılan teknolojiler ve projenin amacı vurgulanabilir.</CardDescription>
               </CardHeader>
               <CardContent>
-                <Link href={`/projeler#proje-${item}`} passHref>
+                <Link href={`/projeler#proje-${item}`} passHref> {/* Bu linkler gerçek proje ID'lerine göre güncellenmeli */}
                   <Button variant="outline" className="w-full">Detayları Gör</Button>
                 </Link>
               </CardContent>
@@ -85,7 +91,7 @@ export default function Home() {
 
       {/* Recent Blog Posts Placeholder */}
       <section className="py-12 bg-secondary/30 rounded-lg">
-        <h2 className="text-3xl md:text-4xl font-headline font-semibold text-center mb-10 text-primary">Son Blog Yazıları</h2>
+        <h2 className="text-3xl md:text-4xl font-headline font-semibold text-center mb-10 text-primary">{content.recentBlogPostsTitle}</h2>
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {[1, 2].map((item) => (
             <Card key={item} className="shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -95,7 +101,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <p className="mb-4">Blog yazısının kısa bir özeti. Okuyucuyu meraklandıracak ve devamını okumaya teşvik edecek bilgiler...</p>
-                <Link href={`/blog/yazi-${item}`} passHref>
+                <Link href={`/blog/yazi-${item}`} passHref> {/* Bu linkler gerçek blog slug'larına göre güncellenmeli */}
                   <Button variant="link" className="p-0 text-accent hover:text-accent/80">
                     Devamını Oku <BookOpen className="ml-2 h-4 w-4" />
                   </Button>

@@ -2,10 +2,16 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Edit3 } from 'lucide-react';
+import { FileText, Edit3, Home } from 'lucide-react';
 
 export default function ManageContentPage() {
   const manageablePages = [
+    {
+      name: 'Anasayfa İçeriği',
+      description: 'Anasayfanın hero alanı, başlıklar ve kısa metinlerini düzenleyin.',
+      editUrl: '/admin/manage-content/anasayfa',
+      icon: Home,
+    },
     {
       name: 'Hakkımda Sayfası',
       description: '"Hakkımda" sayfasının başlıklarını, metinlerini ve profil resmini düzenleyin.',
@@ -13,12 +19,6 @@ export default function ManageContentPage() {
       icon: FileText,
     },
     // Gelecekte diğer sayfalar buraya eklenebilir
-    // {
-    //   name: 'Hizmetler Sayfası',
-    //   description: '"Hizmetler" sayfasındaki servis kartlarını ve açıklamalarını yönetin.',
-    //   editUrl: '/admin/manage-content/hizmetler',
-    //   icon: Settings,
-    // },
   ];
 
   return (

@@ -2,10 +2,11 @@
 'use server';
 
 import { z } from 'zod';
-import { admin, getAdminInitializationError } from '@/lib/firebaseAdmin'; // Using existing firebaseAdmin
+import { admin, getAdminInitializationError } from '@/lib/firebaseAdmin';
 import { cache } from 'react';
 import { revalidatePath } from 'next/cache';
 
+// Hakkımda Sayfası İçin Arayüz ve Şema
 export interface HakkimdaPageContent {
   id?: string; // Firestore document ID, should be 'hakkimda'
   pageTitle: string;
@@ -20,7 +21,7 @@ export interface HakkimdaPageContent {
   stat_teamwork_value: string;
   mission_title: string;
   mission_p1: string;
-  updatedAt?: string; // Firestore Timestamp'i ISO string olarak
+  updatedAt?: string;
 }
 
 const hakkimdaPageContentSchema = z.object({
@@ -53,6 +54,37 @@ const DEFAULT_HAKKIMDA_CONTENT: Omit<HakkimdaPageContent, 'id' | 'updatedAt'> = 
   mission_p1: 'Teknolojinin gücünü kullanarak insanların hayatını kolaylaştıran, estetik ve işlevsel ürünler ortaya koymak. Her zaman en son trendleri takip ederek ve kendimi sürekli geliştirerek, projelerime değer katmayı amaçlıyorum.',
 };
 
+// Anasayfa İçeriği İçin Arayüz ve Şema
+export interface HomepageContent {
+  id?: string; // Firestore document ID, should be 'anasayfa'
+  heroTitle: string;
+  heroSubtitle: string;
+  aboutSnippetTitle: string;
+  aboutSnippetDescription: string;
+  recentProjectsTitle: string;
+  recentBlogPostsTitle: string;
+  updatedAt?: string;
+}
+
+const homepageContentSchema = z.object({
+  heroTitle: z.string().min(1, "Hero başlığı gereklidir."),
+  heroSubtitle: z.string().min(1, "Hero alt başlığı gereklidir."),
+  aboutSnippetTitle: z.string().min(1, "'Kısaca Ben' bölüm başlığı gereklidir."),
+  aboutSnippetDescription: z.string().min(1, "'Kısaca Ben' bölüm açıklaması gereklidir."),
+  recentProjectsTitle: z.string().min(1, "'Son Projelerim' bölüm başlığı gereklidir."),
+  recentBlogPostsTitle: z.string().min(1, "'Son Blog Yazıları' bölüm başlığı gereklidir."),
+});
+
+const DEFAULT_HOMEPAGE_CONTENT: Omit<HomepageContent, 'id' | 'updatedAt'> = {
+  heroTitle: "Merhaba, Ben İsim Soyisim",
+  heroSubtitle: "Tutkulu bir geliştirici ve tasarımcıyım. Web teknolojileriyle harika kullanıcı deneyimleri oluşturuyorum. Portfolyomu keşfedin ve projelerim hakkında daha fazla bilgi edinin.",
+  aboutSnippetTitle: "Kısaca Ben",
+  aboutSnippetDescription: "Yenilikçi çözümler üretmeye ve karmaşık problemleri çözmeye adanmış biriyim. Sürekli öğrenmeye ve kendimi geliştirmeye odaklanıyorum.",
+  recentProjectsTitle: "Son Projelerim",
+  recentBlogPostsTitle: "Son Blog Yazıları",
+};
+
+
 async function getDb() {
   const adminInitError = getAdminInitializationError();
   if (adminInitError) {
@@ -64,15 +96,17 @@ async function getDb() {
   return admin.firestore();
 }
 
+const SITE_PAGES_COLLECTION = 'sitePages';
+
+// Hakkımda Sayfası Fonksiyonları
 export const getHakkimdaContent = cache(async (): Promise<HakkimdaPageContent> => {
   try {
     const db = await getDb();
-    const docRef = db.collection('sitePages').doc('hakkimda');
+    const docRef = db.collection(SITE_PAGES_COLLECTION).doc('hakkimda');
     const docSnap = await docRef.get();
 
     if (docSnap.exists) {
       const dataFromDb = docSnap.data();
-      // Manually construct the object to ensure type conformity and serialize Timestamp
       const content: HakkimdaPageContent = {
         id: docSnap.id,
         pageTitle: dataFromDb?.pageTitle || DEFAULT_HAKKIMDA_CONTENT.pageTitle,
@@ -89,7 +123,7 @@ export const getHakkimdaContent = cache(async (): Promise<HakkimdaPageContent> =
         mission_p1: dataFromDb?.mission_p1 || DEFAULT_HAKKIMDA_CONTENT.mission_p1,
         updatedAt: dataFromDb?.updatedAt && typeof dataFromDb.updatedAt.toDate === 'function' 
                    ? (dataFromDb.updatedAt as admin.firestore.Timestamp).toDate().toISOString() 
-                   : new Date().toISOString(), // Fallback veya mevcut değilse yeni tarih
+                   : new Date().toISOString(),
       };
       return content;
     } else {
@@ -98,12 +132,10 @@ export const getHakkimdaContent = cache(async (): Promise<HakkimdaPageContent> =
         updatedAt: admin.firestore.FieldValue.serverTimestamp() 
       };
       await docRef.set(defaultDataToSave);
-      console.log("Created default 'hakkimda' page content in Firestore.");
-      // Return default content, updatedAt will be a server timestamp object initially
       return { 
         ...DEFAULT_HAKKIMDA_CONTENT, 
         id: 'hakkimda', 
-        updatedAt: new Date().toISOString() // For immediate use, show current time
+        updatedAt: new Date().toISOString() 
       };
     }
   } catch (error) {
@@ -121,7 +153,6 @@ export async function updateHakkimdaContent(data: Omit<HakkimdaPageContent, 'id'
   if (!validation.success) {
     return { success: false, message: "Doğrulama hatası.", errors: validation.error.flatten().fieldErrors };
   }
-
   const dataToSave = { ...validation.data };
   if (dataToSave.profileImageUrl === '') {
     dataToSave.profileImageUrl = 'https://placehold.co/400x400.png';
@@ -130,10 +161,9 @@ export async function updateHakkimdaContent(data: Omit<HakkimdaPageContent, 'id'
     dataToSave.profileImageAiHint = 'placeholder image';
   }
 
-
   try {
     const db = await getDb();
-    const docRef = db.collection('sitePages').doc('hakkimda');
+    const docRef = db.collection(SITE_PAGES_COLLECTION).doc('hakkimda');
     await docRef.set({ 
       ...dataToSave, 
       updatedAt: admin.firestore.FieldValue.serverTimestamp() 
@@ -141,7 +171,6 @@ export async function updateHakkimdaContent(data: Omit<HakkimdaPageContent, 'id'
     
     revalidatePath('/hakkimda');
     revalidatePath('/admin/manage-content/hakkimda');
-
     return { success: true, message: 'Hakkımda sayfası başarıyla güncellendi.' };
   } catch (error: any) {
     console.error("Error updating Hakkimda page content:", error);
@@ -149,4 +178,70 @@ export async function updateHakkimdaContent(data: Omit<HakkimdaPageContent, 'id'
   }
 }
 
+// Anasayfa Fonksiyonları
+export const getHomepageContent = cache(async (): Promise<HomepageContent> => {
+  try {
+    const db = await getDb();
+    const docRef = db.collection(SITE_PAGES_COLLECTION).doc('anasayfa');
+    const docSnap = await docRef.get();
+
+    if (docSnap.exists) {
+      const dataFromDb = docSnap.data();
+      const content: HomepageContent = {
+        id: docSnap.id,
+        heroTitle: dataFromDb?.heroTitle || DEFAULT_HOMEPAGE_CONTENT.heroTitle,
+        heroSubtitle: dataFromDb?.heroSubtitle || DEFAULT_HOMEPAGE_CONTENT.heroSubtitle,
+        aboutSnippetTitle: dataFromDb?.aboutSnippetTitle || DEFAULT_HOMEPAGE_CONTENT.aboutSnippetTitle,
+        aboutSnippetDescription: dataFromDb?.aboutSnippetDescription || DEFAULT_HOMEPAGE_CONTENT.aboutSnippetDescription,
+        recentProjectsTitle: dataFromDb?.recentProjectsTitle || DEFAULT_HOMEPAGE_CONTENT.recentProjectsTitle,
+        recentBlogPostsTitle: dataFromDb?.recentBlogPostsTitle || DEFAULT_HOMEPAGE_CONTENT.recentBlogPostsTitle,
+        updatedAt: dataFromDb?.updatedAt && typeof dataFromDb.updatedAt.toDate === 'function' 
+                   ? (dataFromDb.updatedAt as admin.firestore.Timestamp).toDate().toISOString() 
+                   : new Date().toISOString(),
+      };
+      return content;
+    } else {
+      const defaultDataToSave = { 
+        ...DEFAULT_HOMEPAGE_CONTENT, 
+        updatedAt: admin.firestore.FieldValue.serverTimestamp() 
+      };
+      await docRef.set(defaultDataToSave);
+      return { 
+        ...DEFAULT_HOMEPAGE_CONTENT, 
+        id: 'anasayfa', 
+        updatedAt: new Date().toISOString() 
+      };
+    }
+  } catch (error) {
+    console.error("Error fetching/creating Homepage content:", error);
+    return { 
+      ...DEFAULT_HOMEPAGE_CONTENT, 
+      id: 'anasayfa', 
+      updatedAt: new Date().toISOString() 
+    };
+  }
+});
+
+export async function updateHomepageContent(data: Omit<HomepageContent, 'id' | 'updatedAt'>) {
+  const validation = homepageContentSchema.safeParse(data);
+  if (!validation.success) {
+    return { success: false, message: "Doğrulama hatası.", errors: validation.error.flatten().fieldErrors };
+  }
+
+  try {
+    const db = await getDb();
+    const docRef = db.collection(SITE_PAGES_COLLECTION).doc('anasayfa');
+    await docRef.set({ 
+      ...validation.data, 
+      updatedAt: admin.firestore.FieldValue.serverTimestamp() 
+    }, { merge: true });
+    
+    revalidatePath('/'); // Anasayfayı revalidate et
+    revalidatePath('/admin/manage-content/anasayfa');
+    return { success: true, message: 'Anasayfa içeriği başarıyla güncellendi.' };
+  } catch (error: any) {
+    console.error("Error updating Homepage content:", error);
+    return { success: false, message: `Bir hata oluştu: ${error.message}` };
+  }
+}
     
