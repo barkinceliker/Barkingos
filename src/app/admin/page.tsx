@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Settings, Newspaper, FolderKanban, ListTree, Sparkles, Mail, Brain, Briefcase } from 'lucide-react';
+import { FileText, Settings, Newspaper, FolderKanban, ListTree, Sparkles, Mail, Brain, Briefcase, Edit3 } from 'lucide-react';
 
 export default async function AdminDashboardPage() {
   return (
@@ -103,6 +103,23 @@ export default async function AdminDashboardPage() {
         <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
           <CardHeader>
              <div className="flex justify-center mb-4">
+                <FileText className="h-12 w-12 text-accent" />
+            </div>
+            <CardTitle className="font-headline text-2xl text-center">Site İçerik Yönetimi</CardTitle>
+            <CardDescription className="text-center">
+              'Hakkımda' sayfası gibi çeşitli statik sayfa içeriklerini düzenleyin.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <Link href="/admin/manage-content" passHref>
+              <Button className="w-full">İçerikleri Yönet</Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-xl hover:shadow-2xl transition-shadow duration-300">
+          <CardHeader>
+             <div className="flex justify-center mb-4">
                 <Mail className="h-12 w-12 text-accent" />
             </div>
             <CardTitle className="font-headline text-2xl text-center">Gelen Mesajlar</CardTitle>
@@ -117,21 +134,6 @@ export default async function AdminDashboardPage() {
           </CardContent>
         </Card>
         
-        {/* Site Ayarları kartı kaldırıldı veya yorumlandıysa, burada olmaması gerekir. */}
-        {/* <Card className="shadow-xl opacity-50 cursor-not-allowed"> 
-          <CardHeader>
-            <div className="flex justify-center mb-4">
-                <Settings className="h-12 w-12 text-muted-foreground" />
-            </div>
-            <CardTitle className="font-headline text-2xl text-center">Site Ayarları</CardTitle>
-            <CardDescription className="text-center">
-              Genel site ayarlarını ve yapılandırmalarını düzenleyin. (Yakında)
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Button className="w-full" disabled>Ayarlar</Button>
-          </CardContent>
-        </Card> */}
       </section>
     </div>
   );
