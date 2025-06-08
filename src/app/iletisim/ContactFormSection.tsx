@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, Phone, MapPin, Send, Loader2 } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Loader2, Github, Linkedin } from 'lucide-react';
 import { submitContactForm } from "@/lib/actions/contact"; 
 
 const formSchema = z.object({
@@ -103,9 +103,29 @@ export default function ContactFormSection() {
             <CardHeader>
               <CardTitle className="font-headline text-2xl text-primary">Sosyal Medya</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              {/* Add social media links here later */}
-              <p className="text-muted-foreground">Yakında eklenecek...</p>
+            <CardContent className="space-y-4">
+              <div className="flex items-center">
+                <Github className="h-6 w-6 mr-3 text-accent flex-shrink-0" />
+                <a 
+                  href="https://github.com/barkinceliker" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-foreground hover:text-primary transition-colors"
+                >
+                  GitHub Profilim
+                </a>
+              </div>
+              <div className="flex items-center">
+                <Linkedin className="h-6 w-6 mr-3 text-accent flex-shrink-0" />
+                <a 
+                  href="https://www.linkedin.com/in/celikerbarkin/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-foreground hover:text-primary transition-colors"
+                >
+                  LinkedIn Profilim
+                </a>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -182,5 +202,3 @@ export default function ContactFormSection() {
       </div>
   );
 }
-
-    
