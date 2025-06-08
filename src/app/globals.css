@@ -5,8 +5,18 @@
 
 body {
   font-family: 'PT Sans', sans-serif;
-  /* Removed gradient background, set to solid white */
-  background-color: hsl(var(--background)); /* Will be white */
+  /* Siyah, Altın, Gri ve Turuncu karışımı gradient arka plan */
+  background: hsl(0, 0%, 7%); /* Fallback solid very dark grey */
+  background-image: linear-gradient(145deg, 
+    hsl(0, 0%, 4%) 0%, /* Siyah'a yakın başlangıç */
+    hsl(0, 0%, 18%) 30%, /* Koyu Gri (kırı) */
+    hsl(40, 75%, 30%) 60%, /* Koyu, zengin Altın */
+    hsl(28, 80%, 35%) 85%, /* Koyu, sıcak Turuncu */
+    hsl(0, 0%, 5%) 100% /* Siyah'a yakın bitiş */
+  );
+  background-attachment: fixed;
+  background-size: cover;
+  color: hsl(var(--foreground)); /* Metin renginin uygulanmasını sağla */
 }
 
 html {
@@ -14,67 +24,72 @@ html {
 }
 
 @layer base {
-  :root { /* Light Theme - White Background */
-    --background: 0 0% 100%; /* White */
-    --foreground: 240 10% 3.9%; /* Very Dark Blue/Almost Black - for text */
-    --card: 0 0% 98%; /* Very Light Gray - for cards, slightly off-white */
+  :root { /* Dark Theme: Siyah, Altın, Gri, Turuncu Vurgulu */
+    --background: 0 0% 7%;             /* Çok Koyu Gri/Siyaha Yakın (Fallback) */
+    --foreground: 0 0% 96%;           /* Açık Gri/Kırık Beyaz (Metin için) */
+    
+    --card: 0 0% 10%;                 /* Biraz Daha Açık Koyu Gri (Kartlar için) */
     --card-foreground: hsl(var(--foreground));
-    --popover: 0 0% 100%; /* White */
+
+    --popover: 0 0% 12%;              /* Koyu Açılır Pencere */
     --popover-foreground: hsl(var(--foreground));
-    --primary: 222 47% 11%; /* Dark Blue - for primary actions */
-    --primary-foreground: 0 0% 98%; /* Almost White - for text on primary buttons */
-    --secondary: 0 0% 96.1%; /* Light Gray - for secondary elements */
-    --secondary-foreground: 240 5.9% 10%; /* Dark Blue/Black - for text on secondary elements */
-    --muted: 0 0% 96.1%; /* Light Gray */
-    --muted-foreground: 240 3.8% 46.1%; /* Medium Gray - for less important text */
-    --accent: 190 70% 40%; /* A clear, darker Teal/Cyan - for accents */
-    --accent-foreground: 0 0% 98%; /* Almost White - for text on accent elements */
-    --destructive: 0 84.2% 60.2%; /* Standard Red */
+
+    /* Birincil ve Vurgu renkleri Altın ve Turuncu olacak */
+    --primary: 40 90% 55%;            /* Zengin Altın - Birincil eylemler için */
+    --primary-foreground: 0 0% 10%;   /* Altın butonlar üzerinde koyu metin */
+    
+    --accent: 28 100% 60%;            /* Canlı Turuncu - Vurgular için */
+    --accent-foreground: 0 0% 10%;    /* Turuncu vurgular üzerinde koyu metin */
+
+    --secondary: 0 0% 15%;            /* İkincil elemanlar için Koyu Gri */
+    --secondary-foreground: 0 0% 80%; /* İkincil elemanlar üzerinde Daha Açık Gri metin */
+
+    --muted: 0 0% 15%;                /* Sessiz elemanlar için Koyu Gri */
+    --muted-foreground: 0 0% 60%;     /* Sessiz metinler için Orta Gri */
+    
+    --destructive: 0 70% 55%;         /* Yıkıcı eylemler için derin, zengin bir kırmızı */
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%; /* Light Gray Border */
-    --input: 0 0% 89.8%; /* Light Gray Input Background */
-    --ring: 222 47% 11%; /* Dark Blue Ring - for focus */
+
+    --border: 0 0% 20%;               /* Koyu Gri Kenarlık */
+    --input: 0 0% 12%;                /* Koyu Input Arka Planı */
+    --ring: 40 90% 60%;               /* Odak için Altın Halka */
     --radius: 0.5rem;
 
-    /* Body Background Gradient - Not used for solid white, but kept for text gradient */
-    --gradient-body-start-hsl: 0 0% 100%; /* White - for consistency if used elsewhere */
-    --gradient-body-end-hsl: 0 0% 100%;   /* White - for consistency if used elsewhere */
+    /* Metin Gradienti - Altından Turuncuya */
+    --gradient-start-hsl: hsl(var(--primary)); /* Altın */
+    --gradient-end-hsl: hsl(var(--accent));    /* Turuncu */
 
-    /* Text Gradient (Adjusted for Light Theme) */
-    --gradient-start-hsl: hsl(var(--primary)); /* Dark Blue */
-    --gradient-end-hsl: hsl(var(--accent));   /* Dark Teal/Cyan */
+    /* Grafik Renkleri (Altın/Turuncu ile Koyu Tema için Ayarlandı) */
+    --chart-1: hsl(var(--primary));    /* Altın */
+    --chart-2: hsl(var(--accent));     /* Turuncu */
+    --chart-3: 30 80% 65%;             /* Daha Açık Turuncu */
+    --chart-4: 50 70% 60%;             /* Daha Açık Altın / Sarı */
+    --chart-5: 0 0% 70%;               /* Kontrast için Açık Gri */
 
-    /* Chart Colors (Adjusted for Light Theme - need to be visible on white) */
-    --chart-1: hsl(var(--primary)); /* Dark Blue */
-    --chart-2: hsl(var(--accent));  /* Dark Teal/Cyan */
-    --chart-3: 210 70% 45%; /* Another Dark Blue */
-    --chart-4: 310 65% 50%;  /* Dark Pink/Purple */
-    --chart-5: 170 60% 40%; /* Dark Green/Teal */
-
-    /* Sidebar Colors (Light Theme) */
-    --sidebar-background: 0 0% 99%; /* Very Light Gray/Almost White */
-    --sidebar-foreground: hsl(var(--foreground)); /* Dark text */
+    /* Kenar Çubuğu Renkleri (Koyu Tema) */
+    --sidebar-background: 0 0% 9%;     /* Karttan daha koyu, ana arka plana benzer */
+    --sidebar-foreground: hsl(var(--foreground));
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 0 0% 94%; /* Light gray for active items background */
-    --sidebar-accent-foreground: hsl(var(--accent)); /* Dark Teal for icons/text */
+    --sidebar-accent: 0 0% 18%;        /* Aktif öğelerin arka planı için biraz daha açık gri */
+    --sidebar-accent-foreground: hsl(var(--accent)); /* İkonlar/metin için Turuncu */
     --sidebar-border: hsl(var(--border));
     --sidebar-ring: hsl(var(--ring));
 
-    /* Fine-tuning and Specific Element Colors (Light Theme) */
+    /* İnce Ayar ve Özel Eleman Renkleri (Altın/Turuncu ile Koyu Tema) */
     --link-text: hsl(var(--accent));
-    --link-hover-text: hsl(var(--accent) / 0.8); /* Slightly darker accent on hover */
+    --link-hover-text: hsl(var(--accent) / 0.8); 
     --button-primary-bg: hsl(var(--primary));
     --button-primary-text: hsl(var(--primary-foreground));
     --button-primary-hover-bg: hsl(var(--primary) / 0.9);
     --button-secondary-bg: hsl(var(--secondary));
     --button-secondary-text: hsl(var(--secondary-foreground));
-    --button-secondary-hover-bg: hsl(var(--secondary) / 0.8); /* Darken slightly */
-    --input-bg: hsl(var(--background)); /* White input background */
+    --button-secondary-hover-bg: hsl(var(--secondary) / 0.8);
+    --input-bg: hsl(var(--input));
     --input-border: hsl(var(--border));
     --input-text: hsl(var(--foreground));
     --input-focus-ring: hsl(var(--ring));
-    --card-title-text: hsl(var(--foreground)); /* text-gradient handles this for CardTitle */
+    --card-title-text: hsl(var(--foreground)); /* text-gradient, CardTitle özel stilini yönetir */
     --card-description-text: hsl(var(--muted-foreground));
 
     --blockquote-bg: hsl(var(--secondary));
@@ -83,7 +98,7 @@ html {
     --code-bg: hsl(var(--secondary));
     --code-text: hsl(var(--muted-foreground));
     --separator-color: hsl(var(--border));
-    --toast-bg: hsl(var(--background)); /* Toasts on white background */
+    --toast-bg: hsl(var(--background));
     --toast-text: hsl(var(--foreground));
     --toast-border: hsl(var(--border));
   }
@@ -93,9 +108,7 @@ html {
   * {
     @apply border-border;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
+  /* body için arka plan stili yukarıda global olarak tanımlandı */
   h1, h2, h3, h4, h5, h6 {
     @apply text-gradient;
   }
