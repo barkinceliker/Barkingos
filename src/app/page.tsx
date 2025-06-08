@@ -96,7 +96,7 @@ export default async function SinglePageApp() {
       {/* Hero Section - Full Width Background, Contained Content */}
       <section
         id="anasayfa-section"
-        className="w-full bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))] shadow-xl bg-opacity-75"
+        className="w-full bg-gradient-to-br from-[hsl(var(--hero-gradient-start-hsl))] via-[hsl(var(--hero-gradient-mid-hsl))] to-[hsl(var(--hero-gradient-end-hsl))] shadow-xl bg-opacity-75 rounded-xl"
       >
         <div className="container mx-auto px-4 py-24 md:py-36 lg:py-48 text-center">
           <h1 className="text-4xl md:text-6xl font-headline font-bold text-gradient mb-6">

@@ -5,11 +5,10 @@
 
 body {
   font-family: 'PT Sans', sans-serif;
-  /* Görkemli Sarı Lacivert gradient background - sol-üstten sağ-alta */
   background: hsl(var(--background)); /* Fallback koyu lacivert */
   background-image: linear-gradient(to bottom right,
     hsl(var(--gradient-body-start-hsl)) 0%,
-    hsl(var(--gradient-body-mid-hsl)) 50%,
+    hsl(var(--gradient-body-mid-hsl)) 40%, /* Orta rengin etkisini %50'den %40'a çektik */
     hsl(var(--gradient-body-end-hsl)) 100%
   );
   background-attachment: fixed;
@@ -59,10 +58,11 @@ html {
     --radius: 0.5rem;
 
     /* Text Gradient - Parlak Sarıdan Altın Sarısına */
-    --gradient-start-hsl: 48 100% 58%;  /* Parlak Altın Sarısı */
-    --gradient-end-hsl: 52 100% 62%;    /* Biraz daha açık, canlı Sarı */
+    --gradient-start-hsl: 28 100% 60%; /* Canlı Turuncu */
+    --gradient-end-hsl: 20 90% 55%; /* Koyu Turuncu/Kırmızımsı Turuncu */
 
-    /* Hero Section Background Gradient Colors (Solid, opacity applied via Tailwind class) */
+
+    /* Hero Section Background Gradient Colors (Sarı Lacivert Tema ile uyumlu) */
     --hero-gradient-start-hsl: 220 70% 14%;    /* Hero için Koyu Lacivert */
     --hero-gradient-mid-hsl: 215 60% 18%;     /* Hero için Orta Ton Lacivert */
     --hero-gradient-end-hsl: 210 55% 16%;     /* Hero için biraz farklı Koyu Lacivert */
@@ -97,7 +97,7 @@ html {
     --input-border: hsl(var(--border));
     --input-text: hsl(var(--foreground));
     --input-focus-ring: hsl(var(--ring));
-    --card-title-text: hsl(var(--foreground)); /* Uses text-gradient by default */
+    --card-title-text: hsl(var(--foreground)); 
     --card-description-text: hsl(var(--muted-foreground));
 
     --blockquote-bg: hsl(var(--secondary));
