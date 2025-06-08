@@ -3,7 +3,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { ArrowRight, BookOpen, Briefcase, Award, Users, Zap, CalendarDays, MapPin, Lightbulb, MessageSquare, ExternalLink, Github, Download, FileText as FileTextIcon, GraduationCap } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  Briefcase,
+  Award,
+  Users,
+  Zap,
+  CalendarDays,
+  MapPin,
+  Lightbulb,
+  MessageSquare,
+  ExternalLink,
+  Github,
+  Download,
+  FileText as FileTextIcon,
+  GraduationCap
+} from "lucide-react";
 import { Progress } from '@/components/ui/progress';
 
 // Data fetching functions
@@ -72,6 +88,8 @@ export default async function SinglePageApp() {
     skillsByCategory[skill.category].push(skill);
   });
   const skillCategories = Object.keys(skillsByCategory).sort();
+
+  console.log("SinglePageApp: JavaScript execution completed, about to return JSX.");
 
   return (
     <div className="space-y-16 md:space-y-24 lg:space-y-32">
