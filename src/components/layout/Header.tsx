@@ -1,7 +1,7 @@
 
 "use client";
 
-import LinkFromNext from 'next/link'; // Renamed to avoid conflict with internal Link variable
+import LinkFromNext from 'next/link';
 import React, { useState, useEffect, useCallback } from 'react';
 import { Menu as MenuIcon, Loader2, LogIn, Shield, MoreVertical, X, ChevronDown, FileText, BookOpenText, User, Home, Award, Lightbulb, Briefcase, Sparkles, MessageSquare, LogOut as LogOutIcon } from 'lucide-react';
 
@@ -124,6 +124,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
   
     const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement, MouseEvent>) => {
       let eventDefaultPrevented = false;
+  
       if (href && href.startsWith('/#')) {
         const targetId = href.substring(href.indexOf('#') + 1);
         const targetElement = document.getElementById(targetId);
@@ -137,8 +138,6 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             if (currentPathname === '/') {
               window.history.pushState(null, '', href);
             } else {
-               // If on a different page, let Next.js handle navigation to the root then scroll.
-               // Or, just navigate to the root page with hash.
                router.push(href);
             }
           } else {
@@ -147,12 +146,16 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         }
       }
   
-      if (onClick) {
+      if (onClick && !eventDefaultPrevented) { // Call onClick only if default was not prevented or not a hash link
+        onClick(e);
+      } else if (onClick && eventDefaultPrevented) { // If hash link, call onClick after scroll
         onClick(e);
       }
     }, [href, currentPathname, router, onClick]);
   
     useEffect(() => {
+      setIsActiveClient(false); // Default to false on server and initial client render
+  
       if (typeof window !== 'undefined' && href) {
         const checkActivity = () => {
           let currentActivity = false;
@@ -176,9 +179,9 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           }
         };
   
-        checkActivity();
+        checkActivity(); // Check on mount/hydration
         const handleHashChange = () => checkActivity();
-        const handlePopState = () => checkActivity();
+        const handlePopState = () => checkActivity(); // For browser back/forward
   
         window.addEventListener('hashchange', handleHashChange);
         window.addEventListener('popstate', handlePopState); 
@@ -188,7 +191,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           window.removeEventListener('popstate', handlePopState);
         };
       }
-    }, [href, currentPathname, isActiveClient]);
+    }, [href, currentPathname]); // Rerun when href or pathname changes
   
     const commonClasses = cn(
       "text-foreground hover:bg-accent/10 hover:text-accent-foreground",
@@ -204,7 +207,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           variant="ghost"
           size="sm"
           onClick={handleLinkClick}
-          className={cn(commonClasses, "gap-0")} // Ensure gap-0 for action buttons too
+          className={cn(commonClasses)} // Removed gap-0, default gap-2 will apply
           disabled={disabled}
         >
           {IconComponent && <IconComponent className={cn("h-4 w-4")} />}
@@ -218,11 +221,11 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         asChild
         variant="ghost"
         size="sm"
-        className={cn(commonClasses, "lg:text-xs xl:text-sm", "gap-0")} // Added gap-0 for NavLink Button
+        className={cn(commonClasses, "xl:text-sm lg:text-xs")} // Removed gap-0, default gap-2 will apply
         disabled={disabled}
       >
         <LinkFromNext href={href || '#'} onClick={handleLinkClick}>
-          {IconComponent && <IconComponent className={cn("h-4 w-4")} />} {/* Removed mr-2 */}
+          {IconComponent && <IconComponent className={cn("h-4 w-4")} />} 
           <span>{children}</span>
         </LinkFromNext>
       </Button>
@@ -235,7 +238,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
       <>
         {staticNavItems.map((item) => (
           <SheetClose asChild key={`sheet-nav-${item.id}`}>
-            <NavLink href={item.href} iconName={item.iconName} className="text-base py-2.5 px-4 w-full gap-0">
+            <NavLink href={item.href} iconName={item.iconName} className="text-base py-2.5 px-4 w-full">
               {item.label}
             </NavLink>
           </SheetClose>
@@ -244,7 +247,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
           <>
             <div className="my-2 border-t border-border" />
             <SheetClose asChild>
-              <NavLink href={adminNavItemData.href} iconName={adminNavItemData.iconName} className="text-base py-2.5 px-4 w-full gap-0">
+              <NavLink href={adminNavItemData.href} iconName={adminNavItemData.iconName} className="text-base py-2.5 px-4 w-full">
                 {adminNavItemData.label}
               </NavLink>
             </SheetClose>
@@ -253,16 +256,16 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
         <div className="my-2 border-t border-border" />
         {isAuthenticated ? (
            <SheetClose asChild>
-             <Button variant="ghost" onClick={handleLogout} className="text-base py-2.5 px-4 text-destructive hover:bg-destructive/10 hover:text-destructive justify-start w-full gap-0" disabled={isSubmittingLogout}>
+             <Button variant="ghost" onClick={handleLogout} className="text-base py-2.5 px-4 text-destructive hover:bg-destructive/10 hover:text-destructive justify-start w-full" disabled={isSubmittingLogout}> {/* Removed gap-0 */}
                {isSubmittingLogout ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogOutIcon className="h-5 w-5" />}
-               <span className="ml-0"> {logoutNavItemData.label}</span>
+               <span>{logoutNavItemData.label}</span>
              </Button>
            </SheetClose>
         ) : (
            <SheetClose asChild>
-              <Button variant="default" onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }} className="text-base py-2.5 px-4 justify-start w-full mt-2 gap-0" disabled={isSubmittingLogin}>
+              <Button variant="default" onClick={() => { setIsLoginDialogOpen(true); setIsMobileMenuOpen(false); }} className="text-base py-2.5 px-4 justify-start w-full mt-2" disabled={isSubmittingLogin}> {/* Removed gap-0 */}
                 {isSubmittingLogin ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="h-5 w-5" />}
-                <span className="ml-0"> Giriş Yap</span>
+                <span>Giriş Yap</span>
               </Button>
             </SheetClose>
         )}
@@ -313,14 +316,15 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             href="/#anasayfa-section"
             className="text-2xl font-headline font-bold text-gradient"
             onClick={(e) => {
+              setIsMobileMenuOpen(false); // Close mobile menu if open
               const hrefAttr = e.currentTarget.getAttribute('href');
-              if (typeof window !== 'undefined' && window.location.pathname === '/' && hrefAttr && hrefAttr.startsWith('/#')) {
-                 e.preventDefault();
-                 const targetId = hrefAttr.substring(hrefAttr.indexOf('#') + 1);
-                 document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth'});
-                 window.history.pushState(null, '', hrefAttr);
+               if (typeof window !== 'undefined' && window.location.pathname === '/' && hrefAttr && hrefAttr.startsWith('/#')) {
+                  e.preventDefault();
+                  const targetId = hrefAttr.substring(hrefAttr.indexOf('#') + 1);
+                  document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth'});
+                  window.history.pushState(null, '', hrefAttr);
               } else if (typeof window !== 'undefined' && window.location.pathname === '/') {
-                 const targetElement = document.getElementById('anasayfa-section');
+                  const targetElement = document.getElementById('anasayfa-section');
                   if (targetElement) {
                       e.preventDefault();
                       targetElement.scrollIntoView({ behavior: 'smooth' });
@@ -335,7 +339,7 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
             {siteTitle}
           </LinkFromNext>
 
-          <nav className="hidden lg:flex space-x-1 items-center">
+          <nav className="hidden lg:flex space-x-0 items-center"> {/* Changed space-x-1 to space-x-0 */}
             {staticNavItems.map((item) => (
               <NavLink key={`desktop-nav-${item.id}`} href={item.href} iconName={item.iconName} className="px-3">
                 {item.label}
@@ -348,24 +352,24 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
               {isAuthenticated ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="px-3 lg:text-xs xl:text-sm">
+                    <Button variant="ghost" className="xl:text-sm lg:text-xs px-3">
                       <Shield className="h-4 w-4" />
-                      <span className="ml-2">{adminNavItemData.label}</span>
+                      <span className="ml-2">{adminNavItemData.label}</span> {/* Added ml-2 for spacing from icon */}
                       <ChevronDown className="ml-1 h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem asChild className="gap-0">
-                      <LinkFromNext href={adminNavItemData.href} className="cursor-pointer w-full flex items-center">
+                    <DropdownMenuItem asChild className="cursor-pointer w-full flex items-center"> {/* Removed gap-0 */}
+                      <LinkFromNext href={adminNavItemData.href} className="w-full flex items-center"> {/* Removed gap-0 */}
                         <Shield className="h-4 w-4" />
-                        <span className="ml-2">Admin Paneline Git</span>
+                        <span className="ml-2">{adminNavItemData.label}</span>
                       </LinkFromNext>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={handleLogout}
                       disabled={isSubmittingLogout}
-                      className="text-destructive focus:bg-destructive focus:text-destructive-foreground cursor-pointer gap-0 flex items-center"
+                      className="text-destructive focus:bg-destructive focus:text-destructive-foreground cursor-pointer flex items-center" /* Removed gap-0 */
                     >
                       {isSubmittingLogout ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogOutIcon className="h-4 w-4" />}
                       <span className="ml-2">Çıkış Yap</span>
@@ -373,9 +377,9 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button variant="default" size="sm" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin} className="lg:text-xs xl:text-sm gap-0">
+                <Button variant="default" size="sm" onClick={() => setIsLoginDialogOpen(true)} disabled={isSubmittingLogin} className="xl:text-sm lg:text-xs"> {/* Removed gap-0 */}
                   {isSubmittingLogin ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
-                  <span className="ml-0"> Giriş Yap</span>
+                  <span>Giriş Yap</span>
                 </Button>
               )}
             </div>
@@ -471,3 +475,4 @@ export default function Header({ initialIsAuthenticated, initialSiteTitle }: Hea
     </>
   );
 }
+
