@@ -6,9 +6,10 @@ import Footer from '@/components/layout/Footer';
 import { Toaster } from "@/components/ui/toaster";
 import FloatingLogoutButton from '@/components/layout/FloatingLogoutButton';
 import { checkAuthStatus } from '@/lib/actions/auth';
-import { getThemeSetting, type ThemeSetting, getSiteGeneralSettings } from '@/lib/actions/settings-actions'; // ThemeSetting sadece activeThemeName içerecek
+import { getThemeSetting, type ThemeSetting, getSiteGeneralSettings } from '@/lib/actions/settings-actions';
 import { cn } from '@/lib/utils';
 import { PT_Sans, Playfair_Display, Source_Code_Pro } from 'next/font/google';
+import FloatingNavButton from '@/components/layout/FloatingNavButton';
 
 const ptSans = PT_Sans({
   subsets: ['latin', 'latin-ext'],
@@ -63,49 +64,45 @@ async function AuthAwareUIComponents() {
         initialSiteTitle={siteSettings.siteTitle}
       />
       <FloatingLogoutButton key={`logout-btn-${auth.isAuthenticated.toString()}`} initialIsAuthenticated={auth.isAuthenticated} />
+      <FloatingNavButton 
+        key={`floating-nav-btn-${auth.isAuthenticated.toString()}-${siteSettings.siteTitle}`} 
+        initialIsAuthenticated={auth.isAuthenticated}
+        siteTitle={siteSettings.siteTitle}
+      />
     </>
   );
 }
-
-// Dinamik stil enjeksiyon fonksiyonu kaldırıldı, çünkü tema sınıfı ile globals.css kullanılacak.
 
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const logPrefix = "[RootLayout SERVER RENDER]";
+  const logPrefix = "[RootLayout SUNUCU]";
   console.log(`${logPrefix} ================== BAŞLANGIÇ ==================`);
 
-  // getThemeSetting artık sadece { activeThemeName: string, updatedAt: string } döndürecek.
   const themeSetting = await getThemeSetting();
   console.log(`${logPrefix} getThemeSetting() çağrıldı. Sonuç (veritabanı/cache):`, JSON.stringify(themeSetting));
 
   const activeThemeName = themeSetting?.activeThemeName || 'default';
   console.log(`${logPrefix} Sunucuda render için kullanılacak aktif tema: '${activeThemeName}'`);
-
-  // Dinamik palet ve stil enjeksiyonu kaldırıldı.
-  // Tema sınıfı doğrudan globals.css'teki tanımları tetikleyecek.
+  
   const themeClassName = activeThemeName === 'default' ? '' : `theme-${activeThemeName}`;
   console.log(`${logPrefix} HTML için hesaplanan tema sınıfı: '${themeClassName}'`);
 
   const fontVariableClasses = cn(ptSans.variable, playfairDisplay.variable, sourceCodePro.variable);
   console.log(`${logPrefix} HTML için font değişken sınıfları: '${fontVariableClasses}'`);
-
+  
   const finalHtmlClasses = cn(themeClassName, fontVariableClasses).trim();
-  // Key, tema adı ve fontlara bağlı olmalı ki tema veya font değiştiğinde <html> yeniden render edilsin.
-  const htmlKey = `${activeThemeName}-${fontVariableClasses}`; // Sadece tema adına bağlı
+  const htmlKey = `${activeThemeName}-${fontVariableClasses}`; 
 
   console.log(`${logPrefix} <html> etiketine uygulanacak className: '${finalHtmlClasses}'`);
   console.log(`${logPrefix} <html> etiketine uygulanacak key: '${htmlKey}'`);
-
   console.log(`${logPrefix} ==================== BİTİŞ ====================`);
 
   return (
     <html lang="tr" className={finalHtmlClasses} key={htmlKey}>
-      <head>
-        {/* Dinamik stil enjeksiyonu kaldırıldı. */}
-      </head>
+      <head />
       <body className="font-body antialiased flex flex-col min-h-screen bg-background text-foreground">
         <AuthAwareUIComponents />
         <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -117,5 +114,3 @@ export default async function RootLayout({
     </html>
   );
 }
-
-    
