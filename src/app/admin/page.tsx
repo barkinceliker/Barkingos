@@ -1,7 +1,7 @@
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Settings, LayoutDashboard, Newspaper, FolderKanban, Sparkles, Brain, Briefcase, FileText, MailIcon, ClipboardUser } from 'lucide-react';
+import { Settings, LayoutDashboard, Newspaper, FolderKanban, Sparkles, Brain, Briefcase, FileText, MailIcon, ClipboardList } from 'lucide-react';
 
 // Data fetching functions for embedded forms
 import { getHomepageContent } from '@/lib/actions/page-content-actions';
@@ -48,7 +48,7 @@ export default async function AdminUnifiedPage() {
     { 
       value: "ozgecmis", 
       title: "Özgeçmiş Yönetimi", 
-      icon: ClipboardUser, // Yeni ikon
+      icon: ClipboardList, // Değiştirildi: ClipboardUser -> ClipboardList
       description: "Özgeçmiş sayfasındaki bilgileri (deneyim, eğitim, beceriler vb.) buradan yönetin.",
       content: <EditResumeForm initialData={resumeContent} /> // Yeni form
     },

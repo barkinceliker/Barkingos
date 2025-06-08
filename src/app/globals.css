@@ -5,6 +5,9 @@
 
 body {
   font-family: 'PT Sans', sans-serif;
+  background-image: linear-gradient(to bottom right, hsl(var(--gradient-body-start-hsl)), hsl(var(--gradient-body-end-hsl)));
+  background-attachment: fixed; /* Make gradient cover the viewport and not scroll */
+  background-size: cover; /* Ensure gradient covers the entire body */
 }
 
 html {
@@ -34,7 +37,11 @@ html {
     --ring: 231 48% 48%; /* Primary color for focus rings */
     --radius: 0.5rem;
 
-    /* Gradient Colors */
+    /* Body Gradient Colors */
+    --gradient-body-start-hsl: 195 75% 88%; /* Light Sky Blue-ish */
+    --gradient-body-end-hsl: 165 50% 75%;   /* Soft Emerald/Mint */
+
+    /* Gradient Colors for text-gradient utility */
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
 
@@ -103,7 +110,11 @@ html {
     --input: 0 0% 14.9%;
     --ring: 0 0% 83.1%;
 
-    /* Gradient Colors */
+    /* Body Gradient Colors for Dark Theme */
+    --gradient-body-start-hsl: 200 40% 18%; /* Darker Blue */
+    --gradient-body-end-hsl: 160 35% 12%;   /* Dark Emerald/Teal */
+
+    /* Gradient Colors for text-gradient utility */
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
 
@@ -172,6 +183,9 @@ html {
     --ring: 180 70% 65%;
     --radius: 0.75rem;
 
+    --gradient-body-start-hsl: 205 50% 15%; /* Darker Ocean Start */
+    --gradient-body-end-hsl: 180 40% 25%;   /* Darker Ocean End */
+
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
 
@@ -235,6 +249,9 @@ html {
     --ring: 300 100% 75%;
     --radius: 0.25rem;
 
+    --gradient-body-start-hsl: 270 70% 9%;   /* Dark Purple Cyber */
+    --gradient-body-end-hsl: 240 80% 12%;   /* Dark Blue Cyber */
+
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
 
@@ -297,6 +314,10 @@ html {
     --input: 240 10% 12%;
     --ring: 280 80% 70%;
     --radius: 0.5rem;
+
+    --gradient-body-start-hsl: 240 15% 8%;   /* Midnight Start */
+    --gradient-body-end-hsl: 270 20% 5%;   /* Midnight End */
+
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
   }
@@ -322,6 +343,10 @@ html {
     --input: 120 20% 90%;
     --ring: 130 55% 50%;
     --radius: 0.5rem;
+
+    --gradient-body-start-hsl: 120 30% 92%; /* Light Forest Start */
+    --gradient-body-end-hsl: 100 40% 85%;   /* Light Forest End */
+
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
   }
@@ -347,6 +372,10 @@ html {
     --input: 220 30% 22%;
     --ring: 200 80% 65%;
     --radius: 0.5rem;
+
+    --gradient-body-start-hsl: 220 40% 12%; /* Deep Navy Start */
+    --gradient-body-end-hsl: 200 30% 18%;   /* Deep Navy End */
+
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
   }
@@ -372,6 +401,10 @@ html {
     --input: 340 60% 92%;
     --ring: 330 70% 60%;
     --radius: 0.75rem; /* Softer feel */
+
+    --gradient-body-start-hsl: 340 80% 95%; /* Blush Pink Start */
+    --gradient-body-end-hsl: 320 70% 90%;   /* Blush Pink End */
+
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
   }
@@ -397,6 +430,10 @@ html {
     --input: 270 40% 28%;
     --ring: 280 70% 65%;
     --radius: 0.5rem;
+
+    --gradient-body-start-hsl: 270 50% 18%; /* Royal Purple Start */
+    --gradient-body-end-hsl: 290 45% 22%;   /* Royal Purple End */
+
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
   }
@@ -422,6 +459,10 @@ html {
     --input: 30 60% 90%;
     --ring: 20 85% 60%;
     --radius: 0.5rem;
+
+    --gradient-body-start-hsl: 30 70% 92%; /* Burnt Orange Start */
+    --gradient-body-end-hsl: 15 65% 88%;   /* Burnt Orange End */
+
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
   }
@@ -447,6 +488,10 @@ html {
     --input: 0 0% 25%;
     --ring: 0 70% 55%;
     --radius: 0.5rem;
+
+    --gradient-body-start-hsl: 0 10% 15%;  /* Crimson Start */
+    --gradient-body-end-hsl: 350 15% 18%;  /* Crimson End */
+
     --gradient-start-hsl: var(--primary);
     --gradient-end-hsl: var(--accent);
   }
@@ -458,6 +503,8 @@ html {
   }
   body {
     @apply bg-background text-foreground;
+    /* background-color is applied by bg-background */
+    /* background-image is applied globally outside this layer */
   }
 }
 
@@ -470,3 +517,5 @@ html {
     text-fill-color: transparent;
   }
 }
+
+    
