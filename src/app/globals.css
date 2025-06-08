@@ -15,51 +15,51 @@ html {
 }
 
 @layer base {
-  :root { /* Koyu Mavi-Zümrüt Tema */
-    --background: 210 30% 12%; /* Koyu Mavi-Gri */
-    --foreground: 210 25% 90%; /* Çok Açık Mavi-Gri */
-    --card: 205 35% 18%; /* Biraz daha açık koyu mavi */
-    --card-foreground: 210 25% 90%;
-    --popover: 205 35% 16%;
-    --popover-foreground: 210 25% 90%;
-    --primary: 200 75% 55%; /* Canlı Mavi */
-    --primary-foreground: 210 20% 98%; /* Beyaz */
-    --secondary: 200 30% 25%; /* Daha Koyu Mavi */
-    --secondary-foreground: 190 60% 80%; /* Açık Camgöbeği */
-    --muted: 200 25% 22%;
-    --muted-foreground: 200 20% 65%;
-    --accent: 160 70% 45%; /* Zümrüt/Teal */
-    --accent-foreground: 210 20% 98%; /* Beyaz */
-    --destructive: 0 60% 50%;
+  :root { /* Royal Indigo & Gold Dark Theme */
+    --background: 240 30% 10%; /* Very Dark Indigo */
+    --foreground: 40 20% 95%; /* Warm Off-White */
+    --card: 240 30% 15%; /* Dark Indigo */
+    --card-foreground: hsl(var(--foreground));
+    --popover: 240 30% 13%; /* Slightly darker than card */
+    --popover-foreground: hsl(var(--foreground));
+    --primary: 250 65% 60%; /* Rich Indigo/Purple */
+    --primary-foreground: 240 20% 98%; /* Almost White */
+    --secondary: 240 25% 25%; /* Muted Dark Indigo */
+    --secondary-foreground: 240 20% 85%; /* Light Indigo Gray */
+    --muted: 240 20% 20%; /* Very Muted Dark Indigo */
+    --muted-foreground: 240 15% 65%; /* Muted Indigo Gray */
+    --accent: 40 80% 55%; /* Warm Gold/Amber */
+    --accent-foreground: 240 30% 10%; /* Dark, for text on gold buttons */
+    --destructive: 0 70% 55%; /* Vivid Red */
     --destructive-foreground: 0 0% 98%;
-    --border: 200 30% 30%;
-    --input: 200 30% 20%;
-    --ring: 170 70% 50%; /* Vurgu rengiyle uyumlu */
+    --border: 240 20% 28%; /* Indigo Border */
+    --input: 240 20% 18%; /* Dark Indigo Input */
+    --ring: 40 80% 60%; /* Gold/Amber Ring, slightly brighter */
     --radius: 0.5rem;
 
     /* Gövde Arka Plan Gradienti */
-    --gradient-body-start-hsl: 200 50% 12%; /* Koyu Mavi */
-    --gradient-body-end-hsl: 160 55% 10%;   /* Koyu Zümrüt/Teal */
+    --gradient-body-start-hsl: 250 40% 8%; /* Very dark indigo */
+    --gradient-body-end-hsl: 270 40% 10%;   /* Very dark purple */
 
     /* Metin Gradienti */
-    --gradient-start-hsl: var(--primary);
-    --gradient-end-hsl: var(--accent);
+    --gradient-start-hsl: 250 65% 65%; /* Adjusted Primary for Text Gradient */
+    --gradient-end-hsl: 40 85% 60%;   /* Adjusted Accent for Text Gradient */
 
     /* Grafik Renkleri */
     --chart-1: hsl(var(--primary));
     --chart-2: hsl(var(--accent));
-    --chart-3: 200 60% 65%;
-    --chart-4: 160 55% 55%;
-    --chart-5: 180 50% 50%;
+    --chart-3: 250 50% 70%; /* Lighter Indigo */
+    --chart-4: 40 70% 65%;  /* Lighter Gold */
+    --chart-5: 260 55% 65%; /* Slightly different purple */
 
     /* Kenar Çubuğu Renkleri */
-    --sidebar-background: 210 30% 10%;
-    --sidebar-foreground: 210 20% 85%;
+    --sidebar-background: 240 30% 9%;
+    --sidebar-foreground: 240 20% 88%;
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: 205 30% 20%;
-    --sidebar-accent-foreground: hsl(var(--accent));
-    --sidebar-border: 200 30% 25%;
+    --sidebar-accent: 240 25% 22%; /* Muted Indigo for sidebar active items */
+    --sidebar-accent-foreground: hsl(var(--accent)); /* Gold for icons/text on active sidebar items */
+    --sidebar-border: 240 20% 25%;
     --sidebar-ring: hsl(var(--ring));
 
     /* İnce Ayar ve Özel Eleman Renkleri */
@@ -75,7 +75,7 @@ html {
     --input-border: hsl(var(--border));
     --input-text: hsl(var(--foreground));
     --input-focus-ring: hsl(var(--ring));
-    --card-title-text: hsl(var(--card-foreground));
+    --card-title-text: hsl(var(--card-foreground)); /* text-gradient handles this via global h tags */
     --card-description-text: hsl(var(--muted-foreground));
 
     --blockquote-bg: hsl(var(--secondary) / 0.5);
